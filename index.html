@@ -650,7 +650,7 @@ const Rest = {
     if (!r.ok) { const e = new Error(j.error || 'error'); e.code = r.status === 403 ? 'forbidden' : r.status === 409 ? 'conflict' : 'net'; e.payload = j; throw e; }
     return j;
   },
-  async health() { try { const r = await fetch(this.url('api/health'), { cache: 'no-store' }); if (!r.ok) return null; const j = await r.json(); return j.app === 'koa-inspeccion' ? j : null; } catch { return null; } },
+  async health() { const ac = new AbortController(); const t = setTimeout(() => ac.abort(), 8000); try { const r = await fetch(this.url('api/health'), { cache: 'no-store', signal: ac.signal }); if (!r.ok) return null; const j = await r.json(); return j.app === 'koa-inspeccion' ? j : null; } catch { return null; } finally { clearTimeout(t); } },
   async login(user, pass) { const r = await fetch(this.url('api/login'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user, pass }) }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'No se pudo iniciar sesión'); this.token = j.token; try { localStorage.setItem('koa_tok', j.token); } catch { } return j; },
   async logout() { try { await this.req('POST', 'api/logout'); } catch { } this.token = ''; try { localStorage.removeItem('koa_tok'); } catch { } },
   me() { return this.req('GET', 'api/me'); },
@@ -2024,6 +2024,11 @@ function gateScreen(title, msg) {
       const ejesR = document.createElement('datalist'); ejesR.id = 'ejesList'; ejesR.innerHTML = EJES.map(e => `<option value="${e}">`).join(''); document.body.appendChild(ejesR);
       const lb = document.createElement('button'); lb.className = 'btn small'; lb.id = 'logoutTop'; lb.title = 'Cerrar sesión'; lb.textContent = 'Salir'; lb.onclick = localLogout; $('#themeBtn').after(lb);
       Sync.startRest(); Sync.pill(); render(); return;
+    }
+    if (window.KOA_API) {
+      // Hay un servidor configurado pero no responde: no se permite registrar en el dispositivo
+      gateScreen('Servidor no disponible', `No fue posible conectar con el servidor del portal. Verifique su conexión a internet e intente de nuevo.<br><br><button class="btn primary" onclick="location.reload()">Reintentar</button><br><br><span style="font-size:12px">Si el problema continúa, avise a la administración.</span>`);
+      return;
     }
     // Sin servidor (GitHub Pages sin configurar): acceso con usuario y contraseña; los datos se guardan en este dispositivo
     const u = await localGate();
