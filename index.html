@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>KOA · Inspección de daños post-sismo</title>
+<meta name="theme-color" content="#dfe7fb">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a84ff'/%3E%3Cpath d='M18 50V14h8v15l13-15h10L35 30l15 20H40L30 36l-4 4v10z' fill='white'/%3E%3C/svg%3E">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three.module.min.js",
+  "three/addons/controls/OrbitControls.js": "./vendor/OrbitControls.js"
+} }
+</script>
+<style>
+:root{
+  --text:#1d1d1f; --muted:#6e6e73; --faint:#8e8e93;
+  --glass:rgba(255,255,255,.56); --glass2:rgba(255,255,255,.78); --stroke:rgba(255,255,255,.75);
+  --hair:rgba(0,0,0,.08);
+  --blue:#0a84ff; --green:#34c759; --orange:#ff9f0a; --red:#ff3b30; --purple:#af52de;
+  --yellow:#ffcc00; --indigo:#5856d6; --gray:#aeaeb2; --teal:#30b0c7;
+  --radius:22px; --shadow:0 30px 80px rgba(40,50,90,.22), 0 2px 6px rgba(0,0,0,.06);
+  --font:-apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, Arial, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:var(--font);color:var(--text);-webkit-font-smoothing:antialiased;}
+body{overflow:hidden;background:#e7ecf8}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+#wallpaper{position:fixed;inset:0;z-index:0;
+  background:
+   radial-gradient(1100px 760px at 8% 0%, #7ab8ff 0%, rgba(122,184,255,0) 62%),
+   radial-gradient(900px 700px at 96% 12%, #c9a2ff 0%, rgba(201,162,255,0) 60%),
+   radial-gradient(1000px 800px at 78% 104%, #ffb08a 0%, rgba(255,176,138,0) 60%),
+   radial-gradient(800px 700px at 0% 100%, #8fe3d3 0%, rgba(143,227,211,0) 60%),
+   linear-gradient(135deg,#dfe8ff 0%,#efe6ff 50%,#ffece2 100%);}
+#wallpaper::after{content:"";position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");}
+.glass{background:var(--glass);backdrop-filter:blur(28px) saturate(180%);-webkit-backdrop-filter:blur(28px) saturate(180%);border:1px solid var(--stroke);box-shadow:inset 0 1px 0 rgba(255,255,255,.8), 0 8px 30px rgba(50,60,110,.08)}
+.window{position:relative;z-index:1;margin:16px;height:calc(100vh - 32px);height:calc(100dvh - 32px);display:grid;grid-template-columns:262px 1fr;border-radius:26px;overflow:hidden;
+  background:rgba(255,255,255,.34);backdrop-filter:blur(40px) saturate(170%);-webkit-backdrop-filter:blur(40px) saturate(170%);border:1px solid rgba(255,255,255,.7);box-shadow:var(--shadow)}
+/* Sidebar */
+.sidebar{padding:16px 12px;display:flex;flex-direction:column;gap:6px;background:rgba(255,255,255,.38);border-right:1px solid rgba(255,255,255,.6);overflow-y:auto}
+.traffic{display:flex;gap:8px;padding:4px 8px 14px}
+.traffic i{width:12px;height:12px;border-radius:50%;display:block;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.15)}
+.traffic i:nth-child(1){background:#ff5f57}.traffic i:nth-child(2){background:#febc2e}.traffic i:nth-child(3){background:#28c840}
+.brand{display:flex;align-items:center;gap:10px;padding:4px 8px 14px}
+.brand .logo{width:38px;height:38px;border-radius:10px;background:linear-gradient(145deg,#2f9bff,#0060df);display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px;letter-spacing:-.5px;box-shadow:0 4px 12px rgba(10,132,255,.4)}
+.brand b{display:block;font-size:15px;letter-spacing:-.2px}.brand small{color:var(--muted);font-size:11.5px}
+.navlabel{font-size:11px;font-weight:600;color:var(--faint);padding:10px 10px 4px;text-transform:uppercase;letter-spacing:.4px}
+.nav{display:flex;align-items:center;gap:10px;width:100%;border:0;background:transparent;padding:8px 10px;border-radius:9px;font-size:13.5px;text-align:left;color:var(--text)}
+.nav svg{width:18px;height:18px;flex:none;color:var(--blue)}
+.nav .sm{display:none}
+.nav .cnt{margin-left:auto;font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+.nav:hover{background:rgba(0,0,0,.04)}
+.nav.active{background:rgba(10,132,255,.14);font-weight:600}
+.side-foot{margin-top:auto;padding:10px;font-size:11.5px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+.syncpill{display:inline-flex;align-items:center;gap:6px;padding:5px 9px;border-radius:999px;background:rgba(255,255,255,.6);border:1px solid var(--stroke);width:max-content}
+.syncpill i{width:7px;height:7px;border-radius:50%;background:var(--gray)}
+.syncpill.on i{background:var(--green)}.syncpill.err i{background:var(--orange)}
+/* Main */
+main{display:flex;flex-direction:column;min-width:0;min-height:0}
+.toolbar{display:flex;align-items:center;gap:12px;padding:14px 26px;border-bottom:1px solid rgba(255,255,255,.55);background:rgba(255,255,255,.28)}
+.toolbar h1{font-size:19px;margin:0;letter-spacing:-.3px;font-weight:700}
+.toolbar .sub{color:var(--muted);font-size:12.5px}
+.toolbar .spacer{flex:1}
+#view{flex:1;overflow-y:auto;padding:22px 26px 60px;scroll-behavior:smooth}
+.btn{border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.75);padding:8px 14px;border-radius:10px;font-size:13.5px;font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.05);display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+.btn:hover{background:#fff}
+.btn.primary{background:linear-gradient(180deg,#2a95ff,#0a7cf0);color:#fff;border-color:transparent;box-shadow:0 4px 14px rgba(10,132,255,.35)}
+.btn.primary:hover{filter:brightness(1.05)}
+.btn.danger{color:var(--red)}
+.btn.small{padding:5px 10px;font-size:12.5px;border-radius:8px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+h2,h3,h4{letter-spacing:-.3px}
+.muted{color:var(--muted)}
+.card{border-radius:var(--radius);padding:20px 22px}
+.grid2{display:grid;grid-template-columns:1.25fr 1fr;gap:18px;margin-top:18px}
+.stack{display:flex;flex-direction:column;gap:18px}
+/* Hero */
+.hero{border-radius:28px;padding:28px 30px;display:flex;align-items:center;gap:26px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:-40% -10% auto auto;width:520px;height:520px;background:radial-gradient(circle,rgba(10,132,255,.22),transparent 65%);pointer-events:none}
+.hero h2{font-size:34px;line-height:1.08;margin:6px 0 8px;font-weight:800;letter-spacing:-.8px}
+.eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;color:#c2410c;background:rgba(255,159,10,.16);padding:5px 10px;border-radius:999px}
+.hero p{margin:0 0 16px;color:var(--muted)}
+.hero .acts{display:flex;gap:10px;flex-wrap:wrap}
+.hero .left{flex:1;min-width:0;position:relative}
+.ring{position:relative;width:170px;height:170px;flex:none}
+.ring svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring .lbl{position:absolute;inset:0;display:grid;place-items:center;text-align:center}
+.ring .lbl b{font-size:34px;letter-spacing:-1px;display:block}
+.ring .lbl small{color:var(--muted);font-size:12px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+.stat{border-radius:18px;padding:16px 18px}
+.stat small{color:var(--muted);font-size:12px;display:flex;align-items:center;gap:6px}
+.stat b{font-size:28px;display:block;margin-top:4px;letter-spacing:-.6px;font-variant-numeric:tabular-nums}
+.stat .dotc{width:8px;height:8px;border-radius:50%}
+.canvas3d{position:relative;height:380px;border-radius:16px;overflow:hidden;background:radial-gradient(ellipse at 50% 30%,rgba(255,255,255,.9),rgba(230,236,250,.6));border:1px solid rgba(255,255,255,.8)}
+.canvas3d canvas{display:block;width:100%!important;height:100%!important;touch-action:none}
+.canvas3d .tip{position:absolute;left:12px;bottom:10px;font-size:11.5px;color:var(--muted);background:rgba(255,255,255,.75);padding:4px 9px;border-radius:999px;pointer-events:none}
+.canvas3d .hover{position:absolute;right:12px;top:12px;font-size:12.5px;font-weight:600;background:rgba(255,255,255,.88);padding:6px 11px;border-radius:10px;box-shadow:0 4px 14px rgba(0,0,0,.08);pointer-events:none;opacity:0;transition:opacity .15s}
+.canvas3d .fallback{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:13px;text-align:center;padding:20px}
+.lbl3d{position:absolute;transform:translate(-50%,-50%);font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:999px;color:#fff;pointer-events:none;white-space:nowrap;box-shadow:0 4px 12px rgba(0,0,0,.15)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:12px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.bar{height:8px;border-radius:99px;background:rgba(0,0,0,.07);overflow:hidden;display:flex}
+.bar i{display:block;height:100%}
+.prog{display:grid;grid-template-columns:150px 1fr 70px;gap:12px;align-items:center;padding:9px 0;font-size:13.5px;border-bottom:1px solid var(--hair)}
+.prog:last-child{border-bottom:0}
+.prog .n{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums;font-size:12.5px}
+.steps{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:18px}
+.step{border-radius:18px;padding:16px}
+.step .num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--blue);color:#fff;font-weight:700;font-size:13px;margin-bottom:8px}
+.step b{display:block;font-size:14px;margin-bottom:4px}.step p{margin:0;font-size:12.5px;color:var(--muted);line-height:1.45}
+/* Sections & rows */
+.sec{border-radius:var(--radius);padding:6px 0;margin-bottom:16px;overflow:hidden}
+.sec-h{display:flex;align-items:center;gap:12px;padding:14px 20px 10px}
+.sec-h h3{margin:0;font-size:16.5px}
+.sec-h .tag{font-size:11.5px;color:var(--muted);background:rgba(0,0,0,.05);padding:3px 8px;border-radius:6px}
+.sec-h .right{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:12.5px;color:var(--muted)}
+.sec-h .bar{width:120px}
+.row{display:flex;align-items:center;gap:14px;width:100%;text-align:left;border:0;background:transparent;padding:12px 20px;border-top:1px solid var(--hair)}
+.row:hover{background:rgba(255,255,255,.55)}
+.row .main{flex:1;min-width:0}
+.row b{display:block;font-size:14px;font-weight:600}
+.row small{display:block;color:var(--muted);font-size:12.5px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dot{width:12px;height:12px;border-radius:50%;flex:none;background:var(--gray)}
+.dot.inc{background:transparent;border:2.5px solid var(--orange)}
+.badge{font-size:11.5px;font-weight:600;padding:4px 9px;border-radius:999px;background:rgba(0,0,0,.06);color:var(--muted);white-space:nowrap}
+.chev{width:14px;height:14px;color:var(--faint);flex:none}
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.seg{display:inline-flex;background:rgba(0,0,0,.06);border-radius:10px;padding:3px;gap:2px;flex-wrap:wrap}
+.seg button{border:0;background:transparent;padding:6px 12px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text);display:inline-flex;align-items:center;gap:6px}
+.seg button.on{background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);font-weight:600}
+.search{border:1px solid rgba(0,0,0,.08);background:rgba(255,255,255,.75);border-radius:10px;padding:7px 12px;font-size:13.5px;min-width:200px}
+/* Facades */
+.facgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.fac{border-radius:var(--radius);padding:16px}
+.fac h3{margin:0 0 2px;font-size:15px}.fac .muted{font-size:12px;margin-bottom:12px}
+.elev{display:flex;flex-direction:column;gap:3px;padding:10px;border-radius:12px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8)}
+.lvl{display:flex;align-items:center;gap:8px;border:0;border-radius:6px;padding:5px 8px;font-size:12px;text-align:left;color:#fff;font-weight:600;min-height:24px}
+.lvl span{margin-left:auto;font-weight:500;opacity:.92;font-size:11px}
+.lvl:hover{filter:brightness(1.07);transform:translateX(2px)}
+.lvl.pend{background:rgba(142,142,147,.28);color:var(--text)}
+.lvl.inc{background:repeating-linear-gradient(45deg,rgba(255,159,10,.35) 0 6px,rgba(255,159,10,.2) 6px 12px);color:var(--text)}
+/* Apartments */
+.aptintro{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;margin-bottom:18px;align-items:stretch}
+.aptintro .canvas3d{height:300px}
+.wallkey{display:flex;flex-direction:column;gap:12px;justify-content:center}
+.wallkey .k{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.8)}
+.wallkey .sw{width:16px;height:16px;border-radius:4px;flex:none;margin-top:2px}
+.wallkey b{display:block;font-size:14px}.wallkey p{margin:3px 0 0;font-size:12.5px;color:var(--muted);line-height:1.45}
+.floor{display:grid;grid-template-columns:96px 1fr;gap:12px;align-items:center;padding:10px 16px;border-top:1px solid var(--hair)}
+.floor:first-of-type{border-top:0}
+.floor .fl b{display:block;font-size:14px}.floor .fl small{color:var(--muted);font-size:11.5px}
+.apts{display:grid;grid-template-columns:repeat(12,minmax(52px,1fr));gap:7px}
+.apt{border:1px solid rgba(255,255,255,.9);background:rgba(255,255,255,.65);border-radius:11px;padding:7px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:5px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;transition:transform .12s}
+.apt:hover{transform:translateY(-2px);background:#fff;box-shadow:0 6px 16px rgba(0,0,0,.08)}
+.apt .w{display:flex;gap:3px;width:100%;padding:0 6px}
+.apt .w i{flex:1;height:5px;border-radius:3px;background:var(--gray)}
+.apt.ghost{visibility:hidden}
+.apt.dim{opacity:.25}
+/* Sheet */
+.sheet-back{position:fixed;inset:0;z-index:50;background:rgba(30,35,60,.28);backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px;animation:fade .18s}
+.sheet{width:min(980px,100%);max-height:100%;display:flex;flex-direction:column;border-radius:24px;overflow:hidden;background:rgba(248,249,252,.86);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.85);box-shadow:0 40px 100px rgba(20,30,70,.35);animation:pop .22s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes fade{from{opacity:0}}
+@keyframes pop{from{transform:scale(.96) translateY(10px);opacity:0}}
+.sheet-h{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid var(--hair);background:rgba(255,255,255,.55)}
+.sheet-h .t{flex:1;min-width:0}
+.sheet-h .t b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sheet-h .t small{color:var(--muted);font-size:12px}
+.xbtn{width:30px;height:30px;border-radius:50%;border:0;background:rgba(0,0,0,.07);display:grid;place-items:center;font-size:16px;color:var(--muted)}
+.sheet-b{overflow-y:auto;padding:20px 22px 30px}
+.sheet-f{display:flex;gap:10px;align-items:center;padding:12px 20px;border-top:1px solid var(--hair);background:rgba(255,255,255,.6)}
+.sheet-f .spacer{flex:1}
+.desc{color:var(--muted);font-size:13.5px;margin:0 0 16px;line-height:1.5}
+.status-seg{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.status-seg button{border:1.5px solid rgba(0,0,0,.08);background:rgba(255,255,255,.7);border-radius:14px;padding:12px 10px;text-align:left;display:flex;flex-direction:column;gap:3px}
+.status-seg button b{font-size:14px;display:flex;align-items:center;gap:7px}
+.status-seg button small{font-size:11.5px;color:var(--muted)}
+.status-seg button.on{background:#fff;border-color:var(--c);box-shadow:0 0 0 3px color-mix(in srgb,var(--c) 22%,transparent)}
+.blk{background:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.95);border-radius:16px;padding:16px;margin-bottom:14px}
+.blk h4{margin:0 0 10px;font-size:14px;display:flex;align-items:center;gap:8px}
+.blk h4 .req{font-size:11px;font-weight:600;color:var(--red);background:rgba(255,59,48,.1);padding:2px 7px;border-radius:6px}
+.hz{border-left:4px solid var(--c,var(--gray))}
+.hz-h{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.hz-h b{font-size:15px}
+.hz-h .btn{margin-left:auto}
+.fg{display:grid;grid-template-columns:repeat(6,1fr);gap:12px}
+.f{display:flex;flex-direction:column;gap:5px}
+.f label{font-size:12px;font-weight:600;color:var(--muted)}
+.f label em{color:var(--red);font-style:normal}
+.f input,.f select,.f textarea{border:1px solid rgba(0,0,0,.12);background:#fff;border-radius:10px;padding:9px 11px;font-size:14px;width:100%;outline:none}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(10,132,255,.18)}
+.f textarea{min-height:76px;resize:vertical;line-height:1.45}
+.f .hint{font-size:11.5px;color:var(--faint)}
+.c2{grid-column:span 2}.c3{grid-column:span 3}.c6{grid-column:span 6}.c1{grid-column:span 1}
+.sev{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.sev button{border:1.5px solid rgba(0,0,0,.1);background:#fff;border-radius:10px;padding:8px 6px;font-size:12.5px;font-weight:600;display:flex;flex-direction:column;align-items:center;gap:2px}
+.sev button small{font-weight:400;font-size:10.5px;color:var(--muted);text-align:center;line-height:1.25}
+.sev button.on{background:var(--c);border-color:var(--c);color:#fff}
+.sev button.on small{color:rgba(255,255,255,.9)}
+.qty{display:flex;gap:6px;align-items:stretch}
+.qty input{flex:1}
+.qty .u{display:grid;place-items:center;padding:0 12px;border-radius:10px;background:rgba(0,0,0,.06);font-weight:600;font-size:13px;min-width:50px}
+.photos{display:flex;gap:10px;flex-wrap:wrap}
+.ph{position:relative;width:132px;height:100px;border-radius:12px;overflow:hidden;background:#ddd;border:1px solid rgba(0,0,0,.06)}
+.ph img{width:100%;height:100%;object-fit:cover;display:block;cursor:zoom-in}
+.ph .rm{position:absolute;top:5px;right:5px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:13px;line-height:1}
+.addph{width:132px;height:100px;border-radius:12px;border:1.5px dashed rgba(10,132,255,.5);background:rgba(10,132,255,.06);color:var(--blue);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:12.5px;font-weight:600;position:relative}
+.addph input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.addph svg{width:22px;height:22px}
+.issues{border-radius:14px;padding:12px 14px;font-size:13px;background:rgba(255,159,10,.12);border:1px solid rgba(255,159,10,.35);color:#8a4b00}
+.issues b{display:block;margin-bottom:4px}
+.issues ul{margin:0;padding-left:18px}
+.okbox{border-radius:14px;padding:12px 14px;font-size:13.5px;background:rgba(52,199,89,.13);border:1px solid rgba(52,199,89,.4);color:#1c6b33;font-weight:600}
+.walltabs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:14px 0 16px}
+.walltabs button{border:2px solid transparent;background:rgba(255,255,255,.7);border-radius:14px;padding:12px 14px;text-align:left;display:flex;align-items:center;gap:10px}
+.walltabs button b{display:block;font-size:14px}.walltabs button small{color:var(--muted);font-size:12px}
+.walltabs button.on{background:#fff;border-color:var(--c);box-shadow:0 4px 14px rgba(0,0,0,.06)}
+.walltabs .sw{width:14px;height:14px;border-radius:4px;flex:none}
+.sheet .canvas3d{height:250px}
+/* Report page */
+.rep-actions{display:flex;gap:10px;flex-wrap:wrap}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:14px 0}
+.pend-list{max-height:340px;overflow:auto;border-radius:12px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.85)}
+.pend-list button{display:flex;width:100%;gap:10px;align-items:center;border:0;background:transparent;text-align:left;padding:9px 14px;border-bottom:1px solid var(--hair);font-size:13px}
+.pend-list button:hover{background:#fff}
+.pend-list button small{margin-left:auto;color:var(--muted);font-size:11.5px}
+/* Toast & lightbox */
+#toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%) translateY(20px);z-index:90;background:rgba(30,30,32,.88);color:#fff;padding:10px 18px;border-radius:999px;font-size:13.5px;opacity:0;pointer-events:none;transition:.25s;backdrop-filter:blur(10px)}
+#toast.show{opacity:1;transform:translateX(-50%)}
+.lightbox{position:fixed;inset:0;z-index:95;background:rgba(0,0,0,.82);display:grid;place-items:center;padding:20px;cursor:zoom-out}
+.lightbox img{max-width:100%;max-height:100%;border-radius:10px}
+/* Report (print) */
+#report{display:none;position:fixed;inset:0;z-index:100;background:#f2f2f7;overflow:auto}
+#report .rbar{position:sticky;top:0;display:flex;gap:10px;align-items:center;padding:12px 20px;background:rgba(255,255,255,.85);backdrop-filter:blur(20px);border-bottom:1px solid var(--hair);z-index:2}
+#report .rbar .spacer{flex:1}
+.paper{max-width:900px;margin:24px auto;background:#fff;box-shadow:0 10px 40px rgba(0,0,0,.1);padding:46px 54px;color:#111;font-size:12.5px;line-height:1.5;position:relative}
+.paper h1{font-size:24px;margin:0 0 6px;letter-spacing:-.4px}
+.paper h2{font-size:16px;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #0a84ff;letter-spacing:-.2px}
+.paper h3{font-size:13.5px;margin:18px 0 8px}
+.paper table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:11.5px}
+.paper th,.paper td{border:1px solid #d6d6db;padding:5px 7px;text-align:left;vertical-align:top}
+.paper th{background:#f2f4f8;font-weight:700}
+.paper td.num,.paper th.num{text-align:right;font-variant-numeric:tabular-nums}
+.paper .cover{min-height:820px;display:flex;flex-direction:column;justify-content:space-between}
+.paper .cover .top{border-left:6px solid #0a84ff;padding-left:18px}
+.paper .cover .kicker{font-size:12px;color:#c2410c;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.paper .cover h1{font-size:30px;line-height:1.15;margin:10px 0}
+.paper .watermark{position:absolute;top:220px;left:0;right:0;text-align:center;font-size:54px;font-weight:800;color:rgba(255,59,48,.12);transform:rotate(-18deg);pointer-events:none}
+.paper .item{border:1px solid #e1e1e6;border-radius:8px;padding:10px 12px;margin:10px 0;page-break-inside:avoid;break-inside:avoid}
+.paper .item .ih{display:flex;justify-content:space-between;gap:10px;font-weight:700;margin-bottom:6px}
+.paper .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10.5px;font-weight:700;color:#fff}
+.paper .rphotos{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
+.paper .rphotos img{width:240px;height:180px;object-fit:cover;border-radius:4px;border:1px solid #ddd}
+.paper .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.paper .thumbs figure{margin:0;page-break-inside:avoid;break-inside:avoid}
+.paper .thumbs img{width:100%;height:110px;object-fit:cover;border-radius:4px;border:1px solid #ddd}
+.paper .thumbs figcaption{font-size:9.5px;color:#555;margin-top:2px}
+.paper .sign{margin-top:60px;display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.paper .sign div{border-top:1px solid #333;padding-top:6px;font-size:11.5px}
+.paper .pb{page-break-before:always;break-before:page}
+.paper .foot{margin-top:30px;color:#888;font-size:10px;text-align:center}
+@media print{
+  @page{size:letter;margin:14mm}
+  body{overflow:visible;background:#fff}
+  #wallpaper,.window,#toast,.sheet-back,#report .rbar{display:none!important}
+  #report{display:block!important;position:static;background:#fff;overflow:visible}
+  .paper{box-shadow:none;margin:0;max-width:none;padding:0}
+  .paper .cover{min-height:auto;gap:60px}
+  .paper tr{break-inside:avoid;page-break-inside:avoid}
+  .paper .keep{break-inside:avoid;page-break-inside:avoid}
+  .paper h2,.paper h3{break-after:avoid;page-break-after:avoid}
+}
+/* Responsive */
+@media (max-width:1100px){
+  .grid2,.aptintro{grid-template-columns:1fr}
+  .stats,.steps,.kpis{grid-template-columns:repeat(2,1fr)}
+  .apts{grid-template-columns:repeat(6,minmax(48px,1fr))}
+}
+@media (max-width:820px){
+  body{overflow:auto}
+  .window{margin:0;height:100dvh;border-radius:0;grid-template-columns:1fr;grid-template-rows:1fr auto}
+  .sidebar{order:2;flex-direction:row;padding:6px 6px calc(6px + env(safe-area-inset-bottom));border-right:0;border-top:1px solid rgba(255,255,255,.7);overflow-x:auto;gap:2px;background:rgba(255,255,255,.7)}
+  .traffic,.brand,.navlabel,.side-foot{display:none}
+  #nav{display:flex;flex-direction:row;width:100%;justify-content:space-between;gap:2px}
+  .nav{flex-direction:column;gap:3px;font-size:10px;padding:6px 2px;min-width:0;flex:1;align-items:center;text-align:center;line-height:1.15}
+  .nav .lg{display:none}.nav .sm{display:block}
+  .nav .cnt{display:none}
+  main{order:1;min-height:0}
+  .toolbar{padding:12px 16px}
+  #view{padding:14px 14px 40px}
+  .hero{flex-direction:column;align-items:flex-start;padding:22px}
+  .hero h2{font-size:26px}
+  .ring{width:130px;height:130px;align-self:center}
+  .canvas3d{height:300px}
+  .fg{grid-template-columns:repeat(2,1fr)}
+  .c3,.c6{grid-column:span 2}.c1{grid-column:span 1}
+  .status-seg{grid-template-columns:repeat(2,1fr)}
+  .sheet-back{padding:0}
+  .sheet{border-radius:0;height:100%}
+  .floor{grid-template-columns:1fr}
+  .apts{grid-template-columns:repeat(4,1fr)}
+  .prog{grid-template-columns:110px 1fr 56px}
+  .sev{grid-template-columns:repeat(2,1fr)}
+  .paper{padding:24px 18px}
+  .sheet-f #saveState{display:none}
+  .sheet-f{padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+  .sheet-f .btn{flex:1;justify-content:center}
+  .sheet-f .spacer{display:none}
+}
+</style>
+</head>
+<body>
+<div id="wallpaper"></div>
+
+<div class="window" id="app">
+  <aside class="sidebar">
+    <div class="traffic"><i></i><i></i><i></i></div>
+    <div class="brand"><div class="logo">K</div><div><b>KOA Apartamentos</b><small>Inspección post-sismo</small></div></div>
+    <div class="navlabel">Inspección</div>
+    <nav id="nav"></nav>
+    <div class="side-foot">
+      <span id="syncpill" class="syncpill"><i></i><span>Modo local</span></span>
+      <span id="inspLabel"></span>
+    </div>
+  </aside>
+  <main>
+    <header class="toolbar">
+      <div><h1 id="vTitle">Inicio</h1><div class="sub" id="vSub"></div></div>
+      <div class="spacer"></div>
+      <div id="vActions"></div>
+    </header>
+    <section id="view"></section>
+  </main>
+</div>
+
+<div id="report">
+  <div class="rbar">
+    <button class="btn" id="repClose">← Volver al portal</button>
+    <div class="spacer"></div>
+    <span class="muted" style="font-size:12.5px">Use “Imprimir / Guardar PDF” y elija <b>Guardar como PDF</b></span>
+    <button class="btn primary" id="repPrint">Imprimir / Guardar PDF</button>
+  </div>
+  <div class="paper" id="paper"></div>
+</div>
+
+<div id="toast"></div>
+
+<script type="module">
+/* =========================================================================
+   KOA · Portal de inspección de daños post-sismo
+   Funciona 100% en el navegador (GitHub Pages) y, si se ejecuta con
+   server.js (p. ej. en exe.dev), sincroniza datos y fotos con el servidor.
+   ========================================================================= */
+
+// ---------- Utilidades ----------
+const $ = (s, el = document) => el.querySelector(s);
+const $$ = (s, el = document) => [...el.querySelectorAll(s)];
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const uid = () => (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, '') : Date.now().toString(36) + Math.random().toString(36).slice(2));
+const num = v => { const n = parseFloat(String(v ?? '').replace(',', '.')); return isFinite(n) ? n : 0; };
+const fmt = (n, d = 2) => Number(n || 0).toLocaleString('es-CO', { maximumFractionDigits: d });
+const fdate = t => t ? new Date(t).toLocaleDateString('es-CO', { year: 'numeric', month: 'long', day: 'numeric' }) : '—';
+const fdt = t => t ? new Date(t).toLocaleString('es-CO', { dateStyle: 'short', timeStyle: 'short' }) : '—';
+const clone = o => JSON.parse(JSON.stringify(o));
+function toast(msg) { const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 2600); }
+
+const PROJECT = {
+  nombre: 'Edificio KOA Apartamentos',
+  direccion: 'Urbanización Quintas de la Marina, Armenia (Quindío)',
+  descripcion: 'Edificio residencial de 11 pisos y 2 sótanos: 130 apartamentos, 2 locales comerciales, 9 depósitos, parqueaderos en sótanos −1 y −2, zona común con piscina.',
+  evento: 'Sismo del 10 de agosto de 2026, 7:34 a. m., magnitud 7,4, epicentro en San José del Palmar (Chocó), según el Servicio Geológico Colombiano.',
+  eventoCorto: 'Sismo · 10 ago 2026 · M 7,4'
+};
+
+// ---------- Catálogos técnicos ----------
+const ELEMENTOS = ['Muro de mampostería', 'Revoque / pañete', 'Estuco y pintura', 'Enchape de muro', 'Columna', 'Viga', 'Pantalla / muro de concreto', 'Placa / losa', 'Escalera', 'Piso / enchape de piso', 'Cielo raso', 'Ventanería y vidrios', 'Puerta y marco', 'Barandas / pasamanos', 'Carpintería metálica', 'Junta de dilatación / construcción', 'Impermeabilización', 'Estructura metálica de cubierta', 'Instalación hidrosanitaria', 'Instalación eléctrica', 'Instalación de gas', 'Equipo (ascensor, bomba, otro)', 'Otro'];
+const DANOS = ['Fisura capilar (< 0,2 mm)', 'Fisura fina (0,2 – 1 mm)', 'Fisura media (1 – 3 mm)', 'Grieta (3 – 6 mm)', 'Grieta mayor (> 6 mm)', 'Fisura / grieta diagonal', 'Fisura / grieta horizontal', 'Fisura / grieta vertical', 'Separación muro – estructura', 'Desprendimiento de revoque o enchape', 'Aplastamiento / pérdida de material', 'Descascaramiento de concreto', 'Acero de refuerzo expuesto', 'Deformación / desplome', 'Vidrio roto o fisurado', 'Desajuste de puerta o ventana', 'Daño en junta', 'Filtración / humedad', 'Daño en instalación o equipo', 'Colapso parcial', 'Otro'];
+const SEV = {
+  leve: { n: 'Leve', c: '#e0b400', d: 'Superficial o estético' },
+  moderado: { n: 'Moderado', c: '#ff9f0a', d: 'Reparación localizada' },
+  severo: { n: 'Severo', c: '#ff3b30', d: 'Reconstrucción del elemento' },
+  critico: { n: 'Crítico', c: '#af52de', d: 'Riesgo · acción inmediata' }
+};
+const SEV_ORDER = ['leve', 'moderado', 'severo', 'critico'];
+const REP = [
+  ['R01', 'Sellado de fisuras con sellante elastomérico', 'ml'],
+  ['R02', 'Inyección de fisuras con resina epóxica', 'ml'],
+  ['R03', 'Apertura en V, malla de refuerzo y resane de fisura', 'ml'],
+  ['R04', 'Demolición y reposición de revoque / pañete', 'm²'],
+  ['R05', 'Estuco y pintura (incluye preparación de superficie)', 'm²'],
+  ['R06', 'Desmonte y reconstrucción de muro de mampostería', 'm²'],
+  ['R07', 'Reconexión muro – estructura (anclajes y sello flexible)', 'ml'],
+  ['R08', 'Reparación de concreto con mortero estructural', 'm²'],
+  ['R09', 'Reposición de enchape (muro o piso)', 'm²'],
+  ['R10', 'Reparación o reposición de cielo raso', 'm²'],
+  ['R11', 'Reposición de vidrio', 'm²'],
+  ['R12', 'Ajuste o reposición de ventana / puerta', 'und'],
+  ['R13', 'Reparación de barandas / carpintería metálica', 'ml'],
+  ['R14', 'Sellado de juntas de dilatación', 'ml'],
+  ['R15', 'Reparación de impermeabilización', 'm²'],
+  ['R16', 'Reparación de instalaciones', 'gl'],
+  ['R17', 'Apuntalamiento / medida de seguridad temporal', 'und'],
+  ['R18', 'Evaluación especializada adicional (estructura / equipos)', 'gl'],
+  ['R99', 'Otra actividad (especificar)', '']
+];
+const REP_BY = Object.fromEntries(REP.map(r => [r[0], { code: r[0], name: r[1], unit: r[2] }]));
+const UNITS = ['ml', 'm²', 'm³', 'und', 'gl'];
+const STATUS = {
+  sin_dano: { n: 'Sin daño', c: '#34c759', d: 'Inspeccionado, sin afectación' },
+  con_dano: { n: 'Con daño', c: '#ff3b30', d: 'Registrar cada daño' },
+  no_acceso: { n: 'Sin acceso', c: '#5856d6', d: 'Reprogramar visita' },
+  no_aplica: { n: 'No aplica', c: '#8e8e93', d: 'El elemento no existe' }
+};
+
+// ---------- Inventario de inspección (derivado de los planos) ----------
+const APTS = [101, 102, 103, 104, 105, 107, 109, 110, 111, 112];
+for (let f = 2; f <= 11; f++) for (let n = 1; n <= 12; n++) APTS.push(f * 100 + n);
+const aptFloor = a => Math.floor(a / 100);
+const ITEMS = []; const SECTIONS = []; const BY_ID = {};
+function addSec(group, id, name, floor, nivel, list) {
+  const s = { group, id, name, floor, nivel, items: [] };
+  list.forEach(([k, n, d, fl]) => { const it = { id: `${id}-${k}`, group, sec: id, secName: name, nivel, name: n, desc: d, floor: fl ?? floor }; s.items.push(it); ITEMS.push(it); BY_ID[it.id] = it; });
+  SECTIONS.push(s); return s;
+}
+// Áreas comunes
+addSec('comunes', 's2', 'Sótano −2', -2, 'N −5,85', [
+  ['parq', 'Parqueaderos sótano −2 (inspección global)', 'Todas las celdas de parqueo y circulación vehicular del sótano: placa de piso, muros, columnas, pantallas, demarcación y cielo.'],
+  ['rampa', 'Rampa vehicular', 'Losa de la rampa, muros laterales, bordillos, juntas y acceso vehicular.'],
+  ['conten', 'Muros de contención perimetrales', 'Muros en contacto con el terreno: fisuras, filtraciones, desplomes o desprendimientos.'],
+  ['subest', 'Subestación eléctrica y cuarto de equipos', 'Muros, puerta cortafuego, placa, anclaje de equipos y canalizaciones.'],
+  ['tanque', 'Tanque de agua potable y cuarto de bombas', 'Muros y losa del tanque, cuarto de bombas, tuberías y soportes.'],
+  ['depos', 'Circulación común de depósitos', 'Pasillo común de acceso a los depósitos (los muros de cada depósito se registran en “Locales y depósitos”).'],
+  ['escal', 'Escalera — tramo sótano −2', 'Peldaños, descansos, muros del foso de escalera, barandas y puertas.'],
+  ['hall', 'Hall de ascensores sótano −2', 'Muros, puertas de ascensor, pisos y cielo del hall.'],
+  ['estr', 'Estructura visible sótano −2', 'Columnas, pantallas, vigas y placa superior visibles: fisuras, descascaramiento, acero expuesto.']
+]);
+addSec('comunes', 's1', 'Sótano −1', -1, 'N −2,90', [
+  ['parq', 'Parqueaderos sótano −1 (inspección global)', 'Todas las celdas de parqueo y circulación vehicular del sótano: placa de piso, muros, columnas, pantallas, demarcación y cielo.'],
+  ['rampa', 'Rampa vehicular', 'Losa de la rampa, muros laterales, bordillos y juntas.'],
+  ['conten', 'Muros de contención perimetrales', 'Muros en contacto con el terreno: fisuras, filtraciones, desplomes.'],
+  ['circ', 'Circulación peatonal y acceso a locales', 'Circulaciones comunes del sótano −1, incluido el frente de los locales comerciales.'],
+  ['escal', 'Escalera — tramo sótano −1', 'Peldaños, descansos, muros del foso de escalera, barandas y puertas.'],
+  ['hall', 'Hall de ascensores sótano −1', 'Muros, puertas de ascensor, pisos y cielo del hall.'],
+  ['estr', 'Estructura visible sótano −1', 'Columnas, pantallas, vigas y placa superior visibles.']
+]);
+addSec('comunes', 'p1', 'Piso 1 — acceso y zonas comunes', 1, 'N ±0,00', [
+  ['acceso', 'Acceso peatonal y portería', 'Portería, cerramiento, puertas de acceso, fachada de acceso y cubierta de acceso.'],
+  ['lobby', 'Lobby y recepción', 'Muros, pisos, cielos, ventanería y mobiliario fijo del lobby.'],
+  ['piscina', 'Zona común y piscina', 'Vaso de la piscina, playa, enchapes, cuarto de máquinas, cerramientos y zonas verdes duras.'],
+  ['pasillo', 'Pasillos y circulaciones piso 1', 'Pasillo de apartamentos del piso 1: muros (cara del pasillo), pisos, cielos e iluminación.'],
+  ['escal', 'Escalera — tramo piso 1', 'Peldaños, descansos, muros, barandas y puertas.'],
+  ['hall', 'Hall de ascensores piso 1', 'Muros, puertas de ascensor, pisos y cielo.']
+]);
+for (let f = 2; f <= 11; f++) addSec('comunes', `p${f}`, `Piso ${f} — punto fijo y pasillo`, f, `N +${fmt((f - 1) * 2.75)}`, [
+  ['pasillo', `Pasillo y hall de ascensores piso ${f}`, 'Muros (cara del pasillo), pisos, cielos, puertas de ascensor, iluminación y señalización.'],
+  ['escal', `Escalera — tramo piso ${f}`, 'Peldaños, descansos, muros del foso, barandas y puertas cortafuego.']
+]);
+addSec('comunes', 'cub', 'Cubierta', 12, 'N +30,25', [
+  ['placa', 'Placa de cubierta e impermeabilización', 'Placa, membrana impermeable, pendientes, sifones y bajantes.'],
+  ['metal', 'Estructura metálica de cubierta', 'Perfiles, conexiones, anclajes y tejas.'],
+  ['tanques', 'Tanques elevados y cuarto de máquinas', 'Tanques, soportes, cuarto de máquinas de ascensores.'],
+  ['remates', 'Antepechos, remates y flanches', 'Antepechos perimetrales, remates de muros, flanches y bordes.']
+]);
+addSec('comunes', 'inst', 'Instalaciones y equipos comunes', null, 'Todo el edificio', [
+  ['ascens', 'Ascensores', 'Cabinas, puertas de piso, guías, foso y equipos (puede requerir concepto del fabricante).'],
+  ['hidro', 'Redes hidrosanitarias comunes', 'Bajantes, montantes, tuberías a la vista y equipos de bombeo.'],
+  ['elec', 'Red eléctrica común y tableros', 'Tableros, acometidas, bandejas, iluminación común.'],
+  ['gas', 'Red de gas común', 'Tuberías a la vista, centros de medición y soportes.'],
+  ['rci', 'Red contra incendio y señalización', 'Gabinetes, tuberías, detectores, señalización y luces de emergencia.']
+]);
+// Fachadas exteriores (inspección desde el exterior)
+const FACHADAS = [
+  ['frontal', 'Fachada frontal', true],
+  ['posterior', 'Fachada posterior (Av. Montenegro)', true],
+  ['latizq', 'Fachada lateral izquierda', true],
+  ['latder', 'Fachada lateral derecha', true],
+  ['interior', 'Fachadas interiores (hacia zona común / piscina)', false]
+];
+FACHADAS.forEach(([k, name]) => {
+  const list = [];
+  if (k === 'posterior') list.push(['sot', 'Sótanos −1 y −2 (expuestos sobre la avenida)', 'Paños de fachada de los sótanos y locales visibles desde la Av. Montenegro.', -1]);
+  for (let f = 1; f <= 11; f++) list.push([`p${f}`, `Piso ${f}`, `Paño de fachada del piso ${f}: mampostería, revoque, pintura, ventanería, balcones, barandas y dilataciones.`, f]);
+  list.push(['rem', 'Remate y antepecho de cubierta', 'Antepecho, cornisa, remates y flanches.', 12]);
+  addSec('fachadas', `f-${k}`, name, null, 'Inspección desde el exterior', list);
+});
+// Apartamentos: dos muros por apartamento
+const WALLS = {
+  pasillo: { n: 'Muro hacia el pasillo', c: '#0a84ff', d: 'Cara interior del muro que el apartamento comparte con el pasillo / hall común, incluida la puerta de acceso y su marco.' },
+  fachada: { n: 'Muro de fachada', c: '#ff9f0a', d: 'Cara interior del muro de fachada del apartamento, incluida la ventanería y el balcón si lo tiene. (La cara exterior se inspecciona en “Fachadas”.)' }
+};
+APTS.forEach(a => {
+  const s = { group: 'aptos', id: `apto-${a}`, name: `Apartamento ${a}`, floor: aptFloor(a), nivel: `Piso ${aptFloor(a)}`, items: [], apt: a };
+  Object.entries(WALLS).forEach(([w, W]) => { const it = { id: `a${a}-${w}`, group: 'aptos', sec: s.id, secName: s.name, nivel: s.nivel, name: `Apto ${a} — ${W.n}`, desc: W.d, floor: s.floor, apt: a, wall: w }; s.items.push(it); ITEMS.push(it); BY_ID[it.id] = it; });
+  SECTIONS.push(s);
+});
+// Locales y depósitos
+addSec('privadas', 'locales', 'Locales comerciales', -1, 'Sótano −1', [
+  ['l1-comun', 'Local comercial 1 — Muro hacia zona común', 'Cara interior de los muros que el local comparte con circulaciones o áreas comunes.'],
+  ['l1-fach', 'Local comercial 1 — Fachada / vitrina (cara interior)', 'Cara interior de la fachada del local, vitrina y cortina.'],
+  ['l2-comun', 'Local comercial 2 — Muro hacia zona común', 'Cara interior de los muros que el local comparte con circulaciones o áreas comunes.'],
+  ['l2-fach', 'Local comercial 2 — Fachada / vitrina (cara interior)', 'Cara interior de la fachada del local, vitrina y cortina.']
+]);
+addSec('privadas', 'depositos', 'Depósitos', -2, 'Sótano −2', Array.from({ length: 9 }, (_, i) => [`d${i + 1}`, `Depósito ${i + 1} — Muros hacia circulación común`, 'Muros y puerta del depósito que lindan con la circulación común.']));
+
+const GROUPS = {
+  comunes: { n: 'Áreas comunes', short: 'Comunes' },
+  fachadas: { n: 'Fachadas exteriores', short: 'Fachadas' },
+  aptos: { n: 'Apartamentos (2 muros c/u)', short: 'Aptos' },
+  privadas: { n: 'Locales y depósitos', short: 'Locales' }
+};
+
+// ---------- Almacenamiento local (IndexedDB) ----------
+const DB = {
+  db: null,
+  open() {
+    return new Promise((res, rej) => {
+      const r = indexedDB.open('koa-inspeccion', 1);
+      r.onupgradeneeded = () => { const d = r.result; ['items', 'photos', 'meta'].forEach(n => d.objectStoreNames.contains(n) || d.createObjectStore(n)); };
+      r.onsuccess = () => { this.db = r.result; res(); };
+      r.onerror = () => rej(r.error);
+    });
+  },
+  req(store, mode, fn) { return new Promise((res, rej) => { const t = this.db.transaction(store, mode); const q = fn(t.objectStore(store)); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }); },
+  get(s, k) { return this.req(s, 'readonly', o => o.get(k)); },
+  put(s, k, v) { return this.req(s, 'readwrite', o => o.put(v, k)); },
+  del(s, k) { return this.req(s, 'readwrite', o => o.delete(k)); },
+  keys(s) { return this.req(s, 'readonly', o => o.getAllKeys()); },
+  async entries(s) { const [k, v] = await Promise.all([this.req(s, 'readonly', o => o.getAllKeys()), this.req(s, 'readonly', o => o.getAll())]); return k.map((kk, i) => [kk, v[i]]); },
+  clear(s) { return this.req(s, 'readwrite', o => o.clear()); }
+};
+
+// ---------- Estado ----------
+let recs = {};            // id -> registro de inspección
+let inspector = null;     // datos del ingeniero
+let dirty = new Set();    // ids pendientes por sincronizar
+const urlCache = new Map();
+
+async function loadAll() {
+  (await DB.entries('items')).forEach(([k, v]) => { recs[k] = v; });
+  inspector = (await DB.get('meta', 'inspector')) || null;
+  dirty = new Set((await DB.get('meta', 'dirty')) || []);
+}
+async function saveRec(id, rec) {
+  rec.updatedAt = Date.now();
+  rec.by = inspector?.nombre || '';
+  recs[id] = clone(rec);
+  await DB.put('items', id, recs[id]);
+  dirty.add(id); await DB.put('meta', 'dirty', [...dirty]);
+  Sync.schedule();
+  updateBadges();
+}
+async function saveInspector(data) {
+  inspector = { ...data, updatedAt: Date.now() };
+  await DB.put('meta', 'inspector', inspector);
+  dirty.add('__inspector'); await DB.put('meta', 'dirty', [...dirty]);
+  Sync.schedule(); updateBadges();
+}
+
+// ---------- Fotos ----------
+async function loadImage(file) {
+  try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); }
+  catch { return await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); }); }
+}
+async function compressPhoto(file, stamp) {
+  const img = await loadImage(file);
+  const max = 1600, w0 = img.width, h0 = img.height, s = Math.min(1, max / Math.max(w0, h0));
+  const c = document.createElement('canvas'); c.width = Math.round(w0 * s); c.height = Math.round(h0 * s);
+  const g = c.getContext('2d'); g.drawImage(img, 0, 0, c.width, c.height);
+  // Sello de evidencia
+  const fs = Math.max(14, Math.round(c.width / 55));
+  g.font = `600 ${fs}px -apple-system, Helvetica, Arial`;
+  const lines = [stamp, `${new Date().toLocaleString('es-CO')}  ·  ${inspector?.nombre || ''}`];
+  const pad = fs * 0.6, lh = fs * 1.35, bh = lines.length * lh + pad * 1.4;
+  g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, c.height - bh, c.width, bh);
+  g.fillStyle = '#fff'; lines.forEach((l, i) => g.fillText(l, pad, c.height - bh + pad + lh * (i + 0.75)));
+  return await new Promise(r => c.toBlob(r, 'image/jpeg', 0.74));
+}
+async function storePhoto(file, stamp) {
+  const blob = await compressPhoto(file, stamp);
+  const id = 'f' + uid();
+  await DB.put('photos', id, blob);
+  return id;
+}
+async function photoURL(id) {
+  if (urlCache.has(id)) return urlCache.get(id);
+  const b = await DB.get('photos', id);
+  let u;
+  if (b) u = URL.createObjectURL(b);
+  else if (Sync.enabled) u = Sync.photoSrc(id);
+  else u = '';
+  urlCache.set(id, u); return u;
+}
+async function hydratePhotos(root = document) {
+  for (const img of $$('img[data-ph]', root)) { if (!img.src || img.dataset.loaded !== '1') { img.src = await photoURL(img.dataset.ph); img.dataset.loaded = '1'; } }
+}
+function lightbox(src) { const d = document.createElement('div'); d.className = 'lightbox'; d.innerHTML = `<img src="${src}">`; d.onclick = () => d.remove(); document.body.appendChild(d); }
+document.addEventListener('click', e => { const im = e.target.closest('.ph img'); if (im) lightbox(im.src); });
+
+// ---------- Sincronización con servidor (exe.dev) ----------
+const Sync = {
+  enabled: false, needsToken: false, state: 'local', token: localStorage.getItem('koa_token') || '', timer: null, busy: false,
+  async detect() {
+    try {
+      const r = await fetch('api/health', { cache: 'no-store' });
+      if (!r.ok) return;
+      const j = await r.json();
+      if (j.app !== 'koa-inspeccion') return;
+      this.enabled = true; this.needsToken = !!j.auth;
+    } catch { }
+  },
+  h(extra = {}) { return { 'X-Portal-Token': this.token, ...extra }; },
+  photoSrc(id) { return `api/photos/${id}${this.token ? `?t=${encodeURIComponent(this.token)}` : ''}`; },
+  setPill(state, text) { this.state = state; const p = $('#syncpill'); p.className = 'syncpill ' + (state === 'ok' ? 'on' : state === 'err' ? 'err' : ''); p.lastElementChild.textContent = text; },
+  schedule() { if (!this.enabled) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(), 1200); },
+  async run() {
+    if (!this.enabled || this.busy) return;
+    this.busy = true;
+    try { await this.push(); await this.pull(); this.setPill('ok', 'Sincronizado · ' + new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })); }
+    catch (e) { this.setPill('err', e.message === 'token' ? 'Falta clave de acceso' : 'Sin conexión · guardado local'); }
+    finally { this.busy = false; }
+  },
+  async push() {
+    const uploaded = new Set((await DB.get('meta', 'uploaded')) || []);
+    for (const id of [...dirty]) {
+      if (id === '__inspector') {
+        const r = await fetch('api/inspector', { method: 'PUT', headers: this.h({ 'Content-Type': 'application/json' }), body: JSON.stringify(inspector) });
+        if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('net');
+      } else {
+        const rec = recs[id]; if (!rec) { dirty.delete(id); continue; }
+        for (const pid of photoIds(rec)) {
+          if (uploaded.has(pid)) continue;
+          const b = await DB.get('photos', pid); if (!b) continue;
+          const r = await fetch(`api/photos/${pid}`, { method: 'PUT', headers: this.h({ 'Content-Type': 'image/jpeg' }), body: b });
+          if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('net');
+          uploaded.add(pid); await DB.put('meta', 'uploaded', [...uploaded]);
+        }
+        const r = await fetch(`api/items/${id}`, { method: 'PUT', headers: this.h({ 'Content-Type': 'application/json' }), body: JSON.stringify(rec) });
+        if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('net');
+      }
+      dirty.delete(id); await DB.put('meta', 'dirty', [...dirty]);
+    }
+  },
+  async pull() {
+    const r = await fetch('api/state', { headers: this.h(), cache: 'no-store' });
+    if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('net');
+    const s = await r.json(); let changed = false;
+    if (s.inspector && (!inspector || (s.inspector.updatedAt || 0) > (inspector.updatedAt || 0))) { inspector = s.inspector; await DB.put('meta', 'inspector', inspector); changed = true; }
+    for (const [id, rec] of Object.entries(s.items || {})) {
+      if (dirty.has(id)) continue;
+      if (!recs[id] || (rec.updatedAt || 0) > (recs[id].updatedAt || 0)) { recs[id] = rec; await DB.put('items', id, rec); changed = true; }
+    }
+    if (changed && !$('.sheet-back')) render();
+  }
+};
+function photoIds(rec) { return [...(rec.fotos || []), ...(rec.hallazgos || []).flatMap(h => h.fotos || [])]; }
+
+// ---------- Reglas de completitud ----------
+function issues(rec) {
+  const e = [];
+  if (!rec || !rec.status) return ['Elemento sin inspeccionar'];
+  const st = rec.status;
+  if (st === 'no_acceso') { if (!(rec.nota || '').trim()) e.push('Indique el motivo por el que no hubo acceso'); e.push('Elemento pendiente: debe reprogramarse la visita'); return e; }
+  if (st === 'no_aplica') { if ((rec.nota || '').trim().length < 5) e.push('Explique por qué el elemento no aplica'); return e; }
+  if (st === 'sin_dano') { if (!(rec.fotos || []).length) e.push('Falta la foto de evidencia del elemento sin daño'); return e; }
+  if (st === 'con_dano') {
+    const hs = rec.hallazgos || [];
+    if (!hs.length) e.push('Registre al menos un daño');
+    hs.forEach((h, i) => {
+      const p = `Daño ${i + 1}: `;
+      if (!h.elemento) e.push(p + 'seleccione el elemento afectado');
+      if (!h.dano) e.push(p + 'seleccione el tipo de daño');
+      if (!h.severidad) e.push(p + 'indique la severidad');
+      if (!h.rep) e.push(p + 'seleccione la reparación recomendada');
+      if (h.rep === 'R99' && !h.unidad) e.push(p + 'indique la unidad de medida');
+      if (!(num(h.cantidad) > 0)) e.push(p + 'indique la cantidad de obra a reparar');
+      if ((h.espec || '').trim().length < 15) e.push(p + 'describa el procedimiento específico de reparación');
+      if ((h.comentario || '').trim().length < 15) e.push(p + 'agregue el comentario técnico');
+      if (!(h.fotos || []).length) e.push(p + 'cargue al menos una foto de evidencia');
+    });
+  }
+  return e;
+}
+function itemState(id) {
+  const r = recs[id];
+  if (!r || !r.status) return 'pendiente';
+  if (r.status === 'no_acceso') return 'no_acceso';
+  return issues(r).length ? 'incompleto' : r.status;
+}
+const isDone = id => ['sin_dano', 'con_dano', 'no_aplica'].includes(itemState(id));
+function maxSev(rec) { let m = -1; (rec?.hallazgos || []).forEach(h => { const i = SEV_ORDER.indexOf(h.severidad); if (i > m) m = i; }); return m < 0 ? null : SEV_ORDER[m]; }
+function stateColor(id) {
+  const s = itemState(id), r = recs[id];
+  if (s === 'pendiente') return '#c7c7cc';
+  if (s === 'incompleto') return '#ffb340';
+  if (s === 'no_acceso') return STATUS.no_acceso.c;
+  if (s === 'no_aplica') return '#a1a1a6';
+  if (s === 'sin_dano') return STATUS.sin_dano.c;
+  const ms = maxSev(r); return ms ? SEV[ms].c : STATUS.con_dano.c;
+}
+function stateLabel(id) {
+  const s = itemState(id), r = recs[id];
+  if (s === 'pendiente') return 'Pendiente';
+  if (s === 'incompleto') return 'Incompleto';
+  if (s === 'con_dano') { const ms = maxSev(r); return `Con daño · ${SEV[ms]?.n || ''}`; }
+  return STATUS[s].n;
+}
+function stats(list = ITEMS) {
+  const o = { total: list.length, done: 0, sin: 0, con: 0, noacc: 0, noapl: 0, inc: 0, pend: 0, sev: { leve: 0, moderado: 0, severo: 0, critico: 0 }, fotos: 0, hall: 0 };
+  list.forEach(it => {
+    const s = itemState(it.id), r = recs[it.id];
+    if (isDone(it.id)) o.done++;
+    if (s === 'sin_dano') o.sin++; else if (s === 'con_dano') o.con++; else if (s === 'no_acceso') o.noacc++; else if (s === 'no_aplica') o.noapl++; else if (s === 'incompleto') o.inc++; else o.pend++;
+    if (r) { o.fotos += photoIds(r).length; if (r.status === 'con_dano') (r.hallazgos || []).forEach(h => { o.hall++; if (o.sev[h.severidad] != null) o.sev[h.severidad]++; }); }
+  });
+  o.pct = o.total ? Math.round(o.done / o.total * 100) : 0;
+  return o;
+}
+function floorItems(f) { return ITEMS.filter(it => it.floor === f); }
+
+// ---------- Íconos ----------
+const IC = {
+  home: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5 12 4l9 7.5"/><path d="M5.5 10v9.5h13V10"/><path d="M10 19.5v-5h4v5"/></svg>',
+  common: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 7h2M14 7h2M8 11h2M14 11h2M8 15h2M14 15h2"/></svg>',
+  facade: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 21V5l8-2 8 2v16"/><path d="M4 9h16M4 13h16M4 17h16"/></svg>',
+  apt: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 20h18"/><path d="M5 20V8l7-4 7 4v12"/><path d="M10 20v-6h4v6"/></svg>',
+  store: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9h16v2a3 3 0 0 1-5.3 1.9A3 3 0 0 1 12 14a3 3 0 0 1-2.7-1.1A3 3 0 0 1 4 11z"/><path d="M5.5 13.5V20h13v-6.5"/></svg>',
+  report: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
+  gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>',
+  cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>'
+};
+
+// ---------- Navegación ----------
+const VIEWS = [
+  ['inicio', 'Inicio', IC.home, null],
+  ['comunes', 'Áreas comunes', IC.common, 'comunes'],
+  ['fachadas', 'Fachadas', IC.facade, 'fachadas'],
+  ['aptos', 'Apartamentos', IC.apt, 'aptos'],
+  ['privadas', 'Locales y depósitos', IC.store, 'privadas'],
+  ['informe', 'Informe técnico', IC.report, null],
+  ['ajustes', 'Inspector y datos', IC.gear, null]
+];
+let current = 'inicio';
+function renderNav() {
+  $('#nav').innerHTML = VIEWS.map(([id, n, ic, g]) => {
+    let cnt = '';
+    if (g) { const s = stats(ITEMS.filter(i => i.group === g)); cnt = `<span class="cnt">${s.done}/${s.total}</span>`; }
+    if (id === 'inicio') cnt = `<span class="cnt">${stats().pct}%</span>`;
+    const short = { inicio: 'Inicio', comunes: 'Comunes', fachadas: 'Fachadas', aptos: 'Aptos', privadas: 'Locales', informe: 'Informe', ajustes: 'Datos' }[id];
+    return `<button class="nav ${current === id ? 'active' : ''}" data-view="${id}">${ic}<span class="lg">${n}</span><span class="sm">${short}</span>${cnt}</button>`;
+  }).join('');
+}
+function updateBadges() { renderNav(); $('#inspLabel').textContent = inspector?.nombre ? `Inspector: ${inspector.nombre}` : 'Inspector sin registrar'; }
+$('#nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) go(b.dataset.view); });
+function go(v, anchor) {
+  current = v; render();
+  $('#view').scrollTop = 0;
+  if (anchor) setTimeout(() => { const el = document.getElementById(anchor); if (el) { el.scrollIntoView({ behavior: 'smooth', block: 'start' }); el.animate([{ boxShadow: '0 0 0 3px rgba(10,132,255,.6)' }, { boxShadow: '0 0 0 0 rgba(10,132,255,0)' }], { duration: 1600 }); } }, 60);
+}
+document.addEventListener('click', e => {
+  const g = e.target.closest('[data-go]'); if (g) { go(g.dataset.go, g.dataset.anchor); return; }
+  const it = e.target.closest('[data-item]'); if (it) { openItem(it.dataset.item); return; }
+  const ap = e.target.closest('[data-apt]'); if (ap) { openApt(+ap.dataset.apt); return; }
+});
+
+// ---------- 3D ----------
+let THREE = null, Orbit = null;
+async function three() {
+  if (THREE) return true;
+  try { THREE = await import('three'); Orbit = (await import('three/addons/controls/OrbitControls.js')).OrbitControls; return true; }
+  catch { return false; }
+}
+const scenes = new Set();
+function disposeScenes(filter) { for (const s of [...scenes]) if (!filter || filter(s)) { s.dispose(); scenes.delete(s); } }
+
+async function buildingScene(el, onPick) {
+  if (!(await three())) { el.innerHTML = '<div class="fallback">No se pudo cargar el modelo 3D en este navegador.<br>La inspección funciona normalmente.</div>'; return; }
+  const W = () => el.clientWidth, H = () => el.clientHeight;
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(2, devicePixelRatio)); renderer.setSize(W(), H());
+  el.appendChild(renderer.domElement);
+  const hover = document.createElement('div'); hover.className = 'hover'; el.appendChild(hover);
+  const tip = document.createElement('div'); tip.className = 'tip'; tip.textContent = 'Arrastre para girar · toque un piso'; el.appendChild(tip);
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(36, W() / H(), 0.5, 1000);
+  cam.position.set(92, 62, 92);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xc8d4f0, 1.15));
+  const sun = new THREE.DirectionalLight(0xffffff, 1.4); sun.position.set(60, 120, 40); scene.add(sun);
+  const root = new THREE.Group(); root.position.set(-20, 0, 20); scene.add(root);
+  const toXZ = g => { g.rotateX(-Math.PI / 2); return g; };
+  const shape = pts => { const s = new THREE.Shape(); s.moveTo(pts[0][0], pts[0][1]); pts.slice(1).forEach(p => s.lineTo(p[0], p[1])); s.closePath(); return s; };
+  // Terreno
+  const ground = new THREE.Mesh(new THREE.CircleGeometry(80, 64), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .35, depthWrite: false }));
+  ground.rotation.x = -Math.PI / 2; ground.position.set(20, -0.02, -20); root.add(ground);
+  const grid = new THREE.PolarGridHelper(78, 12, 8, 64, 0xb8c4e0, 0xd8e0f2); grid.position.set(20, 0, -20); grid.material.transparent = true; grid.material.opacity = .45; root.add(grid);
+  const pickables = [];
+  const mk = (geom, color, opacity, floor, label) => {
+    const m = new THREE.Mesh(geom, new THREE.MeshPhysicalMaterial({ color, transparent: true, opacity, roughness: .35, metalness: .05, clearcoat: .6 }));
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(geom, 20), new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: .9 }));
+    m.add(e); m.userData = { floor, label }; root.add(m); pickables.push(m); return m;
+  };
+  // Sótanos (triángulo del lote)
+  const tri = [[0, 0], [56, 0], [0, 56]];
+  const s2 = mk(toXZ(new THREE.ExtrudeGeometry(shape(tri), { depth: 2.7, bevelEnabled: false })), 0x8aa0c8, .55, -2, 'Sótano −2 · parqueaderos');
+  s2.position.y = -5.85;
+  const s1 = mk(toXZ(new THREE.ExtrudeGeometry(shape(tri), { depth: 2.7, bevelEnabled: false })), 0x9fb3d8, .55, -1, 'Sótano −1 · parqueaderos y locales');
+  s1.position.y = -2.95;
+  // Torre en L, 11 pisos
+  const L = [[0, 0], [44, 0], [44, 11], [11, 11], [11, 42], [0, 42]];
+  const floors = {};
+  for (let f = 1; f <= 11; f++) {
+    const m = mk(toXZ(new THREE.ExtrudeGeometry(shape(L), { depth: 2.55, bevelEnabled: false })), 0xd7deea, .9, f, `Piso ${f}`);
+    m.position.y = (f - 1) * 2.75; floors[f] = m;
+  }
+  floors[-1] = s1; floors[-2] = s2;
+  const roof = mk(toXZ(new THREE.ExtrudeGeometry(shape(L), { depth: .5, bevelEnabled: false })), 0xeef2f8, .95, 12, 'Cubierta');
+  roof.position.y = 11 * 2.75 + .2; floors[12] = roof;
+  // Piscina
+  const pool = new THREE.Mesh(new THREE.BoxGeometry(9, .3, 5), new THREE.MeshPhysicalMaterial({ color: 0x5ac8fa, transparent: true, opacity: .8, roughness: .1 }));
+  pool.position.set(24, .15, -20); root.add(pool);
+  // Colorear por avance
+  const colorize = () => {
+    for (const [f, m] of Object.entries(floors)) {
+      const its = floorItems(+f); if (!its.length) continue;
+      const st = stats(its); let sevMax = -1;
+      its.forEach(it => { const s = maxSev(recs[it.id]); if (s) sevMax = Math.max(sevMax, SEV_ORDER.indexOf(s)); });
+      const base = new THREE.Color(0xd7deea), done = new THREE.Color(0x34c759);
+      let c = base.clone().lerp(done, st.done / st.total);
+      if (sevMax >= 2) c = new THREE.Color(sevMax === 3 ? 0xaf52de : 0xff3b30).lerp(c, .35);
+      else if (sevMax === 1) c = new THREE.Color(0xff9f0a).lerp(c, .45);
+      m.material.color.copy(c);
+      m.userData.info = `${m.userData.label} · ${st.done}/${st.total} elementos (${st.pct}%)` + (st.con ? ` · ${st.con} con daño` : '');
+    }
+  };
+  colorize();
+  const controls = new Orbit(cam, renderer.domElement);
+  controls.target.set(0, 10, 0); controls.enableDamping = true; controls.autoRotate = true; controls.autoRotateSpeed = .6;
+  controls.minDistance = 50; controls.maxDistance = 220; controls.maxPolarAngle = Math.PI * .52;
+  const ray = new THREE.Raycaster(), ptr = new THREE.Vector2(); let hot = null, downAt = null;
+  const pick = ev => { const r = renderer.domElement.getBoundingClientRect(); ptr.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(ptr, cam); const h = ray.intersectObjects(pickables, false)[0]; return h ? h.object : null; };
+  const setHot = o => { if (hot === o) return; if (hot) hot.material.emissive?.setHex(0); hot = o; if (hot) { hot.material.emissive.setHex(0x1a3d80); hover.textContent = hot.userData.info || hot.userData.label; hover.style.opacity = 1; } else hover.style.opacity = 0; };
+  renderer.domElement.addEventListener('pointermove', ev => setHot(pick(ev)));
+  renderer.domElement.addEventListener('pointerleave', () => setHot(null));
+  renderer.domElement.addEventListener('pointerdown', ev => { downAt = [ev.clientX, ev.clientY]; controls.autoRotate = false; });
+  renderer.domElement.addEventListener('pointerup', ev => { if (!downAt) return; const d = Math.hypot(ev.clientX - downAt[0], ev.clientY - downAt[1]); downAt = null; if (d < 6) { const o = pick(ev); if (o) onPick(o.userData.floor); } });
+  let raf, alive = true;
+  const ro = new ResizeObserver(() => { renderer.setSize(W(), H()); cam.aspect = W() / H(); cam.updateProjectionMatrix(); }); ro.observe(el);
+  const loop = () => { if (!alive) return; controls.update(); renderer.render(scene, cam); raf = requestAnimationFrame(loop); }; loop();
+  const obj = { el, colorize, dispose() { alive = false; cancelAnimationFrame(raf); ro.disconnect(); controls.dispose(); renderer.dispose(); scene.traverse(o => { o.geometry?.dispose(); o.material?.dispose?.(); }); el.innerHTML = ''; } };
+  scenes.add(obj); return obj;
+}
+
+async function aptScene(el, active = null) {
+  if (!(await three())) { el.innerHTML = '<div class="fallback">Modelo 3D no disponible en este navegador.</div>'; return null; }
+  const W = () => el.clientWidth, H = () => el.clientHeight;
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setPixelRatio(Math.min(2, devicePixelRatio)); renderer.setSize(W(), H()); el.appendChild(renderer.domElement);
+  const scene = new THREE.Scene();
+  const cam = new THREE.PerspectiveCamera(38, W() / H(), .1, 200); cam.position.set(12, 11, 14);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xd0d8ee, 1.2));
+  const g = new THREE.Group(); scene.add(g);
+  const AW = 9, AD = 11, AH = 2.5; // ancho (x), fondo (z), alto
+  const line = (pts, color = 0x3a3a3c, op = .85) => { const geo = new THREE.BufferGeometry().setFromPoints(pts.map(p => new THREE.Vector3(...p))); const l = new THREE.Line(geo, new THREE.LineBasicMaterial({ color, transparent: true, opacity: op })); g.add(l); return l; };
+  const box = (x0, z0, x1, z1, h, color = 0x3a3a3c, op = .9) => { const geo = new THREE.BoxGeometry(x1 - x0, h, z1 - z0); const e = new THREE.LineSegments(new THREE.EdgesGeometry(geo), new THREE.LineBasicMaterial({ color, transparent: true, opacity: op })); e.position.set((x0 + x1) / 2, h / 2, (z0 + z1) / 2); g.add(e); return e; };
+  // Placa y envolvente
+  const slab = new THREE.Mesh(new THREE.BoxGeometry(AW, .08, AD), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: .55 })); slab.position.set(AW / 2, -.04, AD / 2); g.add(slab);
+  box(0, 0, AW, AD, AH, 0x1d1d1f, .95);
+  // Particiones interiores (delineado)
+  const part = (x0, z0, x1, z1) => line([[x0, 0, z0], [x1, 0, z1], [x1, AH, z1], [x0, AH, z0], [x0, 0, z0]], 0x8e8e93, .55);
+  part(0, 4, 5.2, 4); part(5.2, 0, 5.2, 4); part(5.2, 4, 5.2, 6.2); part(0, 7.6, 3.6, 7.6); part(3.6, 7.6, 3.6, AD); part(6.6, 6.2, 6.6, AD); part(5.2, 6.2, AW, 6.2);
+  // Pasillo común (frente) y exterior (fondo)
+  const corr = new THREE.Mesh(new THREE.BoxGeometry(AW + 4, .05, 2.2), new THREE.MeshBasicMaterial({ color: 0x0a84ff, transparent: true, opacity: .12 })); corr.position.set(AW / 2, -.03, -1.2); g.add(corr);
+  // Muros resaltados
+  const wallMesh = (key, color, x, z, rotY) => {
+    const grp = new THREE.Group();
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(AW, AH), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: .32, side: THREE.DoubleSide, depthWrite: false }));
+    const e = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(AW, AH, .22)), new THREE.LineBasicMaterial({ color }));
+    grp.add(m, e); grp.position.set(x, AH / 2, z); grp.rotation.y = rotY; g.add(grp); return { grp, m, e, key };
+  };
+  const wP = wallMesh('pasillo', 0x0a84ff, AW / 2, 0, 0);
+  const wF = wallMesh('fachada', 0xff9f0a, AW / 2, AD, 0);
+  // Puerta (muro pasillo) y ventanas/balcón (fachada)
+  line([[1.2, 0, -.02], [1.2, 2.1, -.02], [2.2, 2.1, -.02], [2.2, 0, -.02]], 0x0a84ff, 1);
+  line([[1.0, .9, AD + .02], [3.0, .9, AD + .02], [3.0, 2.2, AD + .02], [1.0, 2.2, AD + .02], [1.0, .9, AD + .02]], 0xff9f0a, 1);
+  line([[4.6, 0, AD + .02], [4.6, 2.2, AD + .02], [7.4, 2.2, AD + .02], [7.4, 0, AD + .02]], 0xff9f0a, 1);
+  box(4.2, AD, 7.8, AD + 1.3, 1.0, 0xff9f0a, .7);
+  g.position.set(-AW / 2, 0, -AD / 2);
+  // Etiquetas HTML
+  const mkLbl = (txt, bg) => { const d = document.createElement('div'); d.className = 'lbl3d'; d.style.background = bg; d.textContent = txt; el.appendChild(d); return d; };
+  const lP = mkLbl('1 · Muro hacia pasillo', '#0a84ff'), lF = mkLbl('2 · Muro de fachada', '#ff9f0a');
+  const lC = mkLbl('Pasillo común', 'rgba(60,60,67,.6)'), lE = mkLbl('Exterior', 'rgba(60,60,67,.6)');
+  const anchors = [[lP, [AW / 2, AH + .5, 0]], [lF, [AW / 2, AH + .5, AD]], [lC, [AW / 2, .2, -2.2]], [lE, [AW / 2, .2, AD + 2.4]]];
+  const controls = new Orbit(cam, renderer.domElement); controls.enableDamping = true; controls.autoRotate = true; controls.autoRotateSpeed = 1.1; controls.minDistance = 10; controls.maxDistance = 40; controls.maxPolarAngle = Math.PI * .48;
+  let act = active, t0 = performance.now();
+  const setActive = k => { act = k; };
+  let raf, alive = true; const v = new THREE.Vector3();
+  const ro = new ResizeObserver(() => { renderer.setSize(W(), H()); cam.aspect = W() / H(); cam.updateProjectionMatrix(); }); ro.observe(el);
+  const loop = () => {
+    if (!alive) return;
+    const t = (performance.now() - t0) / 1000;
+    [wP, wF].forEach(w => { const on = !act || act === w.key; const pulse = act === w.key ? .35 + .2 * Math.sin(t * 4) : .3; w.m.material.opacity = on ? pulse : .06; w.e.material.opacity = on ? 1 : .2; });
+    controls.update(); renderer.render(scene, cam);
+    anchors.forEach(([d, p]) => { v.set(p[0] - AW / 2, p[1], p[2] - AD / 2).project(cam); d.style.left = ((v.x + 1) / 2 * W()) + 'px'; d.style.top = ((1 - v.y) / 2 * H()) + 'px'; d.style.opacity = v.z < 1 ? 1 : 0; });
+    lP.style.opacity = (!act || act === 'pasillo') ? lP.style.opacity : .35; lF.style.opacity = (!act || act === 'fachada') ? lF.style.opacity : .35;
+    raf = requestAnimationFrame(loop);
+  }; loop();
+  const obj = { el, setActive, sheet: !!el.closest('.sheet'), dispose() { alive = false; cancelAnimationFrame(raf); ro.disconnect(); controls.dispose(); renderer.dispose(); scene.traverse(o => { o.geometry?.dispose(); o.material?.dispose?.(); }); el.innerHTML = ''; } };
+  scenes.add(obj); return obj;
+}
+
+// ---------- Vistas ----------
+function head(title, sub, actions = '') { $('#vTitle').textContent = title; $('#vSub').textContent = sub; $('#vActions').innerHTML = actions; }
+function render() {
+  disposeScenes(s => !s.sheet);
+  renderNav(); updateBadges();
+  ({ inicio: vInicio, comunes: vComunes, fachadas: vFachadas, aptos: vAptos, privadas: vPrivadas, informe: vInforme, ajustes: vAjustes })[current]();
+  hydratePhotos($('#view'));
+}
+function ring(p) {
+  const r = 70, c = 2 * Math.PI * r;
+  return `<div class="ring"><svg viewBox="0 0 170 170"><defs><linearGradient id="rg" x1="0" x2="1"><stop offset="0" stop-color="#34c759"/><stop offset="1" stop-color="#0a84ff"/></linearGradient></defs><circle cx="85" cy="85" r="${r}" fill="none" stroke="rgba(0,0,0,.07)" stroke-width="14"/><circle cx="85" cy="85" r="${r}" fill="none" stroke="url(#rg)" stroke-width="14" stroke-linecap="round" stroke-dasharray="${c * p / 100} ${c}"/></svg><div class="lbl"><div><b>${p}%</b><small>inspeccionado</small></div></div></div>`;
+}
+function stackBar(s) {
+  const t = s.total || 1;
+  return `<div class="bar"><i style="width:${s.sin / t * 100}%;background:var(--green)"></i><i style="width:${s.con / t * 100}%;background:var(--red)"></i><i style="width:${s.noapl / t * 100}%;background:#a1a1a6"></i><i style="width:${s.inc / t * 100}%;background:#ffb340"></i><i style="width:${s.noacc / t * 100}%;background:var(--indigo)"></i></div>`;
+}
+const LEGEND = `<div class="legend"><span><i style="background:var(--green)"></i>Sin daño</span><span><i style="background:var(--red)"></i>Con daño</span><span><i style="background:#ffb340"></i>Incompleto</span><span><i style="background:var(--indigo)"></i>Sin acceso</span><span><i style="background:#c7c7cc"></i>Pendiente</span></div>`;
+
+function vInicio() {
+  head('Inicio', `${PROJECT.nombre} · ${PROJECT.direccion}`);
+  const s = stats();
+  const sevBig = s.sev.severo + s.sev.critico;
+  const grp = Object.entries(GROUPS).map(([g, G]) => { const st = stats(ITEMS.filter(i => i.group === g)); return `<div class="prog"><span>${G.n}</span>${stackBar(st)}<span class="n">${st.done}/${st.total}</span></div>`; }).join('');
+  const fl = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, -1, -2].map(f => { const st = stats(floorItems(f)); const n = f === 12 ? 'Cubierta' : f < 0 ? `Sótano ${f}` : `Piso ${f}`; return `<div class="prog" style="grid-template-columns:90px 1fr 60px;padding:5px 0;font-size:12.5px"><span>${n}</span>${stackBar(st)}<span class="n">${st.pct}%</span></div>`; }).join('');
+  $('#view').innerHTML = `
+  <div class="hero glass">
+    <div class="left">
+      <span class="eyebrow">⚠︎ ${PROJECT.eventoCorto}</span>
+      <h2>Inspección de daños<br>Edificio KOA Apartamentos</h2>
+      <p>${PROJECT.direccion} · Áreas comunes, fachadas y muros de cada apartamento que lindan con zonas comunes.</p>
+      <div class="acts">
+        ${inspector?.nombre ? '' : '<button class="btn primary" data-go="ajustes">Registrar datos del inspector</button>'}
+        <button class="btn ${inspector?.nombre ? 'primary' : ''}" data-go="aptos">Inspeccionar apartamentos</button>
+        <button class="btn" data-go="comunes">Áreas comunes</button>
+        <button class="btn" data-go="informe">Informe</button>
+      </div>
+    </div>
+    ${ring(s.pct)}
+  </div>
+  <div class="stats">
+    <div class="stat glass"><small><span class="dotc" style="background:var(--blue)"></span>Elementos completos</small><b>${s.done}<span class="muted" style="font-size:16px"> / ${s.total}</span></b></div>
+    <div class="stat glass"><small><span class="dotc" style="background:var(--red)"></span>Elementos con daño</small><b>${s.con}</b></div>
+    <div class="stat glass"><small><span class="dotc" style="background:var(--purple)"></span>Daños severos o críticos</small><b>${sevBig}</b></div>
+    <div class="stat glass"><small><span class="dotc" style="background:var(--green)"></span>Fotos de evidencia</small><b>${s.fotos}</b></div>
+  </div>
+  <div class="grid2">
+    <div class="card glass"><h3 style="margin:0 0 4px">Modelo 3D del edificio</h3><div class="muted" style="font-size:12.5px;margin-bottom:12px">Cada piso se colorea según el avance de la inspección y la severidad de los daños. Toque un piso para ir a él.</div>
+      <div id="bld3d" class="canvas3d"></div>
+      <div class="legend"><span><i style="background:#d7deea"></i>Sin inspeccionar</span><span><i style="background:#34c759"></i>Inspeccionado</span><span><i style="background:#ff9f0a"></i>Daño moderado</span><span><i style="background:#ff3b30"></i>Daño severo</span><span><i style="background:#af52de"></i>Crítico</span></div>
+    </div>
+    <div class="stack">
+      <div class="card glass"><h3 style="margin:0 0 8px">Avance por componente</h3>${grp}${LEGEND}</div>
+      <div class="card glass"><h3 style="margin:0 0 8px">Avance por nivel</h3>${fl}</div>
+    </div>
+  </div>
+  <div class="steps">
+    <div class="step glass"><div class="num">1</div><b>Registre sus datos</b><p>Nombre, matrícula profesional y empresa. Aparecen en cada foto y en el informe.</p></div>
+    <div class="step glass"><div class="num">2</div><b>Recorra cada sección</b><p>Áreas comunes, fachadas por fuera (piso por piso) y los 2 muros de cada apartamento.</p></div>
+    <div class="step glass"><div class="num">3</div><b>Registre cada daño</b><p>Tipo, severidad, medidas, reparación, cantidad de obra, comentario técnico y 1–2 fotos.</p></div>
+    <div class="step glass"><div class="num">4</div><b>Genere el informe</b><p>Con el 100 % completo, el portal produce el informe técnico y el cuadro de cantidades para cotizar.</p></div>
+  </div>`;
+  buildingScene($('#bld3d'), f => {
+    if (f >= 1 && f <= 11) go('aptos', `floor-${f}`);
+    else if (f === -1) go('comunes', 'sec-s1');
+    else if (f === -2) go('comunes', 'sec-s2');
+    else if (f === 12) go('comunes', 'sec-cub');
+  });
+}
+
+function secCard(s) {
+  const st = stats(s.items);
+  return `<div class="sec glass" id="sec-${s.id}"><div class="sec-h"><h3>${esc(s.name)}</h3>${s.nivel ? `<span class="tag">${esc(s.nivel)}</span>` : ''}<div class="right"><span>${st.done}/${st.total}</span>${stackBar(st)}</div></div>
+  ${s.items.map(it => rowHTML(it)).join('')}</div>`;
+}
+function rowHTML(it) {
+  const s = itemState(it.id);
+  const nh = (recs[it.id]?.hallazgos || []).length;
+  return `<button class="row" data-item="${it.id}"><span class="dot ${s === 'incompleto' ? 'inc' : ''}" style="${s === 'incompleto' ? '' : `background:${stateColor(it.id)}`}"></span><span class="main"><b>${esc(it.name)}</b><small>${esc(it.desc)}</small></span>${nh && recs[it.id]?.status === 'con_dano' ? `<span class="badge">${nh} daño${nh > 1 ? 's' : ''}</span>` : ''}<span class="badge" style="color:${stateColor(it.id)};background:${stateColor(it.id)}1f">${stateLabel(it.id)}</span>${IC.chev}</button>`;
+}
+function vComunes() {
+  head('Áreas comunes', 'Sótanos, piso 1, puntos fijos de cada piso, cubierta e instalaciones. Los parqueaderos se inspeccionan de forma global por sótano.');
+  $('#view').innerHTML = `<div class="filters"><span class="muted" style="font-size:12.5px">Ir a:</span>${SECTIONS.filter(s => s.group === 'comunes').map(s => `<button class="btn small" data-go="comunes" data-anchor="sec-${s.id}">${esc(s.name.split(' — ')[0])}</button>`).join('')}</div>` +
+    SECTIONS.filter(s => s.group === 'comunes').map(secCard).join('');
+}
+function vFachadas() {
+  head('Fachadas exteriores', 'Inspección desde el exterior (dron, binoculares, andamio o equipo de altura), paño por paño en cada piso.');
+  const cards = SECTIONS.filter(s => s.group === 'fachadas').map(s => {
+    const st = stats(s.items);
+    const lv = [...s.items].reverse().map(it => {
+      const state = itemState(it.id);
+      const cls = state === 'pendiente' ? 'pend' : state === 'incompleto' ? 'inc' : '';
+      const bg = cls ? '' : `background:${stateColor(it.id)}`;
+      return `<button class="lvl ${cls}" style="${bg}" data-item="${it.id}">${esc(it.name.replace('Remate y antepecho de cubierta', 'Remate / cubierta').replace(/\s*\(.*\)/, ''))}<span>${stateLabel(it.id)}</span></button>`;
+    }).join('');
+    return `<div class="fac glass" id="sec-${s.id}"><h3>${esc(s.name)}</h3><div class="muted">${st.done}/${st.total} paños completos</div><div class="elev">${lv}</div></div>`;
+  }).join('');
+  $('#view').innerHTML = `<div class="card glass" style="margin-bottom:16px;font-size:13.5px;line-height:1.5"><b>Cómo inspeccionar las fachadas.</b> <span class="muted">Cada fachada se divide en paños por piso. Registre los daños de la cara exterior: fisuras en mampostería y revoque, desprendimientos, ventanería, balcones, barandas y juntas. La cara interior del muro de fachada se registra en cada apartamento.</span></div><div class="facgrid">${cards}</div>${LEGEND}`;
+}
+let aptFilter = 'todos', aptQuery = '';
+function vAptos() {
+  head('Apartamentos', '130 apartamentos · en cada uno se inspeccionan 2 muros: el que da al pasillo y el de fachada.');
+  const s = stats(ITEMS.filter(i => i.group === 'aptos'));
+  const floors = [];
+  for (let f = 11; f >= 1; f--) {
+    const apts = APTS.filter(a => aptFloor(a) === f);
+    const slots = f === 1 ? [101, 102, 103, 104, 105, 106, 107, 108, 109, 110, 111, 112] : apts;
+    const st = stats(ITEMS.filter(i => i.group === 'aptos' && i.floor === f));
+    floors.push(`<div class="floor" id="floor-${f}"><div class="fl"><b>Piso ${f}</b><small>${st.done}/${st.total} muros</small></div><div class="apts">${slots.map(a => {
+      if (!APTS.includes(a)) return `<div class="apt ghost"></div>`;
+      const ids = [`a${a}-pasillo`, `a${a}-fachada`];
+      return `<button class="apt" data-apt="${a}" title="Apto ${a}: pasillo ${stateLabel(ids[0])} · fachada ${stateLabel(ids[1])}">${a}<span class="w"><i style="background:${stateColor(ids[0])}"></i><i style="background:${stateColor(ids[1])}"></i></span></button>`;
+    }).join('')}</div></div>`);
+  }
+  $('#view').innerHTML = `
+  <div class="aptintro">
+    <div class="card glass" style="padding:14px"><div id="apt3d" class="canvas3d"></div></div>
+    <div class="card glass wallkey">
+      <h3 style="margin:0">Los 2 muros que se revisan en cada apartamento</h3>
+      <div class="k"><span class="sw" style="background:#0a84ff"></span><div><b>1 · Muro hacia el pasillo</b><p>${WALLS.pasillo.d}</p></div></div>
+      <div class="k"><span class="sw" style="background:#ff9f0a"></span><div><b>2 · Muro de fachada</b><p>${WALLS.fachada.d}</p></div></div>
+      <div class="muted" style="font-size:12.5px">Avance: <strong>${s.done}/${s.total}</strong> muros · ${s.con} con daño · ${s.noacc} sin acceso. En cada tarjeta, la barra izquierda es el muro del pasillo y la derecha el de fachada.</div>
+    </div>
+  </div>
+  <div class="filters">
+    <div class="seg" id="aptSeg">${[['todos', 'Todos'], ['pendientes', 'Pendientes'], ['dano', 'Con daño'], ['acceso', 'Sin acceso']].map(([k, n]) => `<button class="${aptFilter === k ? 'on' : ''}" data-f="${k}">${n}</button>`).join('')}</div>
+    <input class="search" id="aptQ" placeholder="Buscar apartamento (ej. 503)" value="${esc(aptQuery)}" inputmode="numeric">
+  </div>
+  <div class="sec glass" style="padding:8px 0">${floors.join('')}</div>${LEGEND}`;
+  $('#aptSeg').onclick = e => { const b = e.target.closest('[data-f]'); if (!b) return; aptFilter = b.dataset.f; $$('#aptSeg button').forEach(x => x.classList.toggle('on', x === b)); applyAptFilter(); };
+  $('#aptQ').oninput = e => { aptQuery = e.target.value.trim(); applyAptFilter(); };
+  applyAptFilter();
+  aptScene($('#apt3d'));
+}
+function applyAptFilter() {
+  $$('.apt[data-apt]').forEach(el => {
+    const a = el.dataset.apt, ids = [`a${a}-pasillo`, `a${a}-fachada`];
+    let dim = false;
+    if (aptFilter === 'pendientes') dim = ids.every(isDone);
+    if (aptFilter === 'dano') dim = !ids.some(id => recs[id]?.status === 'con_dano');
+    if (aptFilter === 'acceso') dim = !ids.map(itemState).includes('no_acceso');
+    if (aptQuery && !a.includes(aptQuery)) dim = true;
+    el.classList.toggle('dim', dim);
+  });
+}
+function vPrivadas() {
+  head('Locales y depósitos', 'Muros de los locales comerciales y depósitos que lindan con áreas comunes.');
+  $('#view').innerHTML = SECTIONS.filter(s => s.group === 'privadas').map(secCard).join('');
+}
+
+// ---------- Editor de un elemento ----------
+let ed = null; // { id, draft, aptMode, aptScene }
+function blankHz() { return { id: 'h' + uid(), elemento: '', dano: '', severidad: '', ubicacion: '', ancho: '', longitud: '', area: '', rep: '', unidad: '', cantidad: '', espec: '', comentario: '', fotos: [] }; }
+function openSheet(title, sub, bodyHTML, footHTML) {
+  closeSheet(true);
+  const back = document.createElement('div'); back.className = 'sheet-back';
+  back.innerHTML = `<div class="sheet" role="dialog" aria-modal="true"><div class="sheet-h"><div class="t"><b>${title}</b><small>${sub}</small></div><button class="xbtn" data-close aria-label="Cerrar">✕</button></div><div class="sheet-b">${bodyHTML}</div><div class="sheet-f">${footHTML}</div></div>`;
+  back.addEventListener('click', e => { if (e.target === back || e.target.closest('[data-close]')) closeSheet(); });
+  document.body.appendChild(back);
+  return back;
+}
+function closeSheet(silent) {
+  const b = $('.sheet-back'); if (!b) return;
+  disposeScenes(s => s.sheet);
+  b.remove(); ed = null;
+  if (!silent) render();
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('.lightbox')) $('.lightbox').remove(); else closeSheet(); } });
+
+function requireInspector() {
+  if (inspector?.nombre && inspector?.matricula) return true;
+  toast('Primero registre los datos del inspector');
+  closeSheet(true); go('ajustes'); return false;
+}
+function nextPending(fromId) {
+  const it = BY_ID[fromId];
+  const list = ITEMS.filter(i => i.group === it.group);
+  const idx = list.findIndex(i => i.id === fromId);
+  for (let k = 1; k <= list.length; k++) { const c = list[(idx + k) % list.length]; if (!isDone(c.id) && itemState(c.id) !== 'no_acceso') return c; }
+  return null;
+}
+function openItem(id) {
+  if (!requireInspector()) return;
+  const it = BY_ID[id];
+  if (it.group === 'aptos') return openApt(it.apt, it.wall);
+  openSheet(esc(it.name), `${esc(it.secName)}${it.nivel ? ' · ' + esc(it.nivel) : ''}`, `<div id="edBody"></div>`, footHTML());
+  ed = { id, draft: clone(recs[id] || { status: '', fotos: [], hallazgos: [], nota: '' }) };
+  renderEditor();
+}
+function openApt(a, wall = 'pasillo') {
+  if (!requireInspector()) return;
+  const id = `a${a}-${wall}`;
+  openSheet(`Apartamento ${a}`, `Piso ${aptFloor(a)} · Inspección de los 2 muros que lindan con áreas comunes`,
+    `<div id="aptCanvas" class="canvas3d"></div><div class="walltabs" id="wallTabs"></div><div id="edBody"></div>`, footHTML());
+  ed = { id, apt: a, wall, draft: clone(recs[id] || { status: '', fotos: [], hallazgos: [], nota: '' }) };
+  aptScene($('#aptCanvas'), wall).then(s => { if (ed) ed.scene = s; });
+  renderWallTabs(); renderEditor();
+}
+function renderWallTabs() {
+  if (!ed?.apt) return;
+  $('#wallTabs').innerHTML = Object.entries(WALLS).map(([w, W]) => { const id = `a${ed.apt}-${w}`; return `<button class="${ed.wall === w ? 'on' : ''}" style="--c:${W.c}" data-wall="${w}"><span class="sw" style="background:${W.c}"></span><span style="flex:1"><b>${w === 'pasillo' ? '1' : '2'} · ${W.n}</b><small>${stateLabel(id)}</small></span><span class="dot ${itemState(id) === 'incompleto' ? 'inc' : ''}" style="${itemState(id) === 'incompleto' ? '' : `background:${stateColor(id)}`}"></span></button>`; }).join('');
+  $('#wallTabs').onclick = e => { const b = e.target.closest('[data-wall]'); if (!b || b.dataset.wall === ed.wall) return; ed.wall = b.dataset.wall; ed.id = `a${ed.apt}-${ed.wall}`; ed.draft = clone(recs[ed.id] || { status: '', fotos: [], hallazgos: [], nota: '' }); ed.scene?.setActive(ed.wall); renderWallTabs(); renderEditor(); $('.sheet-b').scrollTop = $('#wallTabs').offsetTop - 10; };
+}
+function footHTML() {
+  return `<span class="muted" id="saveState" style="font-size:12.5px">Los cambios se guardan automáticamente</span><div class="spacer"></div><button class="btn" data-close>Cerrar</button><button class="btn primary" id="nextBtn">Siguiente pendiente →</button>`;
+}
+function photoBlock(list, key, max, label, required) {
+  return `<div class="photos">${(list || []).map((pid, i) => `<div class="ph"><img data-ph="${pid}" alt="Evidencia"><button class="rm" data-rmph="${key}" data-i="${i}" title="Quitar foto">✕</button></div>`).join('')}
+  ${(list || []).length < max ? `<label class="addph">${IC.cam}<span>${label}</span><input type="file" accept="image/*" capture="environment" data-addph="${key}"></label>` : ''}</div>${required ? '' : ''}`;
+}
+function renderEditor() {
+  const it = BY_ID[ed.id], d = ed.draft;
+  const st = d.status;
+  const statusSeg = `<div class="status-seg">${Object.entries(STATUS).map(([k, S]) => `<button class="${st === k ? 'on' : ''}" style="--c:${S.c}" data-status="${k}"><b><span class="dot" style="background:${S.c};width:10px;height:10px"></span>${S.n}</b><small>${S.d}</small></button>`).join('')}</div>`;
+  let body = `<p class="desc"><b>${esc(it.name)}.</b> ${esc(it.desc)}</p>${statusSeg}`;
+  if (!st) body += `<div class="blk" style="text-align:center;color:var(--muted)">Seleccione el resultado de la inspección de este elemento.</div>`;
+  if (st === 'sin_dano') body += `<div class="blk"><h4>Foto de evidencia <span class="req">Obligatoria</span></h4><p class="muted" style="margin:0 0 10px;font-size:12.5px">Foto general que demuestre que el elemento fue inspeccionado y no presenta daño (1 a 2 fotos).</p>${photoBlock(d.fotos, 'gen', 2, 'Tomar / subir foto')}</div>`;
+  if (st === 'no_acceso' || st === 'no_aplica') body += `<div class="blk"><div class="f"><label>${st === 'no_acceso' ? 'Motivo por el que no hubo acceso <em>*</em>' : 'Por qué no aplica este elemento <em>*</em>'}</label><textarea data-k="nota" placeholder="${st === 'no_acceso' ? 'Ej.: propietario ausente, se reprograma para el …' : 'Ej.: el apartamento no tiene muro de fachada en esta posición…'}">${esc(d.nota)}</textarea></div></div>`;
+  if (st === 'con_dano') {
+    body += (d.hallazgos || []).map((h, i) => hzHTML(h, i)).join('');
+    body += `<button class="btn primary" id="addHz" style="margin:4px 0 16px">＋ Agregar daño</button>`;
+    body += `<div class="blk"><h4>Fotos generales del elemento <span class="muted" style="font-weight:400;font-size:12px">(opcional)</span></h4>${photoBlock(d.fotos, 'gen', 2, 'Foto general')}</div>`;
+  }
+  if (st === 'sin_dano' || st === 'con_dano') body += `<div class="blk"><div class="f"><label>Observaciones generales del elemento (opcional)</label><textarea data-k="nota" placeholder="Observaciones adicionales…">${esc(d.nota)}</textarea></div></div>`;
+  body += `<div id="issuesBox"></div>`;
+  $('#edBody').innerHTML = body;
+  renderIssues();
+  hydratePhotos($('#edBody'));
+}
+function hzHTML(h, i) {
+  const rep = REP_BY[h.rep];
+  const unit = h.rep === 'R99' ? h.unidad : (rep?.unit || '');
+  const c = SEV[h.severidad]?.c || '#c7c7cc';
+  const opt = (list, v) => `<option value="">Seleccione…</option>` + list.map(x => `<option ${x === v ? 'selected' : ''}>${esc(x)}</option>`).join('');
+  const src = unit === 'ml' ? 'longitud' : unit === 'm²' ? 'area' : null;
+  const suggest = src && num(h[src]) > 0 && num(h[src]) !== num(h.cantidad) ? `<button class="btn small" data-use="${src}" data-h="${i}" type="button">Usar ${src === 'area' ? 'área' : 'longitud'} medida (${fmt(num(h[src]))} ${unit})</button>` : '';
+  return `<div class="blk hz" style="--c:${c}">
+    <div class="hz-h"><b>Daño ${i + 1}</b>${h.severidad ? `<span class="badge" style="background:${c};color:#fff">${SEV[h.severidad].n}</span>` : ''}<button class="btn small danger" data-delhz="${i}" type="button">Eliminar</button></div>
+    <div class="fg">
+      <div class="f c3"><label>Elemento afectado <em>*</em></label><select data-h="${i}" data-k="elemento">${opt(ELEMENTOS, h.elemento)}</select></div>
+      <div class="f c3"><label>Tipo de daño <em>*</em></label><select data-h="${i}" data-k="dano">${opt(DANOS, h.dano)}</select></div>
+      <div class="f c6"><label>Severidad <em>*</em></label><div class="sev">${SEV_ORDER.map(k => `<button type="button" class="${h.severidad === k ? 'on' : ''}" style="--c:${SEV[k].c}" data-sev="${k}" data-h="${i}">${SEV[k].n}<small>${SEV[k].d}</small></button>`).join('')}</div></div>
+      <div class="f c6"><label>Ubicación exacta dentro del elemento</label><input data-h="${i}" data-k="ubicacion" value="${esc(h.ubicacion)}" placeholder="Ej.: esquina superior junto al marco de la puerta, a 1,8 m del piso"></div>
+      <div class="f c2"><label>Ancho de fisura (mm)</label><input data-h="${i}" data-k="ancho" inputmode="decimal" value="${esc(h.ancho)}" placeholder="0,5"></div>
+      <div class="f c2"><label>Longitud afectada (m)</label><input data-h="${i}" data-k="longitud" inputmode="decimal" value="${esc(h.longitud)}" placeholder="1,20"></div>
+      <div class="f c2"><label>Área afectada (m²)</label><input data-h="${i}" data-k="area" inputmode="decimal" value="${esc(h.area)}" placeholder="2,40"></div>
+      <div class="f c6"><label>Reparación recomendada <em>*</em></label><select data-h="${i}" data-k="rep"><option value="">Seleccione…</option>${REP.map(r => `<option value="${r[0]}" ${r[0] === h.rep ? 'selected' : ''}>${r[0]} · ${esc(r[1])}${r[2] ? ` (${r[2]})` : ''}</option>`).join('')}</select></div>
+      ${h.rep === 'R99' ? `<div class="f c2"><label>Unidad <em>*</em></label><select data-h="${i}" data-k="unidad">${opt(UNITS, h.unidad)}</select></div>` : ''}
+      <div class="f ${h.rep === 'R99' ? 'c2' : 'c3'}"><label>Cantidad de obra a reparar <em>*</em></label><div class="qty"><input data-h="${i}" data-k="cantidad" inputmode="decimal" value="${esc(h.cantidad)}" placeholder="0"><span class="u">${esc(unit || '—')}</span></div>${suggest ? `<div style="margin-top:4px">${suggest}</div>` : '<span class="hint">Cantidad que el contratista debe cotizar.</span>'}</div>
+      <div class="f c6"><label>Procedimiento específico de reparación <em>*</em></label><textarea data-h="${i}" data-k="espec" placeholder="Ej.: retirar revoque suelto 20 cm a cada lado de la fisura, abrir en V, limpiar, aplicar puente de adherencia, malla de fibra de vidrio y mortero de reparación; estucar y pintar el paño completo.">${esc(h.espec)}</textarea></div>
+      <div class="f c6"><label>Comentario técnico <em>*</em></label><textarea data-h="${i}" data-k="comentario" placeholder="Descripción técnica del daño observado, patrón de fisuración, extensión y observaciones relevantes para la reparación.">${esc(h.comentario)}</textarea></div>
+      <div class="f c6"><label>Fotos de evidencia del daño <em>*</em> <span class="muted" style="font-weight:400">(1 a 2)</span></label>${photoBlock(h.fotos, 'h' + i, 2, 'Tomar / subir foto')}</div>
+    </div></div>`;
+}
+function renderIssues() {
+  const d = ed.draft; const box = $('#issuesBox'); if (!box) return;
+  if (!d.status) { box.innerHTML = ''; return; }
+  const e = issues(d);
+  box.innerHTML = e.length ? `<div class="issues"><b>Para dar por completo este elemento falta:</b><ul>${e.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : `<div class="okbox">✓ Elemento completo · guardado ${fdt(recs[ed.id]?.updatedAt)}</div>`;
+}
+let saveT = null;
+function persistSoon(immediate) {
+  clearTimeout(saveT);
+  const doSave = async () => { await saveRec(ed.id, ed.draft); $('#saveState') && ($('#saveState').textContent = 'Guardado ' + new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })); renderIssues(); if (ed?.apt) renderWallTabs(); };
+  if (immediate) return doSave();
+  $('#saveState') && ($('#saveState').textContent = 'Guardando…');
+  saveT = setTimeout(doSave, 500);
+}
+// Delegación de eventos del editor
+document.addEventListener('input', e => {
+  if (!ed || !e.target.closest('#edBody')) return;
+  const t = e.target, k = t.dataset.k; if (!k) return;
+  if (t.tagName === 'SELECT') return; // se maneja en change
+  if (t.dataset.h != null) ed.draft.hallazgos[+t.dataset.h][k] = t.value; else ed.draft[k] = t.value;
+  persistSoon();
+});
+document.addEventListener('change', async e => {
+  if (!ed || !e.target.closest('#edBody')) return;
+  const t = e.target;
+  if (t.dataset.addph) {
+    const f = t.files?.[0]; if (!f) return;
+    const it = BY_ID[ed.id]; const key = t.dataset.addph;
+    toast('Procesando foto…');
+    try {
+      const pid = await storePhoto(f, `KOA · ${it.name}${key.startsWith('h') ? ` · Daño ${+key.slice(1) + 1}` : ''}`);
+      if (key === 'gen') (ed.draft.fotos ||= []).push(pid); else (ed.draft.hallazgos[+key.slice(1)].fotos ||= []).push(pid);
+      await persistSoon(true); renderEditor(); toast('Foto guardada');
+    } catch (err) { console.error(err); toast('No se pudo procesar la foto'); }
+    return;
+  }
+  const k = t.dataset.k; if (!k || t.tagName !== 'SELECT') return;
+  const h = ed.draft.hallazgos[+t.dataset.h];
+  h[k] = t.value;
+  if (k === 'rep') { h.unidad = t.value === 'R99' ? '' : (REP_BY[t.value]?.unit || ''); if (h.unidad === 'ml' && num(h.longitud) > 0 && !num(h.cantidad)) h.cantidad = h.longitud; if (h.unidad === 'm²' && num(h.area) > 0 && !num(h.cantidad)) h.cantidad = h.area; }
+  await persistSoon(true); renderEditor();
+});
+document.addEventListener('click', async e => {
+  if (!ed || !e.target.closest('.sheet')) return;
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.id === 'nextBtn') {
+    await persistSoon(true);
+    const n = nextPending(ed.id);
+    if (!n) { toast('¡No hay más elementos pendientes en este grupo!'); return; }
+    if (n.group === 'aptos') openApt(n.apt, n.wall); else openItem(n.id);
+    return;
+  }
+  if (t.dataset.status) {
+    ed.draft.status = t.dataset.status;
+    if (t.dataset.status === 'con_dano' && !(ed.draft.hallazgos || []).length) ed.draft.hallazgos = [blankHz()];
+    await persistSoon(true); renderEditor(); return;
+  }
+  if (t.id === 'addHz') { ed.draft.hallazgos.push(blankHz()); await persistSoon(true); renderEditor(); setTimeout(() => { const b = $$('.hz').pop(); b?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return; }
+  if (t.dataset.delhz != null) { if (!confirm('¿Eliminar este daño y sus fotos?')) return; const [h] = ed.draft.hallazgos.splice(+t.dataset.delhz, 1); for (const p of h.fotos || []) DB.del('photos', p).catch(() => { }); await persistSoon(true); renderEditor(); return; }
+  if (t.dataset.sev) { ed.draft.hallazgos[+t.dataset.h].severidad = t.dataset.sev; await persistSoon(true); renderEditor(); return; }
+  if (t.dataset.use) { const h = ed.draft.hallazgos[+t.dataset.h]; h.cantidad = h[t.dataset.use]; await persistSoon(true); renderEditor(); return; }
+  if (t.dataset.rmph) {
+    if (!confirm('¿Quitar esta foto?')) return;
+    const key = t.dataset.rmph, i = +t.dataset.i;
+    const arr = key === 'gen' ? ed.draft.fotos : ed.draft.hallazgos[+key.slice(1)].fotos;
+    const [pid] = arr.splice(i, 1); DB.del('photos', pid).catch(() => { });
+    await persistSoon(true); renderEditor(); return;
+  }
+});
+
+// ---------- Ajustes / inspector ----------
+function vAjustes() {
+  head('Inspector y datos', 'Datos del profesional responsable, sincronización y respaldo.');
+  const i = inspector || {};
+  const f = (k, l, ph, req, type = 'text', span = 'c3') => `<div class="f ${span}"><label>${l}${req ? ' <em>*</em>' : ''}</label><input id="in_${k}" type="${type}" value="${esc(i[k] || '')}" placeholder="${ph}"></div>`;
+  $('#view').innerHTML = `
+  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Profesional responsable de la inspección</h3>
+    <p class="muted" style="font-size:13px;margin-top:-4px">Estos datos se estampan en cada foto de evidencia y en el informe técnico.</p>
+    <div class="fg">
+      ${f('nombre', 'Nombre completo', 'Ing. …', true)}
+      ${f('profesion', 'Profesión', 'Ingeniero civil', true)}
+      ${f('matricula', 'Matrícula profesional', 'N.º de matrícula', true)}
+      ${f('empresa', 'Empresa / firma', 'Opcional', false)}
+      ${f('telefono', 'Teléfono', '', false, 'tel', 'c2')}
+      ${f('email', 'Correo electrónico', '', false, 'email', 'c2')}
+      ${f('fechaInicio', 'Fecha de inicio de la inspección', '', true, 'date', 'c2')}
+    </div>
+    <div style="margin-top:14px"><button class="btn primary" id="saveInsp">Guardar datos del inspector</button></div>
+  </div>
+  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Sincronización</h3>
+    ${Sync.enabled ? `<p style="font-size:13.5px">El portal está conectado a su servidor. Todo lo que se registre (datos y fotos) se guarda en el equipo y se envía al servidor automáticamente, así que el propietario lo ve desde cualquier dispositivo.</p>
+      ${Sync.needsToken ? `<div class="fg"><div class="f c3"><label>Clave de acceso del portal</label><input id="tok" type="password" value="${esc(Sync.token)}" placeholder="Clave entregada por la administración"></div></div><div style="margin-top:10px"><button class="btn" id="saveTok">Guardar clave y sincronizar</button></div>` : ''}
+      <p class="muted" style="font-size:12.5px">Estado: ${esc($('#syncpill').textContent)} · Cambios pendientes por enviar: ${dirty.size}</p>
+      <button class="btn small" id="syncNow">Sincronizar ahora</button>`
+      : `<p style="font-size:13.5px">Modo local: la información se guarda en este navegador y dispositivo. Para entregar la información use <b>Descargar respaldo</b>, o despliegue el portal con su servidor (exe.dev) para que todo se sincronice automáticamente.</p>`}
+  </div>
+  <div class="card glass"><h3 style="margin-top:0">Respaldo de la información</h3>
+    <p class="muted" style="font-size:13px">El respaldo incluye todos los registros y las fotos. Puede cargarse en otro equipo para continuar o revisar la inspección.</p>
+    <div class="rep-actions"><button class="btn" id="expJson">Descargar respaldo (.json)</button><label class="btn" style="position:relative">Cargar respaldo<input type="file" accept="application/json,.json" id="impJson" style="position:absolute;inset:0;opacity:0"></label><button class="btn danger" id="wipe">Borrar datos de este equipo</button></div>
+  </div>`;
+  $('#saveInsp').onclick = async () => {
+    const d = {}; ['nombre', 'profesion', 'matricula', 'empresa', 'telefono', 'email', 'fechaInicio'].forEach(k => d[k] = $('#in_' + k).value.trim());
+    if (!d.nombre || !d.profesion || !d.matricula || !d.fechaInicio) { toast('Complete nombre, profesión, matrícula y fecha'); return; }
+    await saveInspector(d); toast('Datos del inspector guardados'); go('inicio');
+  };
+  $('#saveTok') && ($('#saveTok').onclick = () => { Sync.token = $('#tok').value.trim(); localStorage.setItem('koa_token', Sync.token); urlCache.clear(); Sync.run().then(() => vAjustes()); });
+  $('#syncNow') && ($('#syncNow').onclick = () => Sync.run().then(() => { toast('Sincronización ejecutada'); vAjustes(); }));
+  $('#expJson').onclick = exportJSON;
+  $('#impJson').onchange = e => e.target.files[0] && importJSON(e.target.files[0]);
+  $('#wipe').onclick = async () => { if (!confirm('Esto borra TODOS los registros y fotos guardados en este equipo. ¿Ya descargó un respaldo?')) return; if (prompt('Escriba BORRAR para confirmar') !== 'BORRAR') return; await Promise.all(['items', 'photos', 'meta'].map(s => DB.clear(s))); recs = {}; inspector = null; dirty = new Set(); urlCache.clear(); toast('Datos borrados'); render(); };
+}
+const blobToDataURL = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); });
+async function exportJSON() {
+  toast('Preparando respaldo…');
+  const photos = {};
+  for (const [k, v] of await DB.entries('photos')) photos[k] = await blobToDataURL(v);
+  const data = { app: 'koa-inspeccion', version: 1, exportedAt: Date.now(), inspector, recs, photos };
+  download(new Blob([JSON.stringify(data)], { type: 'application/json' }), `KOA-inspeccion-respaldo-${new Date().toISOString().slice(0, 10)}.json`);
+}
+async function importJSON(file) {
+  try {
+    const data = JSON.parse(await file.text());
+    if (data.app !== 'koa-inspeccion') throw new Error('archivo');
+    let n = 0;
+    for (const [k, v] of Object.entries(data.photos || {})) { if (!(await DB.get('photos', k))) { const b = await (await fetch(v)).blob(); await DB.put('photos', k, b); } }
+    for (const [id, r] of Object.entries(data.recs || {})) { if (!recs[id] || (r.updatedAt || 0) > (recs[id].updatedAt || 0)) { recs[id] = r; await DB.put('items', id, r); dirty.add(id); n++; } }
+    if (data.inspector && (!inspector || (data.inspector.updatedAt || 0) > (inspector.updatedAt || 0))) { inspector = data.inspector; await DB.put('meta', 'inspector', inspector); dirty.add('__inspector'); }
+    await DB.put('meta', 'dirty', [...dirty]); Sync.schedule();
+    toast(`Respaldo cargado: ${n} registros actualizados`); render();
+  } catch { toast('El archivo no es un respaldo válido del portal'); }
+}
+function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
+
+// ---------- Informe ----------
+function quantities() {
+  const map = {};
+  ITEMS.forEach(it => {
+    const r = recs[it.id]; if (r?.status !== 'con_dano') return;
+    (r.hallazgos || []).forEach(h => {
+      if (!h.rep) return;
+      const unit = h.rep === 'R99' ? (h.unidad || '') : REP_BY[h.rep].unit;
+      const name = h.rep === 'R99' ? `Otra: ${(h.espec || '').split(/[.\n]/)[0].slice(0, 60)}` : REP_BY[h.rep].name;
+      const key = h.rep === 'R99' ? `R99|${name}|${unit}` : h.rep;
+      const q = (map[key] ||= { code: h.rep, name, unit, total: 0, n: 0, comunes: 0, fachadas: 0, aptos: 0, privadas: 0 });
+      const c = num(h.cantidad); q.total += c; q.n++; q[it.group] += c;
+    });
+  });
+  return Object.values(map).sort((a, b) => a.code.localeCompare(b.code));
+}
+function vInforme() {
+  head('Informe técnico', 'Verificación de completitud, informe para contratistas y cuadro de cantidades.');
+  const s = stats();
+  const pend = ITEMS.filter(it => !isDone(it.id));
+  const complete = pend.length === 0;
+  const q = quantities();
+  $('#view').innerHTML = `
+  <div class="card glass">
+    <h3 style="margin-top:0">${complete ? '✅ Inspección completa' : '⏳ Inspección en curso'}</h3>
+    <p class="muted" style="font-size:13.5px;margin-top:-4px">${complete ? 'Todos los elementos están inspeccionados y documentados. El informe técnico se puede generar como versión final.' : `Faltan <b>${pend.length}</b> elementos por completar. Puede generar un <b>borrador</b>, que llevará la marca “BORRADOR · inspección incompleta” y la lista de pendientes.`}</p>
+    <div class="kpis">
+      <div class="stat glass"><small>Avance</small><b>${s.pct}%</b></div>
+      <div class="stat glass"><small>Con daño</small><b>${s.con}</b></div>
+      <div class="stat glass"><small>Daños registrados</small><b>${s.hall}</b></div>
+      <div class="stat glass"><small>Actividades a cotizar</small><b>${q.length}</b></div>
+    </div>
+    <div class="rep-actions">
+      <button class="btn primary" id="genRep" ${inspector?.nombre ? '' : 'disabled'}>${complete ? 'Generar informe técnico' : 'Generar borrador del informe'}</button>
+      <button class="btn" id="csvQ">Cuadro de cantidades (CSV / Excel)</button>
+      <button class="btn" id="csvD">Detalle de daños (CSV / Excel)</button>
+    </div>
+    ${inspector?.nombre ? '' : '<p class="muted" style="font-size:12.5px">Registre primero los datos del inspector.</p>'}
+  </div>
+  ${pend.length ? `<div class="card glass" style="margin-top:16px"><h3 style="margin-top:0">Elementos pendientes (${pend.length})</h3><div class="pend-list">${pend.slice(0, 400).map(it => `<button data-item="${it.id}"><span class="dot ${itemState(it.id) === 'incompleto' ? 'inc' : ''}" style="${itemState(it.id) === 'incompleto' ? '' : `background:${stateColor(it.id)}`}"></span>${esc(it.name)}<small>${esc(GROUPS[it.group].short)} · ${stateLabel(it.id)}</small></button>`).join('')}</div></div>` : ''}
+  ${q.length ? `<div class="card glass" style="margin-top:16px"><h3 style="margin-top:0">Vista previa · cuadro de cantidades</h3><div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">${['Código', 'Actividad', 'Unidad', 'Cantidad', 'Ubicaciones'].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}${q.map(r => `<tr><td style="padding:6px">${r.code}</td><td style="padding:6px">${esc(r.name)}</td><td style="padding:6px">${esc(r.unit)}</td><td style="padding:6px;text-align:right">${fmt(r.total)}</td><td style="padding:6px;text-align:right">${r.n}</td></tr>`).join('')}</table></div></div>` : ''}`;
+  $('#genRep').onclick = () => buildReport(!complete);
+  $('#csvQ').onclick = csvQuantities; $('#csvD').onclick = csvDetail;
+}
+function csv(rows) { return '﻿' + rows.map(r => r.map(c => { const s = String(c ?? ''); return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(';')).join('\r\n'); }
+function csvQuantities() {
+  const q = quantities();
+  const rows = [['Código', 'Actividad', 'Unidad', 'Cantidad total', 'N.º ubicaciones', 'Áreas comunes', 'Fachadas', 'Apartamentos', 'Locales y depósitos', 'Valor unitario', 'Valor total']];
+  q.forEach(r => rows.push([r.code, r.name, r.unit, fmt(r.total), r.n, fmt(r.comunes), fmt(r.fachadas), fmt(r.aptos), fmt(r.privadas), '', '']));
+  download(new Blob([csv(rows)], { type: 'text/csv;charset=utf-8' }), 'KOA-cuadro-de-cantidades.csv');
+}
+function csvDetail() {
+  const rows = [['Componente', 'Sección', 'Elemento inspeccionado', 'Estado', 'N.º daño', 'Elemento afectado', 'Tipo de daño', 'Severidad', 'Ubicación', 'Ancho fisura (mm)', 'Longitud (m)', 'Área (m²)', 'Código reparación', 'Reparación', 'Unidad', 'Cantidad', 'Procedimiento de reparación', 'Comentario técnico', 'Fotos', 'Fecha registro', 'Inspector']];
+  ITEMS.forEach(it => {
+    const r = recs[it.id];
+    const base = [GROUPS[it.group].n, it.secName, it.name, stateLabel(it.id)];
+    if (r?.status === 'con_dano' && r.hallazgos?.length) r.hallazgos.forEach((h, i) => rows.push([...base, i + 1, h.elemento, h.dano, SEV[h.severidad]?.n || '', h.ubicacion, h.ancho, h.longitud, h.area, h.rep, REP_BY[h.rep]?.name || '', h.rep === 'R99' ? h.unidad : REP_BY[h.rep]?.unit || '', h.cantidad, h.espec, h.comentario, (h.fotos || []).length, fdt(r.updatedAt), r.by]));
+    else rows.push([...base, '', '', '', '', '', '', '', '', '', '', '', '', r?.nota || '', '', (r?.fotos || []).length, fdt(r?.updatedAt), r?.by || '']);
+  });
+  download(new Blob([csv(rows)], { type: 'text/csv;charset=utf-8' }), 'KOA-detalle-de-danos.csv');
+}
+function pill(sev) { return sev ? `<span class="pill" style="background:${SEV[sev].c}">${SEV[sev].n}</span>` : ''; }
+function stPill(id) { return `<span class="pill" style="background:${stateColor(id)}">${stateLabel(id)}</span>`; }
+function hzTable(it, r) {
+  return (r.hallazgos || []).map((h, i) => {
+    const unit = h.rep === 'R99' ? h.unidad : REP_BY[h.rep]?.unit;
+    return `<div class="item"><div class="ih"><span>${esc(it.name)} — Daño ${i + 1}</span>${pill(h.severidad)}</div>
+    <table><tr><th style="width:24%">Elemento afectado</th><td>${esc(h.elemento)}</td><th style="width:18%">Tipo de daño</th><td>${esc(h.dano)}</td></tr>
+    <tr><th>Ubicación</th><td colspan="3">${esc(h.ubicacion || '—')}</td></tr>
+    <tr><th>Medidas</th><td colspan="3">Ancho de fisura: ${h.ancho ? fmt(num(h.ancho)) + ' mm' : '—'} · Longitud: ${h.longitud ? fmt(num(h.longitud)) + ' m' : '—'} · Área: ${h.area ? fmt(num(h.area)) + ' m²' : '—'}</td></tr>
+    <tr><th>Reparación recomendada</th><td colspan="3"><b>${esc(h.rep)} · ${esc(REP_BY[h.rep]?.name || '')}</b> — Cantidad: <b>${fmt(num(h.cantidad))} ${esc(unit || '')}</b></td></tr>
+    <tr><th>Procedimiento de reparación</th><td colspan="3">${esc(h.espec).replace(/\n/g, '<br>')}</td></tr>
+    <tr><th>Comentario técnico</th><td colspan="3">${esc(h.comentario).replace(/\n/g, '<br>')}</td></tr></table>
+    <div class="rphotos">${(h.fotos || []).map(p => `<img data-ph="${p}">`).join('')}</div></div>`;
+  }).join('') + (r.nota ? `<p><b>Observaciones:</b> ${esc(r.nota)}</p>` : '') + ((r.fotos || []).length ? `<div class="rphotos">${r.fotos.map(p => `<img data-ph="${p}">`).join('')}</div>` : '');
+}
+async function buildReport(draft) {
+  const s = stats(), q = quantities();
+  const dates = Object.values(recs).map(r => r.updatedAt).filter(Boolean);
+  const dmin = dates.length ? Math.min(...dates) : null, dmax = dates.length ? Math.max(...dates) : null;
+  const grpRows = Object.entries(GROUPS).map(([g, G]) => { const st = stats(ITEMS.filter(i => i.group === g)); return `<tr><td>${G.n}</td><td class="num">${st.total}</td><td class="num">${st.sin}</td><td class="num">${st.con}</td><td class="num">${st.noapl}</td><td class="num">${st.noacc + st.inc + st.pend}</td><td class="num">${st.sev.leve}</td><td class="num">${st.sev.moderado}</td><td class="num">${st.sev.severo}</td><td class="num">${st.sev.critico}</td></tr>`; }).join('');
+  const detailFor = group => SECTIONS.filter(x => x.group === group).map(sec => {
+    const dam = sec.items.filter(it => recs[it.id]?.status === 'con_dano');
+    if (!dam.length) return '';
+    return `<h3>${esc(sec.name)}${sec.nivel ? ` <span style="font-weight:400;color:#666">· ${esc(sec.nivel)}</span>` : ''}</h3>` + dam.map(it => hzTable(it, recs[it.id])).join('');
+  }).join('') || '<p>No se registraron daños en este componente.</p>';
+  const statusTable = group => `<table><tr><th>Elemento</th><th>Sección</th><th>Estado</th><th class="num">Daños</th></tr>${ITEMS.filter(i => i.group === group).map(it => `<tr><td>${esc(it.name)}</td><td>${esc(it.secName)}</td><td>${stPill(it.id)}</td><td class="num">${(recs[it.id]?.status === 'con_dano' ? recs[it.id].hallazgos.length : 0) || ''}</td></tr>`).join('')}</table>`;
+  const aptTable = `<table><tr><th>Apto</th><th>Piso</th><th>Muro hacia pasillo</th><th>Muro de fachada</th><th class="num">Daños</th></tr>${APTS.map(a => { const p = `a${a}-pasillo`, f = `a${a}-fachada`; const n = [p, f].reduce((t, id) => t + (recs[id]?.status === 'con_dano' ? recs[id].hallazgos.length : 0), 0); return `<tr><td><b>${a}</b></td><td>${aptFloor(a)}</td><td>${stPill(p)}</td><td>${stPill(f)}</td><td class="num">${n || ''}</td></tr>`; }).join('')}</table>`;
+  const pend = ITEMS.filter(it => !isDone(it.id));
+  const sinDano = ITEMS.filter(it => recs[it.id]?.status === 'sin_dano' && (recs[it.id].fotos || []).length);
+  const totalCant = q.length;
+  const html = `
+  ${draft ? '<div class="watermark">BORRADOR · INSPECCIÓN INCOMPLETA</div>' : ''}
+  <section class="cover">
+    <div class="top">
+      <div class="kicker">Informe técnico de inspección de daños</div>
+      <h1>${PROJECT.nombre}<br><span style="font-weight:500;font-size:22px">Daños por el sismo del 10 de agosto de 2026</span></h1>
+      <p style="font-size:14px">${PROJECT.direccion}</p>
+    </div>
+    <table style="font-size:12.5px">
+      <tr><th style="width:32%">Objeto</th><td>Identificación, cuantificación y recomendaciones de reparación de los daños en áreas comunes, fachadas y muros de unidades privadas que lindan con áreas comunes, como base para el cálculo de la indemnización y la cotización de las reparaciones.</td></tr>
+      <tr><th>Evento</th><td>${PROJECT.evento}</td></tr>
+      <tr><th>Profesional responsable</th><td>${esc(inspector?.nombre)} · ${esc(inspector?.profesion)} · Matrícula ${esc(inspector?.matricula)}${inspector?.empresa ? ' · ' + esc(inspector.empresa) : ''}</td></tr>
+      <tr><th>Período de inspección</th><td>${inspector?.fechaInicio ? fdate(inspector.fechaInicio + 'T12:00') : fdate(dmin)} — ${fdate(dmax)}</td></tr>
+      <tr><th>Fecha del informe</th><td>${fdate(Date.now())}</td></tr>
+      <tr><th>Estado</th><td>${draft ? `<b style="color:#d70015">BORRADOR</b> · ${s.pct}% de los elementos completos (${pend.length} pendientes)` : '<b>Versión final</b> · 100% de los elementos inspeccionados'}</td></tr>
+    </table>
+  </section>
+
+  <h2 class="pb">1. Información general</h2>
+  <table>
+    <tr><th style="width:30%">Proyecto</th><td>${PROJECT.nombre}</td></tr>
+    <tr><th>Dirección</th><td>${PROJECT.direccion}</td></tr>
+    <tr><th>Descripción</th><td>${PROJECT.descripcion}</td></tr>
+    <tr><th>Evento</th><td>${PROJECT.evento}</td></tr>
+    <tr><th>Inspector</th><td>${esc(inspector?.nombre)} · ${esc(inspector?.profesion)} · Mat. ${esc(inspector?.matricula)}${inspector?.telefono ? ' · Tel. ' + esc(inspector.telefono) : ''}${inspector?.email ? ' · ' + esc(inspector.email) : ''}</td></tr>
+  </table>
+
+  <h2>2. Alcance</h2>
+  <p>La inspección cubre: (a) las <b>áreas comunes</b> del edificio: sótanos −1 y −2 (parqueaderos de forma global, rampas, muros de contención, cuartos técnicos y circulaciones), piso 1 (acceso, lobby, zona común y piscina), puntos fijos y pasillos de los pisos 2 a 11, cubierta e instalaciones comunes; (b) las <b>fachadas exteriores</b>, inspeccionadas desde el exterior y divididas en paños por piso; (c) en cada uno de los <b>130 apartamentos</b>, los dos muros que lindan con áreas comunes: el <b>muro hacia el pasillo</b> y el <b>muro de fachada</b> (cara interior); y (d) los muros de los <b>2 locales comerciales</b> y los <b>9 depósitos</b> que lindan con áreas comunes. En total se definieron <b>${ITEMS.length}</b> elementos de inspección.</p>
+  <p>El alcance se limita a la identificación, medición y recomendación de reparación de los daños observados.</p>
+
+  <h2>3. Metodología</h2>
+  <p>Inspección visual elemento por elemento. Cada elemento se clasifica como <i>sin daño</i> (con foto de evidencia), <i>con daño</i>, <i>sin acceso</i> o <i>no aplica</i>. Para cada daño se registra el elemento afectado, el tipo de daño, la severidad, la ubicación, las medidas (ancho de fisura, longitud y área), la reparación recomendada con su cantidad de obra, el procedimiento específico de reparación, un comentario técnico y 1 a 2 fotografías con sello de fecha, ubicación e inspector.</p>
+  <table><tr><th>Severidad</th><th>Criterio</th></tr>
+    <tr><td>${pill('leve')}</td><td>Daño superficial o estético (p. ej., fisuras capilares en revoque o pintura) que no compromete el funcionamiento del elemento.</td></tr>
+    <tr><td>${pill('moderado')}</td><td>Daño que requiere reparación localizada del elemento (p. ej., fisuras de 1 a 3 mm, desprendimientos parciales, desajuste de carpinterías).</td></tr>
+    <tr><td>${pill('severo')}</td><td>Daño extenso que requiere reconstrucción o reposición del elemento (p. ej., grietas mayores, mampostería fracturada o desplazada).</td></tr>
+    <tr><td>${pill('critico')}</td><td>Daño que representa riesgo para las personas y requiere acción inmediata (apuntalamiento, aislamiento del área).</td></tr></table>
+
+  <h2>4. Resumen de resultados</h2>
+  <table class="keep"><tr><th>Componente</th><th class="num">Elementos</th><th class="num">Sin daño</th><th class="num">Con daño</th><th class="num">No aplica</th><th class="num">Pendientes</th><th class="num">Leves</th><th class="num">Moderados</th><th class="num">Severos</th><th class="num">Críticos</th></tr>${grpRows}
+  <tr><th>Total</th><th class="num">${s.total}</th><th class="num">${s.sin}</th><th class="num">${s.con}</th><th class="num">${s.noapl}</th><th class="num">${s.noacc + s.inc + s.pend}</th><th class="num">${s.sev.leve}</th><th class="num">${s.sev.moderado}</th><th class="num">${s.sev.severo}</th><th class="num">${s.sev.critico}</th></tr></table>
+  <p>Se registraron <b>${s.hall}</b> daños en <b>${s.con}</b> elementos, que dan lugar a <b>${totalCant}</b> actividades de reparación (sección 5). Las severidades leve, moderado, severo y crítico se cuentan por daño.</p>
+
+  <h2 class="pb">5. Cuadro de cantidades de obra (para cotización)</h2>
+  <p>Cantidades consolidadas a partir de los daños registrados. Los contratistas deben diligenciar el valor unitario y el valor total de cada actividad.</p>
+  <table><tr><th>Código</th><th style="width:30%">Actividad</th><th>Unidad</th><th class="num">Cantidad</th><th class="num">Ubic.</th><th class="num">Comunes</th><th class="num">Fachadas</th><th class="num">Aptos</th><th class="num">Locales / dep.</th><th style="width:11%">Valor unitario</th><th style="width:11%">Valor total</th></tr>
+  ${q.map(r => `<tr><td>${r.code}</td><td>${esc(r.name)}</td><td>${esc(r.unit)}</td><td class="num"><b>${fmt(r.total)}</b></td><td class="num">${r.n}</td><td class="num">${fmt(r.comunes)}</td><td class="num">${fmt(r.fachadas)}</td><td class="num">${fmt(r.aptos)}</td><td class="num">${fmt(r.privadas)}</td><td></td><td></td></tr>`).join('') || '<tr><td colspan="11">Sin actividades registradas.</td></tr>'}
+  <tr><th colspan="9" style="text-align:right">Total costo directo</th><td colspan="2"></td></tr></table>
+
+  <h2 class="pb">6. Detalle de daños — áreas comunes</h2>${detailFor('comunes')}
+  <h2 class="pb">7. Detalle de daños — fachadas exteriores</h2>${detailFor('fachadas')}
+  <h2 class="pb">8. Apartamentos</h2>
+  <h3>8.1 Estado de los muros por apartamento</h3>${aptTable}
+  <h3>8.2 Detalle de daños por apartamento</h3>${detailFor('aptos')}
+  <h2 class="pb">9. Locales comerciales y depósitos</h2>${statusTable('privadas')}${detailFor('privadas')}
+  <h2 class="pb">10. Elementos sin acceso, no aplicables o pendientes</h2>
+  ${(() => { const rows = ITEMS.filter(it => ['no_acceso', 'no_aplica', 'pendiente', 'incompleto'].includes(itemState(it.id))); return rows.length ? `<table><tr><th>Elemento</th><th>Componente</th><th>Estado</th><th>Observación</th></tr>${rows.map(it => `<tr><td>${esc(it.name)}</td><td>${GROUPS[it.group].n}</td><td>${stPill(it.id)}</td><td>${esc(recs[it.id]?.nota || '')}</td></tr>`).join('')}</table>` : '<p>Ninguno. Todos los elementos fueron inspeccionados.</p>'; })()}
+  <h2 class="pb">11. Anexo fotográfico — elementos sin daño</h2>
+  ${sinDano.length ? `<div class="thumbs">${sinDano.map(it => `<figure><img data-ph="${recs[it.id].fotos[0]}"><figcaption>${esc(it.name)}</figcaption></figure>`).join('')}</div>` : '<p>Sin registros.</p>'}
+  <h2 class="pb">12. Firma del profesional responsable</h2>
+  <p>El presente informe fue elaborado con base en la inspección visual realizada por el profesional que lo suscribe, quien es responsable de su contenido técnico.</p>
+  <div class="sign"><div>${esc(inspector?.nombre)}<br>${esc(inspector?.profesion)} · Matrícula profesional ${esc(inspector?.matricula)}${inspector?.empresa ? '<br>' + esc(inspector.empresa) : ''}</div><div>Fecha: ${fdate(Date.now())}</div></div>
+  <div class="foot">Generado con el Portal de Inspección KOA · ${new Date().toLocaleString('es-CO')}</div>`;
+  $('#paper').innerHTML = html;
+  $('#report').style.display = 'block'; $('#report').scrollTop = 0;
+  await hydratePhotos($('#paper'));
+}
+$('#repClose').onclick = () => { $('#report').style.display = 'none'; };
+$('#repPrint').onclick = async () => { const imgs = $$('#paper img'); await Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))); window.print(); };
+
+// ---------- Inicio ----------
+(async function init() {
+  try { await DB.open(); } catch { document.body.innerHTML = '<p style="padding:40px;font-family:sans-serif">Este navegador no permite guardar datos (IndexedDB). Use Safari, Chrome o Edge actualizados y sin modo privado.</p>'; return; }
+  try { navigator.storage?.persist?.(); } catch { }
+  await loadAll();
+  await Sync.detect();
+  if (Sync.enabled) { Sync.setPill('', 'Conectando…'); Sync.run(); setInterval(() => Sync.run(), 30000); window.addEventListener('online', () => Sync.run()); }
+  else Sync.setPill('', 'Modo local (este equipo)');
+  render();
+})();
+window.__koa = { ITEMS, SECTIONS, recs: () => recs, stats };
+</script>
+</body>
+</html>
