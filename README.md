@@ -55,6 +55,12 @@ node server.js usuario fabig76 'NuevaContraseña' admin  # cambiar contraseña d
 scp -r koa-sismo.exe.xyz:koa/data ./respaldo-koa         # copiar todos los datos y fotos a tu computador
 ```
 
+## Respaldo diario a Google Drive
+
+`respaldo.js` corre cada noche (2:30 a. m., hora de Colombia) desde `/etc/cron.d/koa-respaldo`. Sube a la carpeta de Drive indicada una copia fechada de los datos (`koa-inspeccion/koa-AAAA-MM-DD.json`) y solo las fotos nuevas (`koa-inspeccion/fotos/`). No borra nada. El resultado queda en `respaldo.log`.
+
+Las credenciales van en `/etc/koa-respaldo.env` (nunca en el repositorio): `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH` y `DRIVE_CARPETA`. Para verificarlas: `set -a; . /etc/koa-respaldo.env; node respaldo.js --prueba`.
+
 ## Roles
 
 | | Administrador | Inspector |
@@ -73,6 +79,7 @@ scp -r koa-sismo.exe.xyz:koa/data ./respaldo-koa         # copiar todos los dato
 | `index.html` | El portal (interfaz, modelos 3D, inspección, informe) |
 | `server.js` | Servidor (Node 18+, sin dependencias) |
 | `config.js` | Dirección del servidor para la copia de GitHub Pages |
+| `respaldo.js` | Respaldo diario a Google Drive |
 | `vendor/` | Librería 3D (Three.js, MIT) incluida |
 | `SPEC-correcciones-v2.md` | Especificación de la versión 2 |
 | `pruebas/` | Pruebas automatizadas (Playwright): `test_rest.py` (servidor), `test_local.py`, `test_v2.py` |
