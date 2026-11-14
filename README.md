@@ -59,7 +59,7 @@ scp -r koa-sismo.exe.xyz:koa/data ./respaldo-koa         # copiar todos los dato
 
 `respaldo.js` corre cada noche (2:30 a. m., hora de Colombia) desde `/etc/cron.d/koa-respaldo`. Sube a la carpeta de Drive indicada una copia fechada de los datos (`koa-inspeccion/koa-AAAA-MM-DD.json`) y solo las fotos nuevas (`koa-inspeccion/fotos/`). No borra nada. El resultado queda en `respaldo.log`.
 
-Las credenciales van en `/etc/koa-respaldo.env` (nunca en el repositorio): `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_REFRESH` y `DRIVE_CARPETA`. Para verificarlas: `set -a; . /etc/koa-respaldo.env; node respaldo.js --prueba`.
+El destino se configura en `/etc/koa-respaldo.env` con `DRIVE_WEBHOOK`, la dirección `/exec` del receptor `respaldo-drive.gs` implementado como aplicación web de Apps Script en la cuenta de Google de destino (guarda en la carpeta "Respaldos portal KOA"). No requiere llaves. Para verificar: `set -a; . /etc/koa-respaldo.env; node respaldo.js --prueba`.
 
 ## Roles
 

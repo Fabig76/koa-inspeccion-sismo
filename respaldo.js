@@ -12,12 +12,14 @@
  *   GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH   credenciales OAuth de la cuenta de Google
  *   DRIVE_CARPETA                                            id de la carpeta de Drive de destino
  *   DATA_DIR (opcional, ./data)
+ *   O bien, sin llaves: DRIVE_WEBHOOK = dirección /exec del receptor en Apps Script (respaldo-drive.gs)
+ *   de la cuenta de Google de destino.
  *
  * Uso:  node respaldo.js            ·  node respaldo.js --prueba   (solo verifica acceso a Drive)
  */
 const fs = require('fs'), path = require('path');
 const DATA = process.env.DATA_DIR || path.join(__dirname, 'data');
-const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH, DRIVE_CARPETA } = process.env;
+const { GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET, GOOGLE_REFRESH, DRIVE_CARPETA, DRIVE_WEBHOOK } = process.env;
 const OAUTH = process.env.GOOGLE_OAUTH_URL || 'https://oauth2.googleapis.com/token';
 const API = process.env.GOOGLE_API_URL || 'https://www.googleapis.com';
 
@@ -55,9 +57,33 @@ async function upload(tok, parent, name, buf, mime) {
 }
 function readJSON(f, d) { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch { return d; } }
 
+// ---- Modo receptor (Apps Script en la cuenta de destino) ----
+async function hook(d) {
+  const r = await fetch(DRIVE_WEBHOOK, { method: 'POST', body: JSON.stringify(d), redirect: 'follow' });
+  const t = await r.text(); let j; try { j = JSON.parse(t); } catch { throw new Error('Respuesta no válida del receptor de Drive (' + r.status + ')'); }
+  if (!j.ok) throw new Error('Receptor de Drive: ' + j.error); return j;
+}
+async function viaWebhook() {
+  if (process.argv.includes('--prueba')) { const r = await fetch(DRIVE_WEBHOOK, { redirect: 'follow' }); const j = await r.json(); log(`Receptor de Drive responde: carpeta "${j.carpeta}"`); return; }
+  const users = readJSON(path.join(DATA, 'users.json'), {});
+  let auditoria = ''; try { auditoria = fs.readFileSync(path.join(DATA, 'auditoria.ndjson'), 'utf8'); } catch { }
+  const copia = { app: 'koa-inspeccion', respaldo: new Date().toISOString(), state: readJSON(path.join(DATA, 'state.json'), {}), usuarios: Object.fromEntries(Object.entries(users).map(([n, u]) => [n, { role: u.role, active: u.active }])), auditoria };
+  const dia = new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Bogota' });
+  const r = await hook({ accion: 'subir', carpeta: 'datos', nombre: `koa-${dia}.json`, mime: 'application/json', b64: Buffer.from(JSON.stringify(copia)).toString('base64') });
+  log(`Datos subidos: koa-${dia}.json (${r.size} bytes)`);
+  const enDrive = new Set((await hook({ accion: 'listar', carpeta: 'fotos' })).archivos);
+  const dir = path.join(DATA, 'photos'); let nuevas = 0;
+  for (const f of fs.existsSync(dir) ? fs.readdirSync(dir) : []) {
+    if (!f.endsWith('.jpg') || enDrive.has(f)) continue;
+    await hook({ accion: 'subir', carpeta: 'fotos', unico: true, nombre: f, mime: 'image/jpeg', b64: fs.readFileSync(path.join(dir, f)).toString('base64') }); nuevas++;
+  }
+  log(`Fotos nuevas subidas: ${nuevas} · ya estaban en Drive: ${enDrive.size}`);
+}
+
 (async () => {
+  if (DRIVE_WEBHOOK) return viaWebhook();
   const faltan = ['GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET', 'GOOGLE_REFRESH', 'DRIVE_CARPETA'].filter(k => !process.env[k]);
-  if (faltan.length) { console.error('Faltan variables: ' + faltan.join(', ')); process.exit(2); }
+  if (faltan.length) { console.error('Falta DRIVE_WEBHOOK (o las variables ' + faltan.join(', ') + ')'); process.exit(2); }
   const tok = await token();
   if (process.argv.includes('--prueba')) { const f = await api(tok, 'GET', `/drive/v3/files/${DRIVE_CARPETA}?fields=id,name`); log(`Acceso correcto a la carpeta de Drive "${f.name}"`); return; }
   const base = await folder(tok, DRIVE_CARPETA, 'koa-inspeccion');
