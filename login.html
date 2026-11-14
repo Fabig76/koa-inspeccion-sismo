@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>KOA · Iniciar sesión</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a84ff'/%3E%3Cpath d='M18 50V14h8v15l13-15h10L35 30l15 20H40L30 36l-4 4v10z' fill='white'/%3E%3C/svg%3E">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue","Segoe UI",Roboto,Arial,sans-serif;color:#1d1d1f;-webkit-font-smoothing:antialiased}
+body{display:grid;place-items:center;padding:20px;
+  background:
+   radial-gradient(1100px 760px at 8% 0%, #7ab8ff 0%, rgba(122,184,255,0) 62%),
+   radial-gradient(900px 700px at 96% 12%, #c9a2ff 0%, rgba(201,162,255,0) 60%),
+   radial-gradient(1000px 800px at 78% 104%, #ffb08a 0%, rgba(255,176,138,0) 60%),
+   radial-gradient(800px 700px at 0% 100%, #8fe3d3 0%, rgba(143,227,211,0) 60%),
+   linear-gradient(135deg,#dfe8ff 0%,#efe6ff 50%,#ffece2 100%)}
+.card{width:min(380px,100%);padding:36px 32px 30px;border-radius:28px;text-align:center;
+  background:rgba(255,255,255,.55);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);
+  border:1px solid rgba(255,255,255,.8);box-shadow:0 30px 80px rgba(40,50,90,.22),inset 0 1px 0 rgba(255,255,255,.9)}
+.logo{width:68px;height:68px;margin:0 auto 14px;border-radius:18px;background:linear-gradient(145deg,#2f9bff,#0060df);display:grid;place-items:center;color:#fff;font-weight:800;font-size:32px;box-shadow:0 10px 24px rgba(10,132,255,.4)}
+h1{font-size:22px;margin:0 0 4px;letter-spacing:-.4px}
+p{margin:0 0 22px;color:#6e6e73;font-size:13.5px;line-height:1.45}
+label{display:block;text-align:left;font-size:12px;font-weight:600;color:#6e6e73;margin:0 0 5px 4px}
+input{width:100%;border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.85);border-radius:12px;padding:12px 14px;font-size:16px;margin-bottom:14px;outline:none;font-family:inherit}
+input:focus{border-color:#0a84ff;box-shadow:0 0 0 4px rgba(10,132,255,.18)}
+button{width:100%;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:600;color:#fff;background:linear-gradient(180deg,#2a95ff,#0a7cf0);box-shadow:0 6px 16px rgba(10,132,255,.35);cursor:pointer;font-family:inherit;margin-top:4px}
+button:disabled{opacity:.6}
+.err{min-height:20px;color:#d70015;font-size:13px;margin-top:12px}
+.foot{margin-top:18px;font-size:11.5px;color:#8e8e93}
+</style>
+</head>
+<body>
+<form class="card" id="f" autocomplete="on">
+  <div class="logo">K</div>
+  <h1>Inspección post-sismo</h1>
+  <p>Edificio KOA Apartamentos<br>Acceso restringido</p>
+  <label for="u">Usuario</label>
+  <input id="u" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+  <label for="pw">Contraseña</label>
+  <input id="pw" name="password" type="password" autocomplete="current-password" required>
+  <button id="b" type="submit">Iniciar sesión</button>
+  <div class="err" id="e" role="alert"></div>
+  <div class="foot">Sismo del 10 de agosto de 2026 · Armenia, Quindío</div>
+</form>
+<script>
+const f = document.getElementById('f'), b = document.getElementById('b'), e = document.getElementById('e');
+f.addEventListener('submit', async ev => {
+  ev.preventDefault(); e.textContent = ''; b.disabled = true; b.textContent = 'Verificando…';
+  try {
+    const r = await fetch('api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user: f.u.value, pass: f.pw.value }) });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok) { location.replace('./'); return; }
+    e.textContent = j.error || 'No se pudo iniciar sesión';
+    f.pw.value = ''; f.pw.focus();
+  } catch { e.textContent = 'Sin conexión con el servidor'; }
+  b.disabled = false; b.textContent = 'Iniciar sesión';
+});
+</script>
+</body>
+</html>

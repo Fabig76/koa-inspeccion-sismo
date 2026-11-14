@@ -324,6 +324,7 @@ h2,h3,h4{letter-spacing:-.3px}
     <div class="side-foot">
       <span id="syncpill" class="syncpill"><i></i><span>Modo local</span></span>
       <span id="inspLabel"></span>
+      <span id="userLabel" style="display:flex;align-items:center;gap:8px"></span>
     </div>
   </aside>
   <main>
@@ -546,6 +547,7 @@ async function loadAll() {
 async function saveRec(id, rec) {
   rec.updatedAt = Date.now();
   rec.by = inspector?.nombre || '';
+  rec.user = Sync.user || '';
   recs[id] = clone(rec);
   await DB.put('items', id, recs[id]);
   dirty.add(id); await DB.put('meta', 'dirty', [...dirty]);
@@ -601,25 +603,28 @@ document.addEventListener('click', e => { const im = e.target.closest('.ph img')
 
 // ---------- Sincronización con servidor (exe.dev) ----------
 const Sync = {
-  enabled: false, needsToken: false, state: 'local', token: localStorage.getItem('koa_token') || '', timer: null, busy: false,
+  enabled: false, user: '', state: 'local', timer: null, busy: false,
   async detect() {
     try {
       const r = await fetch('api/health', { cache: 'no-store' });
       if (!r.ok) return;
       const j = await r.json();
       if (j.app !== 'koa-inspeccion') return;
-      this.enabled = true; this.needsToken = !!j.auth;
+      this.enabled = true;
+      const me = await fetch('api/me', { cache: 'no-store' });
+      if (me.status === 401) { location.replace('login'); throw new Error('login'); }
+      if (me.ok) this.user = (await me.json()).user || '';
     } catch { }
   },
-  h(extra = {}) { return { 'X-Portal-Token': this.token, ...extra }; },
-  photoSrc(id) { return `api/photos/${id}${this.token ? `?t=${encodeURIComponent(this.token)}` : ''}`; },
+  h(extra = {}) { return { ...extra }; },
+  photoSrc(id) { return `api/photos/${id}`; },
   setPill(state, text) { this.state = state; const p = $('#syncpill'); p.className = 'syncpill ' + (state === 'ok' ? 'on' : state === 'err' ? 'err' : ''); p.lastElementChild.textContent = text; },
   schedule() { if (!this.enabled) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(), 1200); },
   async run() {
     if (!this.enabled || this.busy) return;
     this.busy = true;
     try { await this.push(); await this.pull(); this.setPill('ok', 'Sincronizado · ' + new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })); }
-    catch (e) { this.setPill('err', e.message === 'token' ? 'Falta clave de acceso' : 'Sin conexión · guardado local'); }
+    catch (e) { if (e.message === 'login') { location.replace('login'); return; } this.setPill('err', 'Sin conexión · guardado local'); }
     finally { this.busy = false; }
   },
   async push() {
@@ -627,25 +632,25 @@ const Sync = {
     for (const id of [...dirty]) {
       if (id === '__inspector') {
         const r = await fetch('api/inspector', { method: 'PUT', headers: this.h({ 'Content-Type': 'application/json' }), body: JSON.stringify(inspector) });
-        if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('net');
+        if (r.status === 401) throw new Error('login'); if (!r.ok) throw new Error('net');
       } else {
         const rec = recs[id]; if (!rec) { dirty.delete(id); continue; }
         for (const pid of photoIds(rec)) {
           if (uploaded.has(pid)) continue;
           const b = await DB.get('photos', pid); if (!b) continue;
           const r = await fetch(`api/photos/${pid}`, { method: 'PUT', headers: this.h({ 'Content-Type': 'image/jpeg' }), body: b });
-          if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('net');
+          if (r.status === 401) throw new Error('login'); if (!r.ok) throw new Error('net');
           uploaded.add(pid); await DB.put('meta', 'uploaded', [...uploaded]);
         }
         const r = await fetch(`api/items/${id}`, { method: 'PUT', headers: this.h({ 'Content-Type': 'application/json' }), body: JSON.stringify(rec) });
-        if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('net');
+        if (r.status === 401) throw new Error('login'); if (!r.ok) throw new Error('net');
       }
       dirty.delete(id); await DB.put('meta', 'dirty', [...dirty]);
     }
   },
   async pull() {
     const r = await fetch('api/state', { headers: this.h(), cache: 'no-store' });
-    if (r.status === 401) throw new Error('token'); if (!r.ok) throw new Error('net');
+    if (r.status === 401) throw new Error('login'); if (!r.ok) throw new Error('net');
     const s = await r.json(); let changed = false;
     if (s.inspector && (!inspector || (s.inspector.updatedAt || 0) > (inspector.updatedAt || 0))) { inspector = s.inspector; await DB.put('meta', 'inspector', inspector); changed = true; }
     for (const [id, rec] of Object.entries(s.items || {})) {
@@ -753,7 +758,16 @@ function renderNav() {
     return `<button class="nav ${current === id ? 'active' : ''}" data-view="${id}">${ic}<span class="lg">${n}</span><span class="sm">${short}</span>${cnt}</button>`;
   }).join('');
 }
-function updateBadges() { renderNav(); $('#inspLabel').textContent = inspector?.nombre ? `Inspector: ${inspector.nombre}` : 'Inspector sin registrar'; }
+function updateBadges() {
+  renderNav();
+  $('#inspLabel').textContent = inspector?.nombre ? `Inspector: ${inspector.nombre}` : 'Inspector sin registrar';
+  const ul = $('#userLabel'); if (ul && Sync.user && !ul.dataset.done) { ul.dataset.done = '1'; ul.innerHTML = `<span>Sesión: <b>${esc(Sync.user)}</b></span><button class="btn small" id="logoutBtn">Salir</button>`; $('#logoutBtn').onclick = logout; }
+}
+async function logout() {
+  if (dirty.size) { await Sync.run(); if (dirty.size && !confirm('Hay cambios que aún no se han enviado al servidor (se conservan en este equipo). ¿Cerrar sesión de todos modos?')) return; }
+  try { await fetch('api/logout', { method: 'POST' }); } catch { }
+  location.replace('login');
+}
 $('#nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) go(b.dataset.view); });
 function go(v, anchor) {
   current = v; render();
@@ -1255,23 +1269,22 @@ function vAjustes() {
   </div>
   <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Sincronización</h3>
     ${Sync.enabled ? `<p style="font-size:13.5px">El portal está conectado a su servidor. Todo lo que se registre (datos y fotos) se guarda en el equipo y se envía al servidor automáticamente, así que el propietario lo ve desde cualquier dispositivo.</p>
-      ${Sync.needsToken ? `<div class="fg"><div class="f c3"><label>Clave de acceso del portal</label><input id="tok" type="password" value="${esc(Sync.token)}" placeholder="Clave entregada por la administración"></div></div><div style="margin-top:10px"><button class="btn" id="saveTok">Guardar clave y sincronizar</button></div>` : ''}
       <p class="muted" style="font-size:12.5px">Estado: ${esc($('#syncpill').textContent)} · Cambios pendientes por enviar: ${dirty.size}</p>
       <button class="btn small" id="syncNow">Sincronizar ahora</button>`
-      : `<p style="font-size:13.5px">Modo local: la información se guarda en este navegador y dispositivo. Para entregar la información use <b>Descargar respaldo</b>, o despliegue el portal con su servidor (exe.dev) para que todo se sincronice automáticamente.</p>`}
+      : ''}
   </div>
-  <div class="card glass"><h3 style="margin-top:0">Respaldo de la información</h3>
+  <div class="card glass"><h3 style="margin-top:0">Sesión y respaldo</h3>
     <p class="muted" style="font-size:13px">El respaldo incluye todos los registros y las fotos. Puede cargarse en otro equipo para continuar o revisar la inspección.</p>
-    <div class="rep-actions"><button class="btn" id="expJson">Descargar respaldo (.json)</button><label class="btn" style="position:relative">Cargar respaldo<input type="file" accept="application/json,.json" id="impJson" style="position:absolute;inset:0;opacity:0"></label><button class="btn danger" id="wipe">Borrar datos de este equipo</button></div>
+    <div class="rep-actions"><button class="btn" id="logout2">Cerrar sesión (${esc(Sync.user)})</button><button class="btn" id="expJson">Descargar respaldo (.json)</button><label class="btn" style="position:relative">Cargar respaldo<input type="file" accept="application/json,.json" id="impJson" style="position:absolute;inset:0;opacity:0"></label><button class="btn danger" id="wipe">Borrar datos de este equipo</button></div>
   </div>`;
   $('#saveInsp').onclick = async () => {
     const d = {}; ['nombre', 'profesion', 'matricula', 'empresa', 'telefono', 'email', 'fechaInicio'].forEach(k => d[k] = $('#in_' + k).value.trim());
     if (!d.nombre || !d.profesion || !d.matricula || !d.fechaInicio) { toast('Complete nombre, profesión, matrícula y fecha'); return; }
     await saveInspector(d); toast('Datos del inspector guardados'); go('inicio');
   };
-  $('#saveTok') && ($('#saveTok').onclick = () => { Sync.token = $('#tok').value.trim(); localStorage.setItem('koa_token', Sync.token); urlCache.clear(); Sync.run().then(() => vAjustes()); });
   $('#syncNow') && ($('#syncNow').onclick = () => Sync.run().then(() => { toast('Sincronización ejecutada'); vAjustes(); }));
   $('#expJson').onclick = exportJSON;
+  $('#logout2').onclick = logout;
   $('#impJson').onchange = e => e.target.files[0] && importJSON(e.target.files[0]);
   $('#wipe').onclick = async () => { if (!confirm('Esto borra TODOS los registros y fotos guardados en este equipo. ¿Ya descargó un respaldo?')) return; if (prompt('Escriba BORRAR para confirmar') !== 'BORRAR') return; await Promise.all(['items', 'photos', 'meta'].map(s => DB.clear(s))); recs = {}; inspector = null; dirty = new Set(); urlCache.clear(); toast('Datos borrados'); render(); };
 }
@@ -1465,8 +1478,11 @@ $('#repPrint').onclick = async () => { const imgs = $$('#paper img'); await Prom
   try { navigator.storage?.persist?.(); } catch { }
   await loadAll();
   await Sync.detect();
-  if (Sync.enabled) { Sync.setPill('', 'Conectando…'); Sync.run(); setInterval(() => Sync.run(), 30000); window.addEventListener('online', () => Sync.run()); }
-  else Sync.setPill('', 'Modo local (este equipo)');
+  if (!Sync.enabled) {
+    document.body.innerHTML = `<div style="min-height:100vh;display:grid;place-items:center;padding:24px;font-family:-apple-system,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#dfe8ff,#efe6ff 50%,#ffece2)"><div style="max-width:420px;text-align:center;background:rgba(255,255,255,.7);border-radius:24px;padding:32px;box-shadow:0 20px 60px rgba(40,50,90,.18)"><div style="font-size:40px">🔒</div><h2 style="margin:8px 0">Acceso restringido</h2><p style="color:#6e6e73;line-height:1.5">El portal de inspección del Edificio KOA solo funciona desde su servidor, con usuario y contraseña. Solicite el enlace de acceso a la administración.</p></div></div>`;
+    return;
+  }
+  Sync.setPill('', 'Conectando…'); Sync.run(); setInterval(() => Sync.run(), 30000); window.addEventListener('online', () => Sync.run());
   render();
 })();
 window.__koa = { ITEMS, SECTIONS, recs: () => recs, stats };
