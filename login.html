@@ -45,6 +45,8 @@ button:disabled{opacity:.6}
   <div class="foot">Sismo del 10 de agosto de 2026 · Armenia, Quindío</div>
 </form>
 <script>
+// Sin servidor (GitHub Pages): el inicio de sesión lo hace el propio portal
+fetch('api/health', { cache: 'no-store' }).then(r => { if (!r.ok) location.replace('./'); }).catch(() => location.replace('./'));
 const f = document.getElementById('f'), b = document.getElementById('b'), e = document.getElementById('e');
 f.addEventListener('submit', async ev => {
   ev.preventDefault(); e.textContent = ''; b.disabled = true; b.textContent = 'Verificando…';

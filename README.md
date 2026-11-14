@@ -9,11 +9,21 @@ Portal web privado, **con usuario y contraseña**, para que el ingeniero inspect
 
 Por cada daño se registra el tipo, la severidad, las medidas, la reparación recomendada con su cantidad de obra, el procedimiento de reparación, el comentario técnico y 1 o 2 fotos selladas. Al final se genera el **informe técnico** (PDF) y el **cuadro de cantidades** (CSV para Excel) para que los contratistas coticen.
 
-> El portal **solo funciona desde su servidor** (`server.js`). Abierto desde otro lugar (por ejemplo, GitHub Pages) muestra “Acceso restringido”. **No es necesario activar GitHub Pages.**
+## Acceso
+
+**Dirección:** https://fabig76.github.io/koa-inspeccion-sismo/
+
+Se entra con usuario y contraseña (dos usuarios: el administrador y el ingeniero). El repositorio solo guarda huellas cifradas (PBKDF2) de las contraseñas, nunca las contraseñas. La página publicada no contiene datos de la inspección.
+
+**Dónde quedan los datos:** en el dispositivo donde se hace la inspección (funciona sin internet dentro del edificio). Para entregar la información, el ingeniero descarga el respaldo en *Inspector y datos → Sesión y respaldo* y lo envía; el administrador lo abre con *Cargar respaldo*. El informe técnico en PDF y el cuadro de cantidades se generan en *Informe técnico*.
+
+**Cambiar una contraseña:** pídeselo a quien mantiene el portal; se regenera la huella en `index.html` (constante `LOCAL_USERS`).
 
 ---
 
-## Instalación en exe.dev
+## Opción avanzada: servidor propio con datos centralizados
+
+### Instalación en exe.dev
 
 ```bash
 # 1. Crear la máquina (desde tu computador)

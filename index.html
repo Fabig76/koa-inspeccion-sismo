@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>KOA · Inspección de daños post-sismo</title>
 <meta name="theme-color" content="#dfe7fb">
+<meta name="robots" content="noindex, nofollow">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a84ff'/%3E%3Cpath d='M18 50V14h8v15l13-15h10L35 30l15 20H40L30 36l-4 4v10z' fill='white'/%3E%3C/svg%3E">
 <script type="importmap">
 { "imports": {
@@ -273,6 +274,21 @@ h2,h3,h4{letter-spacing:-.3px}
   .paper .keep{break-inside:avoid;page-break-inside:avoid}
   .paper h2,.paper h3{break-after:avoid;page-break-after:avoid}
 }
+/* Login (modo GitHub Pages) */
+#gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px}
+#gate[hidden]{display:none}
+#gate .lcard{position:relative;width:min(380px,100%);padding:36px 32px 30px;border-radius:28px;text-align:center;background:rgba(255,255,255,.55);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.8);box-shadow:0 30px 80px rgba(40,50,90,.22),inset 0 1px 0 rgba(255,255,255,.9)}
+#gate .logo{width:68px;height:68px;margin:0 auto 14px;border-radius:18px;background:linear-gradient(145deg,#2f9bff,#0060df);display:grid;place-items:center;color:#fff;font-weight:800;font-size:32px;box-shadow:0 10px 24px rgba(10,132,255,.4)}
+#gate h1{font-size:22px;margin:0 0 4px;letter-spacing:-.4px}
+#gate p{margin:0 0 22px;color:var(--muted);font-size:13.5px;line-height:1.45}
+#gate label{display:block;text-align:left;font-size:12px;font-weight:600;color:var(--muted);margin:0 0 5px 4px}
+#gate input{width:100%;border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.85);border-radius:12px;padding:12px 14px;font-size:16px;margin-bottom:14px;outline:none}
+#gate input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(10,132,255,.18)}
+#gate button{width:100%;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:600;color:#fff;background:linear-gradient(180deg,#2a95ff,#0a7cf0);box-shadow:0 6px 16px rgba(10,132,255,.35);margin-top:4px}
+#gate button:disabled{opacity:.6}
+#gate .err{min-height:20px;color:#d70015;font-size:13px;margin-top:12px}
+#gate .foot{margin-top:18px;font-size:11.5px;color:var(--faint)}
+body.locked .window{display:none}
 /* Responsive */
 @media (max-width:1100px){
   .grid2,.aptintro{grid-template-columns:1fr}
@@ -314,6 +330,21 @@ h2,h3,h4{letter-spacing:-.3px}
 </head>
 <body>
 <div id="wallpaper"></div>
+
+<div id="gate" hidden>
+  <form class="lcard" id="gateForm" autocomplete="on">
+    <div class="logo">K</div>
+    <h1>Inspección post-sismo</h1>
+    <p>Edificio KOA Apartamentos<br>Acceso restringido</p>
+    <label for="gU">Usuario</label>
+    <input id="gU" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
+    <label for="gP">Contraseña</label>
+    <input id="gP" name="password" type="password" autocomplete="current-password" required>
+    <button id="gB" type="submit">Iniciar sesión</button>
+    <div class="err" id="gE" role="alert"></div>
+    <div class="foot">Sismo del 10 de agosto de 2026 · Armenia, Quindío</div>
+  </form>
+</div>
 
 <div class="window" id="app">
   <aside class="sidebar">
@@ -764,9 +795,9 @@ function updateBadges() {
   const ul = $('#userLabel'); if (ul && Sync.user && !ul.dataset.done) { ul.dataset.done = '1'; ul.innerHTML = `<span>Sesión: <b>${esc(Sync.user)}</b></span><button class="btn small" id="logoutBtn">Salir</button>`; $('#logoutBtn').onclick = logout; }
 }
 async function logout() {
-  if (dirty.size) { await Sync.run(); if (dirty.size && !confirm('Hay cambios que aún no se han enviado al servidor (se conservan en este equipo). ¿Cerrar sesión de todos modos?')) return; }
-  try { await fetch('api/logout', { method: 'POST' }); } catch { }
-  location.replace('login');
+  if (Sync.enabled && dirty.size) { await Sync.run(); if (dirty.size && !confirm('Hay cambios que aún no se han enviado al servidor (se conservan en este equipo). ¿Cerrar sesión de todos modos?')) return; }
+  if (Sync.enabled) { try { await fetch('api/logout', { method: 'POST' }); } catch { } location.replace('login'); }
+  else { localStorage.removeItem('koa_sesion'); location.reload(); }
 }
 $('#nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) go(b.dataset.view); });
 function go(v, anchor) {
@@ -1267,11 +1298,11 @@ function vAjustes() {
     </div>
     <div style="margin-top:14px"><button class="btn primary" id="saveInsp">Guardar datos del inspector</button></div>
   </div>
-  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Sincronización</h3>
+  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">${Sync.enabled ? "Sincronización" : "Dónde se guarda la información"}</h3>
     ${Sync.enabled ? `<p style="font-size:13.5px">El portal está conectado a su servidor. Todo lo que se registre (datos y fotos) se guarda en el equipo y se envía al servidor automáticamente, así que el propietario lo ve desde cualquier dispositivo.</p>
       <p class="muted" style="font-size:12.5px">Estado: ${esc($('#syncpill').textContent)} · Cambios pendientes por enviar: ${dirty.size}</p>
       <button class="btn small" id="syncNow">Sincronizar ahora</button>`
-      : ''}
+      : `<p style="font-size:13.5px">La información (registros y fotos) se guarda <b>en este dispositivo</b>, aunque no haya internet. Para entregarla al administrador, use <b>Descargar respaldo</b> y envíe el archivo; el administrador lo abre con <b>Cargar respaldo</b> en su equipo. El informe técnico en PDF se genera desde la sección <b>Informe técnico</b>.</p><p class="muted" style="font-size:12.5px">Recomendación: descargue un respaldo al terminar cada jornada de inspección.</p>`}
   </div>
   <div class="card glass"><h3 style="margin-top:0">Sesión y respaldo</h3>
     <p class="muted" style="font-size:13px">El respaldo incluye todos los registros y las fotos. Puede cargarse en otro equipo para continuar o revisar la inspección.</p>
@@ -1472,6 +1503,51 @@ async function buildReport(draft) {
 $('#repClose').onclick = () => { $('#report').style.display = 'none'; };
 $('#repPrint').onclick = async () => { const imgs = $$('#paper img'); await Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))); window.print(); };
 
+// ---------- Acceso con usuario y contraseña (modo GitHub Pages) ----------
+// Solo se guardan huellas PBKDF2 de las contraseñas, nunca las contraseñas.
+const LOCAL_USERS = {
+  fabig76: { s: '4353144834120d06e8f309a6a4f99484', h: '9792a8bd64fbdfc8ebb8852205762710df6c3ba2fed1d5a3878259b9104c7a6e' },
+  ingeniero: { s: '3d9061334ba810936140452b2170d0cc', h: 'ec6902dfba322ffe0dff27fc8258cf5d813f689776094ae2b045ebe81a3588e9' }
+};
+const hex2b = h => new Uint8Array(h.match(/../g).map(x => parseInt(x, 16)));
+const b2hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+async function pbkdf2(pass, saltHex) {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveBits']);
+  return b2hex(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: hex2b(saltHex), iterations: 210000 }, key, 256));
+}
+function localSession() {
+  try { const s = JSON.parse(localStorage.getItem('koa_sesion') || 'null'); if (s && s.exp > Date.now() && LOCAL_USERS[s.user]) return s.user; } catch { }
+  return null;
+}
+function localGate() {
+  const u = localSession();
+  if (u) return Promise.resolve(u);
+  document.body.classList.add('locked');
+  $('#gate').hidden = false; setTimeout(() => $('#gU').focus(), 50);
+  return new Promise(resolve => {
+    let fails = +(localStorage.getItem('koa_fallos') || 0), until = +(localStorage.getItem('koa_bloqueo') || 0);
+    $('#gateForm').onsubmit = async ev => {
+      ev.preventDefault();
+      const e = $('#gE'), b = $('#gB'); e.textContent = '';
+      if (until > Date.now()) { e.textContent = `Demasiados intentos. Espere ${Math.ceil((until - Date.now()) / 60000)} min.`; return; }
+      b.disabled = true; b.textContent = 'Verificando…';
+      const user = $('#gU').value.trim().toLowerCase(), pass = $('#gP').value;
+      const rec = LOCAL_USERS[user];
+      const ok = rec && (await pbkdf2(pass, rec.s)) === rec.h;
+      b.disabled = false; b.textContent = 'Iniciar sesión';
+      if (!ok) {
+        fails++; if (fails >= 5) { fails = 0; until = Date.now() + 10 * 60e3; localStorage.setItem('koa_bloqueo', until); }
+        localStorage.setItem('koa_fallos', fails);
+        e.textContent = 'Usuario o contraseña incorrectos'; $('#gP').value = ''; $('#gP').focus(); return;
+      }
+      localStorage.setItem('koa_fallos', 0);
+      localStorage.setItem('koa_sesion', JSON.stringify({ user, exp: Date.now() + 30 * 864e5 }));
+      $('#gate').hidden = true; document.body.classList.remove('locked');
+      resolve(user);
+    };
+  });
+}
+
 // ---------- Inicio ----------
 (async function init() {
   try { await DB.open(); } catch { document.body.innerHTML = '<p style="padding:40px;font-family:sans-serif">Este navegador no permite guardar datos (IndexedDB). Use Safari, Chrome o Edge actualizados y sin modo privado.</p>'; return; }
@@ -1479,10 +1555,11 @@ $('#repPrint').onclick = async () => { const imgs = $$('#paper img'); await Prom
   await loadAll();
   await Sync.detect();
   if (!Sync.enabled) {
-    document.body.innerHTML = `<div style="min-height:100vh;display:grid;place-items:center;padding:24px;font-family:-apple-system,Helvetica,Arial,sans-serif;background:linear-gradient(135deg,#dfe8ff,#efe6ff 50%,#ffece2)"><div style="max-width:420px;text-align:center;background:rgba(255,255,255,.7);border-radius:24px;padding:32px;box-shadow:0 20px 60px rgba(40,50,90,.18)"><div style="font-size:40px">🔒</div><h2 style="margin:8px 0">Acceso restringido</h2><p style="color:#6e6e73;line-height:1.5">El portal de inspección del Edificio KOA solo funciona desde su servidor, con usuario y contraseña. Solicite el enlace de acceso a la administración.</p></div></div>`;
-    return;
+    Sync.user = await localGate();
+    Sync.setPill('', 'Guardado en este equipo');
+  } else {
+    Sync.setPill('', 'Conectando…'); Sync.run(); setInterval(() => Sync.run(), 30000); window.addEventListener('online', () => Sync.run());
   }
-  Sync.setPill('', 'Conectando…'); Sync.run(); setInterval(() => Sync.run(), 30000); window.addEventListener('online', () => Sync.run());
   render();
 })();
 window.__koa = { ITEMS, SECTIONS, recs: () => recs, stats };
