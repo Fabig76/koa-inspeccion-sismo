@@ -633,7 +633,7 @@ const GROUPS = {
 };
 
 // ---------- Plataforma (identidad, base de datos, archivos) ----------
-const Plat = { user: null, db: null, assets: null, downloads: null, rest: null, me: null, uid: null, isOwner: false, canEdit: false, local: false, online: navigator.onLine };
+const Plat = { user: null, db: null, assets: null, downloads: null, rest: null, me: null, uid: null, viewer: false, isOwner: false, canEdit: false, local: false, online: navigator.onLine };
 
 // ---------- Servidor propio (VPS): API JSON con usuario y contraseña ----------
 const Rest = {
@@ -698,7 +698,7 @@ let inspector = null;     // mi perfil (alias usado por las vistas)
 let config = { locked: false };
 const urlCache = new Map();
 const itemPath = (uid, id) => `registros/${uid}/items/${id}`;
-const readOnly = () => !Plat.uid || (config.locked && !Plat.isOwner);
+const readOnly = () => !Plat.uid || Plat.viewer || (config.locked && !Plat.isOwner);
 const canEditRec = rec => Plat.isOwner || !rec?._uid || rec._uid === Plat.uid;
 
 function rebuild() {
@@ -1056,14 +1056,14 @@ function renderNav() {
     let cnt = '';
     if (g) { const s = stats(ITEMS.filter(i => i.group === g)); cnt = `<span class="cnt">${s.done}/${s.total}</span>`; }
     if (id === 'inicio') cnt = `<span class="cnt">${stats().pct}%</span>`;
-    const short = { inicio: 'Inicio', comunes: 'Comunes', fachadas: 'Fachadas', aptos: 'Aptos', privadas: 'Locales', informe: 'Informe', admin: 'Admin', ajustes: 'Perfil' }[id];
+    const short = { inicio: 'Inicio', comunes: 'Comunes', fachadas: 'Fachadas', aptos: 'Aptos', privadas: 'Locales', informe: 'Informe', admin: 'Admin', ajustes: Plat.viewer ? 'Cuenta' : 'Perfil' }[id];
     return `<button class="nav ${current === id ? 'active' : ''}" data-view="${id}">${ic}<span class="lg">${n}</span><span class="sm">${short}</span>${cnt}</button>`;
   }).join('');
 }
 function updateBadges() {
   renderNav();
-  const il = $('#inspLabel'); if (il) il.textContent = inspector?.nombre ? `Inspector: ${inspector.nombre}` : 'Perfil sin registrar';
-  const ul = $('#userLabel'); if (ul) { ul.innerHTML = `<span class="role ${Plat.isOwner ? 'owner' : ''}">${Plat.isOwner ? 'Administrador' : 'Inspector'}</span> <span>${esc(Plat.me?.name || '')}</span>${config.locked ? ' <span class="role" style="background:rgba(255,59,48,.15);color:var(--red)">Cerrada</span>' : ''}${Plat.local ? ' <button class="btn small" id="logoutSide">Salir</button>' : ''}`; $('#logoutSide')?.addEventListener('click', localLogout); }
+  const il = $('#inspLabel'); if (il) il.textContent = Plat.viewer ? 'Solo lectura' : inspector?.nombre ? `Inspector: ${inspector.nombre}` : 'Perfil sin registrar';
+  const ul = $('#userLabel'); if (ul) { ul.innerHTML = `<span class="role ${Plat.isOwner ? 'owner' : ''}">${Plat.isOwner ? 'Administrador' : Plat.viewer ? 'Consulta' : 'Inspector'}</span> <span>${esc(Plat.me?.name || '')}</span>${config.locked ? ' <span class="role" style="background:rgba(255,59,48,.15);color:var(--red)">Cerrada</span>' : ''}${Plat.local ? ' <button class="btn small" id="logoutSide">Salir</button>' : ''}`; $('#logoutSide')?.addEventListener('click', localLogout); }
   Sync.pill();
 }
 $('#nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) go(b.dataset.view); });
@@ -1257,7 +1257,7 @@ function vInicio() {
       <h2>Inspección de daños<br>Edificio KOA Apartamentos</h2>
       <p>${PROJECT.direccion} · Áreas comunes, fachadas y muros de cada apartamento que lindan con zonas comunes.</p>
       <div class="acts">
-        ${inspector?.nombre ? '' : '<button class="btn primary" data-go="ajustes">Registrar mis datos profesionales</button>'}
+        ${inspector?.nombre || Plat.viewer ? '' : '<button class="btn primary" data-go="ajustes">Registrar mis datos profesionales</button>'}
         <button class="btn ${inspector?.nombre ? 'primary' : ''}" data-go="aptos">Inspeccionar apartamentos</button>
         <button class="btn" data-go="comunes">Áreas comunes</button>
         <button class="btn" data-go="informe">Informe</button>
@@ -1398,7 +1398,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('.li
 function hasProfile() { return !!(inspector?.nombre && inspector?.matricula); }
 // Si no hay perfil, se pide dentro de una hoja y al guardar se continúa al elemento tocado (no se cambia de vista).
 function profileGate(then) {
-  if (hasProfile() || Plat.isOwner) return true;
+  if (hasProfile() || Plat.isOwner || Plat.viewer) return true;
   openSheet('Complete sus datos profesionales', 'Se estampan en cada foto y aparecen en el informe. Solo se piden una vez.', `<div id="profBody">${profileFormHTML(inspector || {})}</div>`, `<div class="spacer"></div><button class="btn" data-close>Cancelar</button><button class="btn primary" id="profGo">Guardar y continuar →</button>`);
   $('#profGo').onclick = async () => { const d = readProfileForm(); if (!d) return; await saveProfile(d); toast('Datos guardados'); then(); };
   return false;
@@ -1433,14 +1433,14 @@ function renderWallTabs() {
   $('#wallTabs').onclick = e => { const b = e.target.closest('[data-wall]'); if (!b || b.dataset.wall === ed.wall) return; ed.wall = b.dataset.wall; ed.id = `a${ed.apt}-${ed.wall}`; ed.draft = clone(recs[ed.id] || blankRec()); ed.scene?.setActive(ed.wall); renderWallTabs(); renderEditor(); $('.sheet-b').scrollTop = $('#wallTabs').offsetTop - 10; };
 }
 function footHTML() {
-  return `<span class="muted" id="saveState" style="font-size:12.5px">Los cambios se guardan y envían automáticamente</span><div class="spacer"></div><button class="btn" data-close>Cerrar</button><button class="btn primary" id="nextBtn">Siguiente pendiente →</button>`;
+  return `<span class="muted" id="saveState" style="font-size:12.5px">${Plat.viewer ? 'Modo consulta · solo lectura' : 'Los cambios se guardan y envían automáticamente'}</span><div class="spacer"></div><button class="btn" data-close>Cerrar</button><button class="btn primary" id="nextBtn">${Plat.viewer ? 'Siguiente →' : 'Siguiente pendiente →'}</button>`;
 }
 function applyLockUI() {
   const s = $('.sheet'); if (!s || !ed) return;
   const ro = readOnly() || !canEditRec(ed.draft);
   s.classList.toggle('readonly', ro);
   const b = $('#roBanner'); if (b) b.remove();
-  if (ro) { const d = document.createElement('div'); d.id = 'roBanner'; d.className = 'banner lock'; d.textContent = config.locked && !Plat.isOwner ? `Inspección cerrada por la administración${config.lockedAt ? ' el ' + fdt(config.lockedAt) : ''}. Solo lectura.` : !Plat.uid ? 'Sin identidad en esta vista: no se puede guardar.' : 'Este registro pertenece a otro inspector. Solo lectura.'; $('#edBody')?.prepend(d); }
+  if (ro) { const d = document.createElement('div'); d.id = 'roBanner'; d.className = 'banner ' + (Plat.viewer ? 'info' : 'lock'); d.textContent = Plat.viewer ? 'Acceso de consulta: puede ver toda la información, pero no modificarla.' : config.locked && !Plat.isOwner ? `Inspección cerrada por la administración${config.lockedAt ? ' el ' + fdt(config.lockedAt) : ''}. Solo lectura.` : !Plat.uid ? 'Sin identidad en esta vista: no se puede guardar.' : 'Este registro pertenece a otro inspector. Solo lectura.'; $('#edBody')?.prepend(d); }
 }
 function photoBlock(list, key, max, esc_ref) {
   const refs = list || [];
@@ -1610,6 +1610,14 @@ function nameOf(uidv) { if (!uidv) return '—'; if (profiles[uidv]?.nombre) ret
 
 // ---------- Mi perfil / ajustes ----------
 function vAjustes() {
+  if (Plat.viewer) {
+    head('Mi cuenta', 'Acceso de consulta (solo lectura).');
+    $('#view').innerHTML = `<div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Acceso de consulta <span class="role">Solo lectura</span></h3><p style="font-size:13.5px;line-height:1.5">Usuario <b>${esc(Plat.uid)}</b>. Puede consultar todas las secciones, los daños registrados con sus fotos, el informe técnico y el cuadro de cantidades. No puede registrar ni modificar información.</p><div class="rep-actions"><button class="btn" id="logoutV">Cerrar sesión</button></div></div>
+    <div class="card glass"><h3 style="margin-top:0">Apariencia</h3><div class="seg" id="themeSeg">${Object.entries(THEMES).map(([k, n]) => `<button class="${themePref() === k ? 'on' : ''}" data-theme-set="${k}">${themeIcon[k].replace('<svg ', '<svg width="15" height="15" ')}${n}</button>`).join('')}</div></div>`;
+    $('#logoutV').onclick = localLogout;
+    $('#themeSeg').onclick = e => { const b = e.target.closest('[data-theme-set]'); if (b) setTheme(b.dataset.themeSet); };
+    return;
+  }
   head('Mi perfil', 'Datos del profesional, apariencia y este dispositivo.');
   const pend = Object.keys(outbox).length;
   $('#view').innerHTML = `
@@ -1674,10 +1682,10 @@ function vAdmin() {
 function usersPanelHTML() {
   const us = Object.values(Plat.users || {});
   return `<div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Usuarios y acceso</h3>
-    <p class="muted" style="font-size:12.5px;margin-top:-4px">Cree el usuario del ingeniero, cámbiele la contraseña o bloquéelo cuando termine. Un usuario bloqueado no puede entrar ni ver nada.</p>
+    <p class="muted" style="font-size:12.5px;margin-top:-4px">Cree el usuario del ingeniero, cámbiele la contraseña o bloquéelo cuando termine. Un usuario bloqueado no puede entrar ni ver nada. El rol <b>Consulta</b> es para empresas cotizantes, consejo de administración o interventoría: ve todo lo registrado, el informe y las cantidades, pero no puede modificar nada ni entrar a Administración.</p>
     <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px">${['Usuario', 'Rol', 'Estado', ''].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}
-    ${us.map(u => `<tr><td style="padding:6px"><b>${esc(u.user)}</b>${u.user === Plat.uid ? ' <span class="role owner">yo</span>' : ''}</td><td style="padding:6px">${u.role === 'admin' ? 'Administrador' : 'Inspector'}</td><td style="padding:6px">${u.active ? '<span style="color:var(--green)">Activo</span>' : '<span style="color:var(--red)">Bloqueado</span>'}</td><td style="padding:6px;text-align:right;white-space:nowrap"><button class="btn small" data-upass="${esc(u.user)}">Cambiar contraseña</button> ${u.user !== Plat.uid ? `<button class="btn small ${u.active ? 'danger' : ''}" data-utoggle="${esc(u.user)}" data-active="${u.active ? 1 : 0}">${u.active ? 'Bloquear' : 'Activar'}</button>` : ''}</td></tr>`).join('')}</table>
-    <div class="fg"><div class="f c2"><label>Nuevo usuario</label><input id="nuUser" placeholder="ej. ingeniero2" autocapitalize="none"></div><div class="f c2"><label>Contraseña (mín. 8)</label><input id="nuPass" type="text" autocomplete="off" placeholder="Contraseña"></div><div class="f c1"><label>Rol</label><select id="nuRole"><option value="inspector">Inspector</option><option value="admin">Administrador</option></select></div><div class="f c1" style="justify-content:flex-end"><button class="btn primary" id="nuAdd">Crear</button></div></div>
+    ${us.map(u => `<tr><td style="padding:6px"><b>${esc(u.user)}</b>${u.user === Plat.uid ? ' <span class="role owner">yo</span>' : ''}</td><td style="padding:6px">${u.role === 'admin' ? 'Administrador' : u.role === 'consulta' ? 'Consulta (solo lectura)' : 'Inspector'}</td><td style="padding:6px">${u.active ? '<span style="color:var(--green)">Activo</span>' : '<span style="color:var(--red)">Bloqueado</span>'}</td><td style="padding:6px;text-align:right;white-space:nowrap"><button class="btn small" data-upass="${esc(u.user)}">Cambiar contraseña</button> ${u.user !== Plat.uid ? `<button class="btn small ${u.active ? 'danger' : ''}" data-utoggle="${esc(u.user)}" data-active="${u.active ? 1 : 0}">${u.active ? 'Bloquear' : 'Activar'}</button>` : ''}</td></tr>`).join('')}</table>
+    <div class="fg"><div class="f c2"><label>Nuevo usuario</label><input id="nuUser" placeholder="ej. ingeniero2" autocapitalize="none"></div><div class="f c2"><label>Contraseña (mín. 8)</label><input id="nuPass" type="text" autocomplete="off" placeholder="Contraseña"></div><div class="f c1"><label>Rol</label><select id="nuRole"><option value="inspector">Inspector</option><option value="consulta">Consulta (solo lectura)</option><option value="admin">Administrador</option></select></div><div class="f c1" style="justify-content:flex-end"><button class="btn primary" id="nuAdd">Crear</button></div></div>
   </div>`;
 }
 function bindUsersPanel() {
@@ -2014,7 +2022,7 @@ function gateScreen(title, msg) {
       if (Rest.token) { try { me = await Rest.me(); } catch { Rest.token = ''; } }
       if (!me && health.users === false) await setupGate();
       if (!me) { const j = await serverGate(health); me = { user: j.user, role: j.role, name: j.user }; }
-      Plat.uid = me.user; Plat.me = { id: me.user, name: me.user, isOwner: me.role === 'admin', canEdit: true }; Plat.isOwner = me.role === 'admin'; Plat.canEdit = true;
+      Plat.uid = me.user; Plat.viewer = me.role === 'consulta'; Plat.me = { id: me.user, name: me.user, isOwner: me.role === 'admin', canEdit: !Plat.viewer }; Plat.isOwner = me.role === 'admin'; Plat.canEdit = !Plat.viewer;
       (await DB.entries('cache')).forEach(([k, v]) => { if (!remote[v._uid]) remote[v._uid] = {}; remote[v._uid][k] = v; });
       (await DB.entries('outbox')).forEach(([k, v]) => { outbox[k] = v; });
       inspector = (await DB.get('meta', 'perfil')) || null; if (inspector && inspector.uid !== Plat.uid) inspector = null;

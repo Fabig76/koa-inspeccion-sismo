@@ -11,7 +11,7 @@
  *  Primer arranque (crea el administrador si no hay usuarios):
  *      KOA_ADMIN='fabig76:ContraseñaSegura' node server.js
  *  Variables: PORT (8000), DATA_DIR, ORIGENES (coma-separados, p. ej. https://fabig76.github.io)
- *  Consola:   node server.js usuario <nombre> <contraseña> [admin|inspector]   ·   node server.js usuarios
+ *  Consola:   node server.js usuario <nombre> <contraseña> [admin|inspector|consulta]   ·   node server.js usuarios
  */
 const http = require('http'), fs = require('fs'), path = require('path'), crypto = require('crypto');
 
@@ -38,7 +38,8 @@ function setUser(name, pass, role = 'inspector', extra = {}) {
   if (!USER_RE.test(name)) throw new Error('Nombre de usuario inválido (3-40 letras minúsculas, números, . _ -)');
   if (pass != null && String(pass).length < 8) throw new Error('La contraseña debe tener al menos 8 caracteres');
   const cur = users[name] || { createdAt: Date.now() };
-  const u = { ...cur, role: role || cur.role || 'inspector', active: extra.active ?? cur.active ?? true, updatedAt: Date.now() };
+  role = ['admin', 'inspector', 'consulta'].includes(role) ? role : (cur.role || 'inspector');
+  const u = { ...cur, role, active: extra.active ?? cur.active ?? true, updatedAt: Date.now() };
   if (pass != null) { u.salt = crypto.randomBytes(16).toString('hex'); u.hash = hashPass(pass, u.salt); }
   if (!u.hash) throw new Error('Falta la contraseña');
   users[name] = u; writeJSON(F.users, users);
@@ -51,7 +52,7 @@ const [cmd, a1, a2, a3] = process.argv.slice(2);
 if (cmd) {
   if (cmd === 'usuario') { try { setUser(a1, a2, a3 || (users[a1]?.role) || 'inspector'); console.log(`Usuario "${a1}" guardado (${users[a1.toLowerCase()].role}).`); } catch (e) { console.error(e.message); process.exit(1); } }
   else if (cmd === 'usuarios') { const l = Object.entries(users); console.log(l.length ? l.map(([n, u]) => `${n}\t${u.role}\t${u.active ? 'activo' : 'bloqueado'}`).join('\n') : '(sin usuarios)'); }
-  else { console.error('Comandos: usuario <nombre> <contraseña> [admin|inspector] | usuarios'); process.exit(1); }
+  else { console.error('Comandos: usuario <nombre> <contraseña> [admin|inspector|consulta] | usuarios'); process.exit(1); }
   process.exit(0);
 }
 if (!Object.keys(users).length && process.env.KOA_ADMIN) { const [n, p] = process.env.KOA_ADMIN.split(':'); setUser(n, p, 'admin'); console.log(`Administrador "${n}" creado.`); }
@@ -121,6 +122,9 @@ const server = http.createServer(async (req, res) => {
     if (p.startsWith('/api/')) {
       if (!me) return json(res, 401, { error: 'login' });
       const isAdmin = me.role === 'admin';
+      const isViewer = me.role === 'consulta';
+      // Rol de consulta: solo lectura en todo el servidor
+      if (isViewer && !(req.method === 'GET' || p === '/api/logout')) return json(res, 403, { error: 'Acceso de consulta: solo lectura' });
       const lockedAll = !!state.config.locked && !isAdmin;
       if (p === '/api/logout' && req.method === 'POST') { const t = (req.headers.authorization || '').replace(/^Bearer\s+/i, ''); if (t) { delete sessions[sha(t)]; saveSessions(); } return json(res, 200, { ok: true }); }
       if (p === '/api/me') return json(res, 200, { user: me.user, role: me.role, name: me.user, locked: !!state.config.locked });
@@ -160,7 +164,7 @@ const server = http.createServer(async (req, res) => {
       if (p === '/api/users' && req.method === 'GET') return json(res, 200, Object.fromEntries(Object.entries(users).map(([n, u]) => [n, pubUser(n, u)])));
       if (p === '/api/users' && req.method === 'POST') {
         const d = JSON.parse(await body(req, 1e4));
-        try { setUser(d.user, d.pass, d.role === 'admin' ? 'admin' : 'inspector'); } catch (e) { return json(res, 400, { error: e.message }); }
+        try { setUser(d.user, d.pass, ['admin', 'consulta'].includes(d.role) ? d.role : 'inspector'); } catch (e) { return json(res, 400, { error: e.message }); }
         audit({ ev: 'usuario_creado', user: me.user, target: String(d.user).toLowerCase(), role: d.role }); return json(res, 200, { ok: true });
       }
       m = p.match(/^\/api\/users\/([^/]+)$/);

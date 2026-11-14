@@ -63,14 +63,18 @@ El destino se configura en `/etc/koa-respaldo.env` con `DRIVE_WEBHOOK`, la direc
 
 ## Roles
 
-| | Administrador | Inspector |
-|---|---|---|
-| Inspeccionar y registrar | ✅ | ✅ (solo sus registros) |
-| Crear / bloquear usuarios, cambiar contraseñas | ✅ | — |
-| Cerrar / reabrir la inspección | ✅ | — |
-| Ver historial y reabrir elementos | ✅ | — |
-| Informe, CSV y copia de seguridad | ✅ | Informe y CSV |
-| Borrar datos del servidor | nadie | nadie |
+| | Administrador | Inspector | Consulta |
+|---|---|---|---|
+| Ver todas las secciones, daños y fotos | ✅ | ✅ | ✅ |
+| Inspeccionar y registrar | ✅ | ✅ (solo sus registros) | — |
+| Crear / bloquear usuarios, cambiar contraseñas | ✅ | — | — |
+| Cerrar / reabrir la inspección | ✅ | — | — |
+| Ver historial y reabrir elementos | ✅ | — | — |
+| Informe y cuadro de cantidades (CSV) | ✅ | ✅ | ✅ |
+| Copia de seguridad y auditoría | ✅ | — | — |
+| Borrar datos del servidor | nadie | nadie | nadie |
+
+El rol **Consulta** es para empresas cotizantes, miembros del consejo o la interventoría. El servidor rechaza cualquier escritura de ese rol.
 
 ## Archivos
 
