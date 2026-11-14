@@ -2,34 +2,85 @@
 
 Portal privado para que el ingeniero inspector registre, elemento por elemento, los daños del sismo del 10 de agosto de 2026 en áreas comunes, fachadas (por fuera, piso por piso), los dos muros de cada uno de los 130 apartamentos que lindan con zonas comunes, 2 locales y 9 depósitos. Al final genera el informe técnico y el cuadro de cantidades para que los contratistas coticen.
 
-## Dónde está publicado
+## Arquitectura
 
-El portal corre como **aplicación de Claude**, con base de datos y almacenamiento de fotos en el servidor y acceso controlado por el administrador (dueño del artefacto). El enlace lo tiene el administrador en claude.ai. Este repositorio guarda el código fuente; la dirección de GitHub Pages solo muestra "Acceso restringido".
+- **Servidor (`server.js`)** en el VPS de exe.dev: usuarios con rol (administrador / inspector), acceso con usuario y contraseña, registros, fotos, cierre de la inspección y auditoría. Todo queda en la carpeta `data/`.
+- **Página (`index.html`)**: se abre desde GitHub Pages (`https://fabig76.github.io/koa-inspeccion-sismo/`) o directamente desde el servidor. Cada registro y foto se envía al servidor en el momento; si no hay señal, queda en cola en el dispositivo y se envía al recuperarla. El administrador ve los cambios en segundos.
+- `config.js` indica a la página de GitHub Pages dónde está el servidor.
 
-- Todo lo que registra el inspector llega al servidor en el momento; si pierde la señal, queda en una cola del dispositivo y se envía al recuperar la conexión.
-- El administrador invita al inspector desde **Compartir → invitar por correo como Editor**, y puede retirarle el acceso cuando quiera. No se debe activar el enlace público.
-- Solo el administrador puede **cerrar la inspección** (solo lectura para los demás), reabrir elementos, ver el historial de cambios y exportar.
-- El inspector solo escribe sus propios registros. Nada se borra del servidor: quitar una foto o un daño queda en el historial.
+## Instalación en exe.dev (una sola vez)
 
-La especificación completa de esta versión está en `SPEC-correcciones-v2.md`.
+Desde tu computador:
+
+```bash
+ssh exe.dev new                                   # crea la máquina; anota el nombre, p. ej. koa-sismo
+ssh koa-sismo.exe.xyz                             # entra a la máquina
+git clone https://github.com/Fabig76/koa-inspeccion-sismo.git koa && cd koa
+KOA_ADMIN='fabig76:TU_CONTRASEÑA' ORIGENES='https://fabig76.github.io' nohup node server.js > portal.log 2>&1 &
+exit
+ssh exe.dev share set-public koa-sismo            # el portal ya pide usuario y contraseña
+```
+
+El portal queda en `https://koa-sismo.exe.xyz/`. Entra con el usuario administrador y crea al ingeniero en **Administración → Usuarios y acceso**.
+
+Para que también funcione desde GitHub Pages, edita `config.js` en este repositorio: `window.KOA_API = "https://koa-sismo.exe.xyz";`
+
+### Arranque automático al reiniciar la máquina
+
+```bash
+sudo tee /etc/systemd/system/koa.service >/dev/null <<'EOF'
+[Unit]
+Description=Portal KOA
+After=network.target
+[Service]
+WorkingDirectory=/home/exedev/koa
+Environment=PORT=8000
+Environment=ORIGENES=https://fabig76.github.io
+ExecStart=/usr/bin/node server.js
+Restart=always
+User=exedev
+[Install]
+WantedBy=multi-user.target
+EOF
+sudo systemctl daemon-reload && sudo systemctl enable --now koa
+```
+(Ajusta `WorkingDirectory` y `User` con `pwd` y `whoami`.)
+
+### Mantenimiento
+
+```bash
+cd ~/koa && git pull && sudo systemctl restart koa     # actualizar el portal
+node server.js usuarios                                 # listar usuarios
+node server.js usuario fabig76 'NuevaContraseña' admin  # cambiar contraseña desde consola
+scp -r koa-sismo.exe.xyz:koa/data ./respaldo-koa         # copiar todos los datos y fotos a tu computador
+```
+
+## Roles
+
+| | Administrador | Inspector |
+|---|---|---|
+| Inspeccionar y registrar | ✅ | ✅ (solo sus registros) |
+| Crear / bloquear usuarios, cambiar contraseñas | ✅ | — |
+| Cerrar / reabrir la inspección | ✅ | — |
+| Ver historial y reabrir elementos | ✅ | — |
+| Informe, CSV y copia de seguridad | ✅ | Informe y CSV |
+| Borrar datos del servidor | nadie | nadie |
 
 ## Archivos
 
 | Archivo | Para qué sirve |
 |---|---|
-| `index.html` | El portal completo (interfaz, modelos 3D, inspección, informe). Requiere la plataforma de Claude (`claude.use`). |
-| `vendor/` | Librería 3D (Three.js, licencia MIT) incluida para no depender de internet. |
-| `SPEC-correcciones-v2.md` | Especificación de la versión 2 (problemas, decisiones, reglas de acceso). |
-| `pruebas/` | Simulador de la plataforma y prueba automatizada de extremo a extremo (Playwright). |
-| `legacy/` | Versión anterior con servidor Node propio (exe.dev) y acceso por contraseña. Ya no se usa. |
-
-## Cómo se republica una nueva versión
-
-El portal se publica desde Claude con `publish_files` (index.html + vendor) sobre el mismo artefacto; las capacidades declaradas son `db` (reglas por rol), `user` (perfil), `assets` (subida para contribuyentes) y `downloads`.
+| `index.html` | El portal (interfaz, modelos 3D, inspección, informe) |
+| `server.js` | Servidor (Node 18+, sin dependencias) |
+| `config.js` | Dirección del servidor para la copia de GitHub Pages |
+| `vendor/` | Librería 3D (Three.js, MIT) incluida |
+| `SPEC-correcciones-v2.md` | Especificación de la versión 2 |
+| `pruebas/` | Pruebas automatizadas (Playwright): `test_rest.py` (servidor), `test_local.py`, `test_v2.py` |
+| `legacy/` | Versión anterior |
 
 ## Pruebas locales
 
 ```bash
-python3 pruebas/mockserver.py . 8400 &      # sirve el portal y simula base de datos y fotos
-python3 pruebas/test_v2.py                   # recorre el flujo: inspector, administrador, cierre, informe
+KOA_ADMIN='fabig76:AdminPrueba123' ORIGENES=http://127.0.0.1:8100 PORT=8500 node server.js &
+python3 pruebas/test_rest.py
 ```
