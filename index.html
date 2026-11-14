@@ -632,7 +632,7 @@ const GROUPS = {
 };
 
 // ---------- Plataforma (identidad, base de datos, archivos) ----------
-const Plat = { user: null, db: null, assets: null, downloads: null, me: null, uid: null, isOwner: false, canEdit: false, online: navigator.onLine };
+const Plat = { user: null, db: null, assets: null, downloads: null, me: null, uid: null, isOwner: false, canEdit: false, local: false, online: navigator.onLine };
 window.addEventListener('online', () => { Plat.online = true; Sync.flush(); });
 window.addEventListener('offline', () => { Plat.online = false; Sync.pill(); });
 
@@ -685,6 +685,7 @@ async function saveRec(id, rec, accion) {
   rec.createdAt = rec.createdAt || Date.now(); rec.updatedAt = Date.now(); rec.lastUid = Plat.uid;
   if (accion) hist(rec, accion);
   else { const h = rec.historial?.[rec.historial.length - 1]; if (!h || h.accion !== 'editado' || Date.now() - h.at > 10 * 60e3 || h.uid !== Plat.uid) hist(rec, 'editado'); }
+  if (Plat.local) { (remote[rec._uid] ||= {})[id] = clone(rec); rebuild(); await DB.put('cache', id, remote[rec._uid][id]); updateBadges(); return true; }
   outbox[id] = clone(rec); rebuild();
   await DB.put('outbox', id, outbox[id]); await DB.put('cache', id, outbox[id]);
   Sync.schedule(); updateBadges(); return true;
@@ -694,8 +695,7 @@ async function saveProfile(data) {
   inspector = { ...data, uid: Plat.uid, updatedAt: Date.now() };
   profiles[Plat.uid] = inspector;
   await DB.put('meta', 'perfil', inspector);
-  try { await Plat.db.doc(`perfiles/${Plat.uid}`).set(inspector); Sync.subscribeItems(Plat.uid); }
-  catch (e) { await DB.put('meta', 'perfilPendiente', true); Sync.schedule(); }
+  if (Plat.db) { try { await Plat.db.doc(`perfiles/${Plat.uid}`).set(inspector); Sync.subscribeItems(Plat.uid); } catch (e) { await DB.put('meta', 'perfilPendiente', true); Sync.schedule(); } }
   updateBadges(); return true;
 }
 
@@ -750,7 +750,8 @@ const Sync = {
     const n = Object.keys(outbox).length;
     let st = 'on', t = text;
     if (!t) {
-      if (!Plat.online) { st = 'err'; t = n ? `Sin conexión · ${n} por enviar` : 'Sin conexión'; }
+      if (Plat.local) { st = ''; t = 'Guardado en este equipo'; }
+      else if (!Plat.online) { st = 'err'; t = n ? `Sin conexión · ${n} por enviar` : 'Sin conexión'; }
       else if (this.lastErr) { st = 'err'; t = this.lastErr; }
       else if (n) { st = ''; t = `Enviando ${n} cambio${n > 1 ? 's' : ''}…`; }
       else t = 'En línea · todo enviado';
@@ -928,6 +929,7 @@ function ask(title, msg, { ok = 'Aceptar', cancel = 'Cancelar', danger = false, 
   });
 }
 async function dl(filename, data) {
+  if (!Plat.downloads && Plat.local) { const blob = data instanceof Blob ? data : new Blob([data]); const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); toast('Archivo descargado'); return true; }
   if (!Plat.downloads) { await ask('Descarga no disponible', 'En esta vista no se pueden guardar archivos. Abra el portal desde claude.ai en un computador e intente de nuevo.', { cancel: '' }); return false; }
   try { await Plat.downloads.save({ filename, data }); toast('Archivo guardado'); return true; }
   catch (e) { if (e?.code !== 'declined') { console.warn(e); toast('No se pudo guardar el archivo'); } return false; }
@@ -1386,6 +1388,7 @@ function photoBlock(list, key, max, esc_ref) {
   ${refs.length < max ? `<div class="photo-btns"><label class="addph">${IC.cam}<span>Cámara</span><input type="file" accept="image/*" capture="environment" data-addph="${key}"></label><label class="addph">${IC.gal}<span>Galería</span><input type="file" accept="image/*" multiple data-addph="${key}"></label></div>` : ''}</div>`;
 }
 function renderEditor() {
+  if (!ed || !$('#edBody')) return;
   const it = BY_ID[ed.id], d = ed.draft;
   const st = d.status;
   const statusSeg = `<div class="status-seg">${Object.entries(STATUS).map(([k, S]) => `<button class="${st === k ? 'on' : ''}" style="--c:${S.c}" data-status="${k}"><b><span class="dot" style="background:${S.c};width:10px;height:10px"></span>${S.n}</b><small>${S.d}</small></button>`).join('')}</div>`;
@@ -1474,9 +1477,11 @@ document.addEventListener('change', async e => {
     const arr = key === 'gen' ? (ed.draft.fotos ||= []) : (ed.draft.hallazgos[+key.slice(1)].fotos ||= []);
     const max = key === 'gen' ? 2 : 4;
     toast('Procesando foto…');
+    const cur = ed;
     try {
       for (const f of files.slice(0, max - arr.length)) arr.push(await storePhoto(f, `KOA · ${it.name}${key.startsWith('h') ? ` · Daño ${+key.slice(1) + 1}` : ''}`));
-      await persistSoon(true, 'foto agregada'); renderEditor(); toast('Foto guardada');
+      if (ed !== cur) { await saveRec(cur.id, cur.draft, 'foto agregada'); return; }
+      await persistSoon(true, 'foto agregada'); if (ed === cur) { renderEditor(); toast('Foto guardada'); }
     } catch (err) { console.error(err); toast('No se pudo procesar la foto'); }
     return;
   }
@@ -1558,12 +1563,15 @@ function vAjustes() {
     <p class="muted" style="font-size:12.5px;margin-bottom:0">“Automático” sigue la configuración del dispositivo.</p>
   </div>
   <div class="card glass"><h3 style="margin-top:0">Este dispositivo</h3>
-    <p style="font-size:13.5px;line-height:1.5">Todo lo que registra se envía al servidor en el momento. Si pierde la señal (por ejemplo en los sótanos), los cambios quedan en una cola y se envían solos al recuperar la conexión; mientras tanto <b>no cierre esta pestaña</b>. Las fotos se borran del dispositivo una vez enviadas.</p>
-    <p class="muted" style="font-size:12.5px">Estado: ${esc($('#syncpill')?.textContent || '')} · Cambios pendientes de envío: <b>${pend}</b></p>
-    <div class="rep-actions"><button class="btn" id="syncNow">Enviar ahora</button><button class="btn" id="clearCache" ${pend ? 'disabled title="Primero deben enviarse los cambios pendientes"' : ''}>Limpiar caché local</button></div>
+    ${Plat.local ? `<p style="font-size:13.5px;line-height:1.5">La información (registros y fotos) se guarda <b>en este dispositivo</b>, aunque no haya internet. Para entregarla al administrador, use <b>Descargar respaldo</b> y envíe el archivo; el administrador lo carga en <b>Administración → Cargar respaldo</b>. Descargue un respaldo al terminar cada jornada.</p><div class="rep-actions" style="margin-bottom:12px"><button class="btn primary" id="expLocal">Descargar respaldo (con fotos)</button><button class="btn" id="logoutLocal">Cerrar sesión (${esc(Plat.uid)})</button></div>` : ''}
+    <p style="font-size:13.5px;line-height:1.5" ${Plat.local ? 'hidden' : ''}>Todo lo que registra se envía al servidor en el momento. Si pierde la señal (por ejemplo en los sótanos), los cambios quedan en una cola y se envían solos al recuperar la conexión; mientras tanto <b>no cierre esta pestaña</b>. Las fotos se borran del dispositivo una vez enviadas.</p>
+    <p class="muted" style="font-size:12.5px" ${Plat.local ? 'hidden' : ''}>Estado: ${esc($('#syncpill')?.textContent || '')} · Cambios pendientes de envío: <b>${pend}</b></p>
+    <div class="rep-actions" ${Plat.local ? 'hidden' : ''}><button class="btn" id="syncNow">Enviar ahora</button><button class="btn" id="clearCache" ${pend ? 'disabled title="Primero deben enviarse los cambios pendientes"' : ''}>Limpiar caché local</button></div>
   </div>`;
   $('#saveInsp').onclick = async () => { const d = readProfileForm(); if (!d) return; await saveProfile(d); toast('Datos guardados'); };
   $('#syncNow').onclick = () => Sync.flush().then(() => { toast('Sincronización ejecutada'); vAjustes(); });
+  $('#expLocal')?.addEventListener('click', exportLocalBackup);
+  $('#logoutLocal')?.addEventListener('click', localLogout);
   $('#themeSeg').onclick = e => { const b = e.target.closest('[data-theme-set]'); if (b) setTheme(b.dataset.themeSet); };
   $('#clearCache').onclick = async () => { if (!await ask('Limpiar caché local', 'Se borra la copia local de este dispositivo. Los datos del servidor no se tocan.', { ok: 'Limpiar' })) return; await Promise.all(['cache', 'photos'].map(s => DB.clear(s))); urlCache.clear(); toast('Caché limpiada'); };
 }
@@ -1580,7 +1588,7 @@ function vAdmin() {
   <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Estado de la inspección</h3>
     <div class="kpis"><div class="stat glass"><small>Avance</small><b>${s.pct}%</b></div><div class="stat glass"><small>Elementos con daño</small><b>${s.con}</b></div><div class="stat glass"><small>Daños atribuibles al sismo</small><b>${s.hallSismo}<span class="muted" style="font-size:16px"> / ${s.hall}</span></b></div><div class="stat glass"><small>Fotos</small><b>${s.fotos}</b></div></div>
     <div class="rep-actions">${config.locked ? '<button class="btn" id="unlock">Reabrir inspección</button>' : '<button class="btn danger" id="lock">Cerrar inspección (solo lectura para inspectores)</button>'}</div>
-    <p class="muted" style="font-size:12.5px;margin-bottom:0">Para dar o quitar acceso a un inspector use <b>Compartir</b> (arriba a la derecha en claude.ai): invítelo por correo como <b>Editor</b>. Al quitarlo, deja de ver y escribir de inmediato.</p>
+    ${Plat.local ? `<p class="muted" style="font-size:12.5px;margin-bottom:0"><b>Modo sin servidor:</b> la información de cada usuario queda en su propio dispositivo. El ingeniero le entrega la información con <b>Descargar respaldo</b> (Mi perfil) y usted la carga aquí con <b>Cargar respaldo</b>. El cierre de la inspección solo aplica en este equipo hasta que el portal tenga servidor.</p>` : `<p class="muted" style="font-size:12.5px;margin-bottom:0">Para dar o quitar acceso a un inspector use <b>Compartir</b> (arriba a la derecha en claude.ai): invítelo por correo como <b>Editor</b>. Al quitarlo, deja de ver y escribir de inmediato.</p>`}
   </div>
   <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Inspectores</h3>
     ${insp.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px">${['Nombre', 'Profesión', 'Matrícula', 'Elementos registrados', 'Último registro'].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}${insp.map(p => `<tr><td style="padding:6px">${esc(p.nombre)}${p.uid === Plat.uid ? ' <span class="role owner">yo</span>' : ''}</td><td style="padding:6px">${esc(p.profesion)}</td><td style="padding:6px">${esc(p.matricula)}</td><td style="padding:6px">${p.n}</td><td style="padding:6px">${p.last ? fdt(p.last) : '—'}</td></tr>`).join('')}</table>` : '<p class="muted" style="font-size:13px">Ningún inspector ha registrado su perfil todavía.</p>'}
@@ -1589,12 +1597,14 @@ function vAdmin() {
     <div class="act-list">${acts.slice(0, 80).map(a => `<div><span>${esc(fdt(a.at))}</span><span><b>${esc(BY_ID[a.item]?.name || a.item)}</b><br><small>${esc(a.accion)}${a.status ? ' · ' + (STATUS[a.status]?.n || a.status) : ''}${a.removed ? ' · <span style="color:var(--red)">con eliminación</span>' : ''}</small></span><small>${esc(nameOf(a.uid))}</small></div>`).join('') || '<div><span></span><span class="muted">Sin actividad.</span><span></span></div>'}</div>
   </div>
   <div class="card glass"><h3 style="margin-top:0">Exportaciones</h3>
-    <div class="rep-actions"><button class="btn" id="expJson">Copia de seguridad (JSON)</button><button class="btn" id="csvQ2">Cuadro de cantidades (CSV)</button><button class="btn" id="csvD2">Detalle de daños (CSV)</button></div>
+    <div class="rep-actions"><button class="btn" id="expJson">${Plat.local ? 'Descargar respaldo (con fotos)' : 'Copia de seguridad (JSON)'}</button>${Plat.local ? '<label class="btn" style="position:relative">Cargar respaldo<input type="file" accept="application/json,.json" id="impJson" style="position:absolute;inset:0;opacity:0"></label>' : ''}<button class="btn" id="csvQ2">Cuadro de cantidades (CSV)</button><button class="btn" id="csvD2">Detalle de daños (CSV)</button></div>
     <p class="muted" style="font-size:12.5px;margin-bottom:0">La copia JSON incluye todos los registros con los identificadores de sus fotos; el informe se genera en <b>Informe técnico</b>.</p>
   </div>`;
-  $('#lock')?.addEventListener('click', async () => { if (!await ask('Cerrar inspección', 'Los inspectores pasarán a solo lectura. Podrá reabrirla cuando quiera.', { ok: 'Cerrar inspección', danger: true })) return; await Plat.db.doc('config/estado').set({ locked: true, lockedAt: Date.now(), lockedBy: Plat.uid }); toast('Inspección cerrada'); });
-  $('#unlock')?.addEventListener('click', async () => { await Plat.db.doc('config/estado').set({ locked: false, lockedAt: null, lockedBy: Plat.uid }); toast('Inspección reabierta'); });
-  $('#expJson').onclick = () => dl(`KOA-respaldo-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ app: 'koa-inspeccion', version: 2, exportedAt: Date.now(), config, profiles, recs }, null, 1));
+  const setLock = async (c) => { if (Plat.local) { config = c; localStorage.setItem('koa_config', JSON.stringify(c)); onRemoteChange(true); } else await Plat.db.doc('config/estado').set(c); };
+  $('#lock')?.addEventListener('click', async () => { if (!await ask('Cerrar inspección', 'Los inspectores pasarán a solo lectura. Podrá reabrirla cuando quiera.', { ok: 'Cerrar inspección', danger: true })) return; await setLock({ locked: true, lockedAt: Date.now(), lockedBy: Plat.uid }); toast('Inspección cerrada'); });
+  $('#unlock')?.addEventListener('click', async () => { await setLock({ locked: false, lockedAt: null, lockedBy: Plat.uid }); toast('Inspección reabierta'); });
+  $('#impJson')?.addEventListener('change', e => e.target.files[0] && importLocalBackup(e.target.files[0]));
+  $('#expJson').onclick = () => Plat.local ? exportLocalBackup() : dl(`KOA-respaldo-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ app: 'koa-inspeccion', version: 2, exportedAt: Date.now(), config, profiles, recs }, null, 1));
   $('#csvQ2').onclick = csvQuantities; $('#csvD2').onclick = csvDetail;
 }
 
@@ -1794,6 +1804,70 @@ async function downloadReport(draft) {
 }
 $('#repClose').onclick = () => { $('#report').style.display = 'none'; };
 
+// ---------- Acceso con usuario y contraseña (GitHub Pages, sin servidor) ----------
+// Solo se guardan huellas PBKDF2 de las contraseñas, nunca las contraseñas.
+const LOCAL_USERS = {
+  fabig76: { s: '4353144834120d06e8f309a6a4f99484', h: '9792a8bd64fbdfc8ebb8852205762710df6c3ba2fed1d5a3878259b9104c7a6e', admin: true },
+  ingeniero: { s: '3d9061334ba810936140452b2170d0cc', h: 'ec6902dfba322ffe0dff27fc8258cf5d813f689776094ae2b045ebe81a3588e9', admin: false }
+};
+const hex2b = h => new Uint8Array(h.match(/../g).map(x => parseInt(x, 16)));
+const b2hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
+async function pbkdf2(pass, saltHex) {
+  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveBits']);
+  return b2hex(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: hex2b(saltHex), iterations: 210000 }, key, 256));
+}
+function localSession() { try { const s = JSON.parse(localStorage.getItem('koa_sesion') || 'null'); if (s && s.exp > Date.now() && LOCAL_USERS[s.user]) return s.user; } catch { } return null; }
+function localGate() {
+  const u = localSession(); if (u) return Promise.resolve(u);
+  document.body.classList.add('locked');
+  const g = $('#gate'); g.hidden = false;
+  g.innerHTML = `<form class="lcard" id="gateForm" autocomplete="on" style="text-align:center"><div class="logo">K</div><h1>Inspección post-sismo</h1><p>Edificio KOA Apartamentos<br>Acceso restringido</p>
+    <div class="f" style="text-align:left;margin-bottom:12px"><label for="gU">Usuario</label><input id="gU" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></div>
+    <div class="f" style="text-align:left;margin-bottom:14px"><label for="gP">Contraseña</label><input id="gP" name="password" type="password" autocomplete="current-password" required></div>
+    <button class="btn primary" id="gB" type="submit" style="width:100%;justify-content:center;padding:12px">Iniciar sesión</button>
+    <div class="err" id="gE" role="alert" style="min-height:20px;color:var(--red);font-size:13px;margin-top:12px"></div>
+    <div class="foot">Sismo del 10 de agosto de 2026 · Armenia, Quindío</div></form>`;
+  setTimeout(() => $('#gU').focus(), 50);
+  return new Promise(resolve => {
+    let fails = +(localStorage.getItem('koa_fallos') || 0), until = +(localStorage.getItem('koa_bloqueo') || 0);
+    $('#gateForm').onsubmit = async ev => {
+      ev.preventDefault();
+      const e = $('#gE'), b = $('#gB'); e.textContent = '';
+      if (until > Date.now()) { e.textContent = `Demasiados intentos. Espere ${Math.ceil((until - Date.now()) / 60000)} min.`; return; }
+      b.disabled = true; b.textContent = 'Verificando…';
+      const user = $('#gU').value.trim().toLowerCase(), pass = $('#gP').value;
+      const rec = LOCAL_USERS[user];
+      const ok = rec && (await pbkdf2(pass, rec.s)) === rec.h;
+      b.disabled = false; b.textContent = 'Iniciar sesión';
+      if (!ok) { fails++; if (fails >= 5) { fails = 0; until = Date.now() + 10 * 60e3; localStorage.setItem('koa_bloqueo', until); } localStorage.setItem('koa_fallos', fails); e.textContent = 'Usuario o contraseña incorrectos'; $('#gP').value = ''; $('#gP').focus(); return; }
+      localStorage.setItem('koa_fallos', 0);
+      localStorage.setItem('koa_sesion', JSON.stringify({ user, exp: Date.now() + 30 * 864e5 }));
+      g.hidden = true; document.body.classList.remove('locked');
+      resolve(user);
+    };
+  });
+}
+function localLogout() { localStorage.removeItem('koa_sesion'); location.reload(); }
+const blobToDataURL2 = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); });
+async function exportLocalBackup() {
+  toast('Preparando respaldo…');
+  const photos = {};
+  for (const [k, v] of await DB.entries('photos')) photos[k] = await blobToDataURL2(v);
+  const data = { app: 'koa-inspeccion', version: 2, local: true, exportedAt: Date.now(), profiles, recs, photos };
+  await dl(`KOA-respaldo-${new Date().toISOString().slice(0, 10)}.json`, new Blob([JSON.stringify(data)], { type: 'application/json' }));
+}
+async function importLocalBackup(file) {
+  try {
+    const data = JSON.parse(await file.text());
+    if (data.app !== 'koa-inspeccion') throw new Error('archivo');
+    let n = 0;
+    for (const [k, v] of Object.entries(data.photos || {})) if (!(await DB.get('photos', k))) await DB.put('photos', k, await (await fetch(v)).blob());
+    for (const [id, r] of Object.entries(data.recs || {})) { if (!recs[id] || (r.updatedAt || 0) > (recs[id].updatedAt || 0)) { const uid = r._uid || 'importado'; (remote[uid] ||= {})[id] = r; await DB.put('cache', id, r); n++; } }
+    for (const [uid, p] of Object.entries(data.profiles || {})) profiles[uid] ||= p;
+    rebuild(); toast(`Respaldo cargado: ${n} registros`); render();
+  } catch { toast('El archivo no es un respaldo válido del portal'); }
+}
+
 // ---------- Inicio ----------
 function gateScreen(title, msg) {
   document.body.classList.add('locked');
@@ -1803,7 +1877,20 @@ function gateScreen(title, msg) {
 (async function init() {
   try { await DB.open(); } catch { }
   try { navigator.storage?.persist?.(); } catch { }
-  if (!window.claude?.use) { gateScreen('Acceso restringido', 'Este portal solo funciona desde su enlace oficial en claude.ai, con la cuenta a la que la administración le dio acceso.<br><br>Solicite el enlace a la administración del edificio.'); return; }
+  if (!window.claude?.use) {
+    // GitHub Pages: acceso con usuario y contraseña; los datos se guardan en este dispositivo
+    const u = await localGate();
+    Plat.local = true; Plat.uid = u; Plat.me = { id: u, name: u, isOwner: !!LOCAL_USERS[u].admin, canEdit: true };
+    Plat.isOwner = !!LOCAL_USERS[u].admin; Plat.canEdit = true;
+    (await DB.entries('cache')).forEach(([k, v]) => { if (!remote[v._uid]) remote[v._uid] = {}; remote[v._uid][k] = v; });
+    (await DB.entries('outbox')).forEach(([k, v]) => { if (!remote[v._uid]) remote[v._uid] = {}; remote[v._uid][k] = v; DB.put('cache', k, v); DB.del('outbox', k); });
+    inspector = (await DB.get('meta', 'perfil')) || null; if (inspector && inspector.uid !== Plat.uid) inspector = null;
+    if (inspector) profiles[Plat.uid] = inspector;
+    try { config = JSON.parse(localStorage.getItem('koa_config') || '{"locked":false}'); } catch { }
+    rebuild();
+    const ejesL = document.createElement('datalist'); ejesL.id = 'ejesList'; ejesL.innerHTML = EJES.map(e => `<option value="${e}">`).join(''); document.body.appendChild(ejesL);
+    Sync.loading = false; Sync.pill(); render(); return;
+  }
   gateScreen('Conectando…', 'Verificando su acceso al portal.');
   const [user, db, assets, downloads] = await Promise.all([claude.use('user'), claude.use('db'), claude.use('assets'), claude.use('downloads')]);
   Plat.user = user; Plat.db = db; Plat.assets = assets; Plat.downloads = downloads;
@@ -1820,7 +1907,7 @@ function gateScreen(title, msg) {
   Sync.start(); Sync.pill();
   render();
 })();
-window.__koa = { ITEMS, SECTIONS, recs: () => recs, stats, Plat, outbox: () => outbox };
+window.__koa = { ITEMS, SECTIONS, recs: () => recs, stats, Plat, outbox: () => outbox, ed: () => ed };
 
 </script>
 </body>
