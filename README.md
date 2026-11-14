@@ -23,7 +23,7 @@ ssh exe.dev share set-public koa-sismo            # el portal ya pide usuario y 
 
 El portal queda en `https://koa-sismo.exe.xyz/`. Entra con el usuario administrador y crea al ingeniero en **Administración → Usuarios y acceso**.
 
-La copia de GitHub Pages ya apunta a `https://koa-sismo.exe.xyz` (archivo `config.js`). La máquina `koa-sismo` se creó el 14/11/2026 y corre como servicio `koa` (systemd).
+Dirección oficial: `https://inspeccion.bytracking.net` (CNAME a `koa-sismo.exe.xyz`, registrado en exe.dev; máquina pública). La copia de GitHub Pages apunta a ese dominio (archivo `config.js`). La máquina `koa-sismo` se creó el 14/11/2026 y corre como servicio `koa` (systemd).
 
 ### Arranque automático al reiniciar la máquina
 
