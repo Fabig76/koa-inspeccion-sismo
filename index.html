@@ -275,21 +275,47 @@ h2,h3,h4{letter-spacing:-.3px}
   .paper .keep{break-inside:avoid;page-break-inside:avoid}
   .paper h2,.paper h3{break-after:avoid;page-break-after:avoid}
 }
-/* Login (modo GitHub Pages) */
+/* Pantallas de acceso */
 #gate{position:fixed;inset:0;z-index:200;display:grid;place-items:center;padding:20px}
 #gate[hidden]{display:none}
-#gate .lcard{position:relative;width:min(380px,100%);padding:36px 32px 30px;border-radius:28px;text-align:center;background:rgba(255,255,255,.55);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.8);box-shadow:0 30px 80px rgba(40,50,90,.22),inset 0 1px 0 rgba(255,255,255,.9)}
+#gate .lcard{position:relative;width:min(420px,100%);padding:36px 32px 30px;border-radius:28px;text-align:center;background:rgba(255,255,255,.55);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border:1px solid rgba(255,255,255,.8);box-shadow:0 30px 80px rgba(40,50,90,.22),inset 0 1px 0 rgba(255,255,255,.9)}
 #gate .logo{width:68px;height:68px;margin:0 auto 14px;border-radius:18px;background:linear-gradient(145deg,#2f9bff,#0060df);display:grid;place-items:center;color:#fff;font-weight:800;font-size:32px;box-shadow:0 10px 24px rgba(10,132,255,.4)}
 #gate h1{font-size:22px;margin:0 0 4px;letter-spacing:-.4px}
-#gate p{margin:0 0 22px;color:var(--muted);font-size:13.5px;line-height:1.45}
-#gate label{display:block;text-align:left;font-size:12px;font-weight:600;color:var(--muted);margin:0 0 5px 4px}
-#gate input{width:100%;border:1px solid rgba(0,0,0,.1);background:rgba(255,255,255,.85);border-radius:12px;padding:12px 14px;font-size:16px;margin-bottom:14px;outline:none}
-#gate input:focus{border-color:var(--blue);box-shadow:0 0 0 4px rgba(10,132,255,.18)}
-#gate button{width:100%;border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:600;color:#fff;background:linear-gradient(180deg,#2a95ff,#0a7cf0);box-shadow:0 6px 16px rgba(10,132,255,.35);margin-top:4px}
-#gate button:disabled{opacity:.6}
-#gate .err{min-height:20px;color:#d70015;font-size:13px;margin-top:12px}
+#gate p{margin:0 0 14px;color:var(--muted);font-size:13.5px;line-height:1.5}
 #gate .foot{margin-top:18px;font-size:11.5px;color:var(--faint)}
 body.locked .window{display:none}
+/* Diálogo propio (la plataforma no permite alert/confirm) */
+.dlg-back{position:fixed;inset:0;z-index:300;background:rgba(30,35,60,.35);backdrop-filter:blur(4px);display:grid;place-items:center;padding:20px;animation:fade .15s}
+.dlg{width:min(420px,100%);border-radius:20px;padding:22px 22px 16px;background:rgba(250,250,252,.96);border:1px solid rgba(255,255,255,.9);box-shadow:0 30px 80px rgba(20,30,70,.35);animation:pop .2s cubic-bezier(.2,.9,.3,1.2)}
+.dlg h4{margin:0 0 8px;font-size:16px}
+.dlg p{margin:0 0 16px;font-size:13.5px;color:var(--muted);line-height:1.5;white-space:pre-line}
+.dlg .acts{display:flex;gap:8px;justify-content:flex-end}
+.dlg input,.dlg textarea{width:100%;border:1px solid rgba(0,0,0,.12);border-radius:10px;padding:9px 11px;font-size:14px;margin-bottom:14px;background:#fff}
+[data-theme=dark] .dlg{background:rgba(40,40,48,.97);border-color:rgba(255,255,255,.1)}
+[data-theme=dark] .dlg input,[data-theme=dark] .dlg textarea{background:rgba(0,0,0,.25);border-color:rgba(255,255,255,.14);color:var(--text)}
+/* Banner de estado */
+.banner{border-radius:14px;padding:10px 14px;font-size:13px;margin-bottom:14px;display:flex;gap:10px;align-items:center}
+.banner.lock{background:rgba(255,59,48,.12);border:1px solid rgba(255,59,48,.35);color:#9f1d17}
+.banner.warn{background:rgba(255,159,10,.14);border:1px solid rgba(255,159,10,.35);color:#8a4b00}
+.banner.info{background:rgba(10,132,255,.12);border:1px solid rgba(10,132,255,.3);color:#0b4f9c}
+[data-theme=dark] .banner.lock{color:#ff8a80}[data-theme=dark] .banner.warn{color:#ffc266}[data-theme=dark] .banner.info{color:#8ac4ff}
+.role{font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(10,132,255,.15);color:#0a84ff;text-transform:uppercase;letter-spacing:.3px}
+.role.owner{background:rgba(175,82,222,.15);color:#af52de}
+.photo-btns{display:flex;gap:8px;flex-wrap:wrap}
+.addph{width:auto;min-width:110px;height:100px;padding:0 14px}
+.ph .esc{position:absolute;left:5px;bottom:5px;font-size:10px;font-weight:700;background:rgba(0,0,0,.6);color:#fff;padding:2px 6px;border-radius:6px;border:0}
+.ph .esc.on{background:var(--green)}
+.ph .num{position:absolute;left:5px;top:5px;font-size:10px;font-weight:700;background:rgba(255,255,255,.85);color:#111;padding:2px 6px;border-radius:6px}
+.intentos{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+.intentos div{display:flex;gap:10px;align-items:center;font-size:13px;background:rgba(0,0,0,.04);border-radius:10px;padding:8px 10px}
+[data-theme=dark] .intentos div{background:rgba(255,255,255,.06)}
+.act-list{max-height:420px;overflow:auto;border-radius:12px;background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.85)}
+.act-list div{display:grid;grid-template-columns:130px 1fr auto;gap:10px;padding:8px 14px;border-bottom:1px solid var(--hair);font-size:12.5px;align-items:center}
+.act-list small{color:var(--muted)}
+[data-theme=dark] .act-list{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.08)}
+.readonly .sheet-b input,.readonly .sheet-b select,.readonly .sheet-b textarea,.readonly .sheet-b .status-seg button,.readonly .sheet-b .sev button,.readonly .sheet-b .addph,.readonly .sheet-b .rm,.readonly .sheet-b #addHz,.readonly .sheet-b [data-delhz],.readonly .sheet-b .esc{pointer-events:none;opacity:.7}
+.readonly .sheet-b .addph,.readonly .sheet-b #addHz,.readonly .sheet-b [data-delhz],.readonly .sheet-b .rm{display:none}
+
 
 /* ============ Modo oscuro ============ */
 html{color-scheme:light}
@@ -395,21 +421,7 @@ html[data-theme=dark]{color-scheme:dark;
 </head>
 <body>
 <div id="wallpaper"></div>
-
-<div id="gate" hidden>
-  <form class="lcard" id="gateForm" autocomplete="on">
-    <div class="logo">K</div>
-    <h1>Inspección post-sismo</h1>
-    <p>Edificio KOA Apartamentos<br>Acceso restringido</p>
-    <label for="gU">Usuario</label>
-    <input id="gU" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required>
-    <label for="gP">Contraseña</label>
-    <input id="gP" name="password" type="password" autocomplete="current-password" required>
-    <button id="gB" type="submit">Iniciar sesión</button>
-    <div class="err" id="gE" role="alert"></div>
-    <div class="foot">Sismo del 10 de agosto de 2026 · Armenia, Quindío</div>
-  </form>
-</div>
+<div id="gate" hidden></div>
 
 <div class="window" id="app">
   <aside class="sidebar">
@@ -418,9 +430,9 @@ html[data-theme=dark]{color-scheme:dark;
     <div class="navlabel">Inspección</div>
     <nav id="nav"></nav>
     <div class="side-foot">
-      <span id="syncpill" class="syncpill"><i></i><span>Modo local</span></span>
+      <span id="syncpill" class="syncpill"><i></i><span>Conectando…</span></span>
       <span id="inspLabel"></span>
-      <span id="userLabel" style="display:flex;align-items:center;gap:8px"></span>
+      <span id="userLabel" style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"></span>
     </div>
   </aside>
   <main>
@@ -438,8 +450,8 @@ html[data-theme=dark]{color-scheme:dark;
   <div class="rbar">
     <button class="btn" id="repClose">← Volver al portal</button>
     <div class="spacer"></div>
-    <span class="muted" style="font-size:12.5px">Use “Imprimir / Guardar PDF” y elija <b>Guardar como PDF</b></span>
-    <button class="btn primary" id="repPrint">Imprimir / Guardar PDF</button>
+    <span class="muted" style="font-size:12.5px">Descargue el archivo, ábralo en el navegador y use <b>Imprimir → Guardar como PDF</b></span>
+    <button class="btn primary" id="repDl">Descargar informe (.html)</button>
   </div>
   <div class="paper" id="paper"></div>
 </div>
@@ -448,11 +460,10 @@ html[data-theme=dark]{color-scheme:dark;
 
 <script type="module">
 /* =========================================================================
-   KOA · Portal de inspección de daños post-sismo
-   Funciona 100% en el navegador (GitHub Pages) y, si se ejecuta con
-   server.js (p. ej. en exe.dev), sincroniza datos y fotos con el servidor.
+   KOA · Portal de inspección de daños post-sismo · v2
+   Datos y fotos en el servidor (base de datos y archivos del artefacto),
+   acceso controlado por el administrador, cola de envío para zonas sin señal.
    ========================================================================= */
-
 // ---------- Utilidades ----------
 const $ = (s, el = document) => el.querySelector(s);
 const $$ = (s, el = document) => [...el.querySelectorAll(s)];
@@ -475,7 +486,8 @@ const PROJECT = {
 
 // ---------- Catálogos técnicos ----------
 const ELEMENTOS = ['Muro de mampostería', 'Revoque / pañete', 'Estuco y pintura', 'Enchape de muro', 'Columna', 'Viga', 'Pantalla / muro de concreto', 'Placa / losa', 'Escalera', 'Piso / enchape de piso', 'Cielo raso', 'Ventanería y vidrios', 'Puerta y marco', 'Barandas / pasamanos', 'Carpintería metálica', 'Junta de dilatación / construcción', 'Impermeabilización', 'Estructura metálica de cubierta', 'Instalación hidrosanitaria', 'Instalación eléctrica', 'Instalación de gas', 'Equipo (ascensor, bomba, otro)', 'Otro'];
-const DANOS = ['Fisura capilar (< 0,2 mm)', 'Fisura fina (0,2 – 1 mm)', 'Fisura media (1 – 3 mm)', 'Grieta (3 – 6 mm)', 'Grieta mayor (> 6 mm)', 'Fisura / grieta diagonal', 'Fisura / grieta horizontal', 'Fisura / grieta vertical', 'Separación muro – estructura', 'Desprendimiento de revoque o enchape', 'Aplastamiento / pérdida de material', 'Descascaramiento de concreto', 'Acero de refuerzo expuesto', 'Deformación / desplome', 'Vidrio roto o fisurado', 'Desajuste de puerta o ventana', 'Daño en junta', 'Filtración / humedad', 'Daño en instalación o equipo', 'Colapso parcial', 'Otro'];
+const DANOS = ['Fisura capilar (< 0,2 mm)', 'Fisura fina (0,2 – 1 mm)', 'Fisura media (1 – 3 mm)', 'Grieta (3 – 6 mm)', 'Grieta mayor (> 6 mm)', 'Fisura / grieta diagonal', 'Fisura / grieta horizontal', 'Fisura / grieta vertical', 'Separación muro – estructura', 'Desprendimiento de revoque o enchape', 'Aplastamiento / pérdida de material', 'Descascaramiento de concreto', 'Acero de refuerzo expuesto', 'Deformación / desplome', 'Vidrio roto o fisurado', 'Desajuste de puerta o ventana', 'Daño en junta', 'Filtración / humedad', 'Daño en instalación o equipo', 'Reparación reciente evidente (resane previo a la visita)', 'Colapso parcial', 'Otro'];
+const isFisura = d => /fisura|grieta|separaci/i.test(d || '');
 const SEV = {
   leve: { n: 'Leve', c: '#e0b400', d: 'Superficial o estético' },
   moderado: { n: 'Moderado', c: '#ff9f0a', d: 'Reparación localizada' },
@@ -483,6 +495,12 @@ const SEV = {
   critico: { n: 'Crítico', c: '#af52de', d: 'Riesgo · acción inmediata' }
 };
 const SEV_ORDER = ['leve', 'moderado', 'severo', 'critico'];
+const ATRIB = {
+  sismo: { n: 'Atribuible al sismo', s: 'Sismo' },
+  agravado: { n: 'Preexistente, agravado por el sismo', s: 'Agravado' },
+  no_sismo: { n: 'No atribuible al sismo', s: 'No sismo' },
+  indeterminado: { n: 'Indeterminado', s: 'Indet.' }
+};
 const REP = [
   ['R01', 'Sellado de fisuras con sellante elastomérico', 'ml'],
   ['R02', 'Inyección de fisuras con resina epóxica', 'ml'],
@@ -509,9 +527,12 @@ const UNITS = ['ml', 'm²', 'm³', 'und', 'gl'];
 const STATUS = {
   sin_dano: { n: 'Sin daño', c: '#34c759', d: 'Inspeccionado, sin afectación' },
   con_dano: { n: 'Con daño', c: '#ff3b30', d: 'Registrar cada daño' },
-  no_acceso: { n: 'Sin acceso', c: '#5856d6', d: 'Reprogramar visita' },
+  no_acceso: { n: 'Sin acceso', c: '#5856d6', d: 'Registrar intentos' },
   no_aplica: { n: 'No aplica', c: '#8e8e93', d: 'El elemento no existe' }
 };
+// Ejes estructurales del edificio (según planos)
+const EJES_L = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'], EJES_N = ['1', '2', '3', '4', '5', '6', '7', '8', "8'", '9', "9'"];
+const EJES = []; EJES_L.forEach(l => EJES_N.forEach(n => EJES.push(`${l}-${n}`)));
 
 // ---------- Inventario de inspección (derivado de los planos) ----------
 const APTS = [101, 102, 103, 104, 105, 107, 109, 110, 111, 112];
@@ -610,161 +631,219 @@ const GROUPS = {
   privadas: { n: 'Locales y depósitos', short: 'Locales' }
 };
 
-// ---------- Almacenamiento local (IndexedDB) ----------
+// ---------- Plataforma (identidad, base de datos, archivos) ----------
+const Plat = { user: null, db: null, assets: null, downloads: null, me: null, uid: null, isOwner: false, canEdit: false, online: navigator.onLine };
+window.addEventListener('online', () => { Plat.online = true; Sync.flush(); });
+window.addEventListener('offline', () => { Plat.online = false; Sync.pill(); });
+
+// ---------- Almacenamiento local: caché de lectura y cola de envío ----------
 const DB = {
   db: null,
   open() {
     return new Promise((res, rej) => {
-      const r = indexedDB.open('koa-inspeccion', 1);
-      r.onupgradeneeded = () => { const d = r.result; ['items', 'photos', 'meta'].forEach(n => d.objectStoreNames.contains(n) || d.createObjectStore(n)); };
+      const r = indexedDB.open('koa-inspeccion-v2', 1);
+      r.onupgradeneeded = () => { const d = r.result; ['cache', 'outbox', 'photos', 'meta'].forEach(n => d.objectStoreNames.contains(n) || d.createObjectStore(n)); };
       r.onsuccess = () => { this.db = r.result; res(); };
       r.onerror = () => rej(r.error);
     });
   },
-  req(store, mode, fn) { return new Promise((res, rej) => { const t = this.db.transaction(store, mode); const q = fn(t.objectStore(store)); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }); },
+  req(store, mode, fn) { return new Promise((res, rej) => { if (!this.db) return res(undefined); const t = this.db.transaction(store, mode); const q = fn(t.objectStore(store)); t.oncomplete = () => res(q && q.result); t.onerror = () => rej(t.error); t.onabort = () => rej(t.error); }); },
   get(s, k) { return this.req(s, 'readonly', o => o.get(k)); },
   put(s, k, v) { return this.req(s, 'readwrite', o => o.put(v, k)); },
   del(s, k) { return this.req(s, 'readwrite', o => o.delete(k)); },
-  keys(s) { return this.req(s, 'readonly', o => o.getAllKeys()); },
-  async entries(s) { const [k, v] = await Promise.all([this.req(s, 'readonly', o => o.getAllKeys()), this.req(s, 'readonly', o => o.getAll())]); return k.map((kk, i) => [kk, v[i]]); },
+  async entries(s) { const [k, v] = await Promise.all([this.req(s, 'readonly', o => o.getAllKeys()), this.req(s, 'readonly', o => o.getAll())]); return (k || []).map((kk, i) => [kk, v[i]]); },
   clear(s) { return this.req(s, 'readwrite', o => o.clear()); }
 };
 
 // ---------- Estado ----------
-let recs = {};            // id -> registro de inspección
-let inspector = null;     // datos del ingeniero
-let dirty = new Set();    // ids pendientes por sincronizar
+let recs = {};            // itemId -> registro vigente (fusión servidor + cola local)
+let remote = {};          // uid -> { itemId -> registro }
+let outbox = {};          // itemId -> registro pendiente de envío (ya con _uid/_path)
+let profiles = {};        // uid -> perfil profesional
+let inspector = null;     // mi perfil (alias usado por las vistas)
+let config = { locked: false };
 const urlCache = new Map();
+const itemPath = (uid, id) => `registros/${uid}/items/${id}`;
+const readOnly = () => !Plat.uid || (config.locked && !Plat.isOwner);
+const canEditRec = rec => Plat.isOwner || !rec?._uid || rec._uid === Plat.uid;
 
-async function loadAll() {
-  (await DB.entries('items')).forEach(([k, v]) => { recs[k] = v; });
-  inspector = (await DB.get('meta', 'inspector')) || null;
-  dirty = new Set((await DB.get('meta', 'dirty')) || []);
+function rebuild() {
+  const m = {};
+  for (const uid of Object.keys(remote)) for (const [id, r] of Object.entries(remote[uid])) if (!m[id] || (r.updatedAt || 0) > (m[id].updatedAt || 0)) m[id] = r;
+  for (const [id, r] of Object.entries(outbox)) if (!m[id] || (r.updatedAt || 0) >= (m[id].updatedAt || 0)) m[id] = r;
+  recs = m;
 }
-async function saveRec(id, rec) {
-  rec.updatedAt = Date.now();
-  rec.by = inspector?.nombre || '';
-  rec.user = Sync.user || '';
-  recs[id] = clone(rec);
-  await DB.put('items', id, recs[id]);
-  dirty.add(id); await DB.put('meta', 'dirty', [...dirty]);
-  Sync.schedule();
-  updateBadges();
+function hist(rec, accion, extra) {
+  rec.historial = (rec.historial || []).slice(-24);
+  rec.historial.push({ at: Date.now(), uid: Plat.uid, accion, status: rec.status || '', n: (rec.hallazgos || []).length, ...(extra || {}) });
 }
-async function saveInspector(data) {
-  inspector = { ...data, updatedAt: Date.now() };
-  await DB.put('meta', 'inspector', inspector);
-  dirty.add('__inspector'); await DB.put('meta', 'dirty', [...dirty]);
-  Sync.schedule(); updateBadges();
+async function saveRec(id, rec, accion) {
+  if (readOnly()) { toast('La inspección está cerrada: solo lectura'); return false; }
+  if (!canEditRec(rec)) { toast('Este registro pertenece a otro inspector'); return false; }
+  if (!profiles[Plat.uid]) await saveProfile({ nombre: inspector?.nombre || Plat.me?.name || 'Administrador', profesion: inspector?.profesion || '', matricula: inspector?.matricula || '', rol: Plat.isOwner ? 'admin' : 'inspector' });
+  rec._uid = rec._uid || Plat.uid; rec._path = itemPath(rec._uid, id); rec.item = id;
+  rec.createdAt = rec.createdAt || Date.now(); rec.updatedAt = Date.now(); rec.lastUid = Plat.uid;
+  if (accion) hist(rec, accion);
+  else { const h = rec.historial?.[rec.historial.length - 1]; if (!h || h.accion !== 'editado' || Date.now() - h.at > 10 * 60e3 || h.uid !== Plat.uid) hist(rec, 'editado'); }
+  outbox[id] = clone(rec); rebuild();
+  await DB.put('outbox', id, outbox[id]); await DB.put('cache', id, outbox[id]);
+  Sync.schedule(); updateBadges(); return true;
+}
+async function saveProfile(data) {
+  if (!Plat.uid) return false;
+  inspector = { ...data, uid: Plat.uid, updatedAt: Date.now() };
+  profiles[Plat.uid] = inspector;
+  await DB.put('meta', 'perfil', inspector);
+  try { await Plat.db.doc(`perfiles/${Plat.uid}`).set(inspector); Sync.subscribeItems(Plat.uid); }
+  catch (e) { await DB.put('meta', 'perfilPendiente', true); Sync.schedule(); }
+  updateBadges(); return true;
 }
 
 // ---------- Fotos ----------
+// Referencias: 'a:<assetId>' (en el servidor) · 'l:<localId>' (pendiente de subir, en este dispositivo)
 async function loadImage(file) {
   try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); }
   catch { return await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); }); }
 }
-async function compressPhoto(file, stamp) {
+async function compressPhoto(file, stamp, max = 1600, q = .74) {
   const img = await loadImage(file);
-  const max = 1600, w0 = img.width, h0 = img.height, s = Math.min(1, max / Math.max(w0, h0));
-  const c = document.createElement('canvas'); c.width = Math.round(w0 * s); c.height = Math.round(h0 * s);
+  const s = Math.min(1, max / Math.max(img.width, img.height));
+  const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
   const g = c.getContext('2d'); g.drawImage(img, 0, 0, c.width, c.height);
-  // Sello de evidencia
-  const fs = Math.max(14, Math.round(c.width / 55));
-  g.font = `600 ${fs}px -apple-system, Helvetica, Arial`;
-  const lines = [stamp, `${new Date().toLocaleString('es-CO')}  ·  ${inspector?.nombre || ''}`];
-  const pad = fs * 0.6, lh = fs * 1.35, bh = lines.length * lh + pad * 1.4;
-  g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, c.height - bh, c.width, bh);
-  g.fillStyle = '#fff'; lines.forEach((l, i) => g.fillText(l, pad, c.height - bh + pad + lh * (i + 0.75)));
-  return await new Promise(r => c.toBlob(r, 'image/jpeg', 0.74));
+  if (stamp) {
+    const fs = Math.max(14, Math.round(c.width / 55));
+    g.font = `600 ${fs}px -apple-system, Helvetica, Arial`;
+    const lines = [stamp, `${new Date().toLocaleString('es-CO')}  ·  ${inspector?.nombre || Plat.me?.name || ''}`];
+    const pad = fs * .6, lh = fs * 1.35, bh = lines.length * lh + pad * 1.4;
+    g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, c.height - bh, c.width, bh);
+    g.fillStyle = '#fff'; lines.forEach((l, i) => g.fillText(l, pad, c.height - bh + pad + lh * (i + .75)));
+  }
+  return await new Promise(r => c.toBlob(r, 'image/jpeg', q));
 }
 async function storePhoto(file, stamp) {
   const blob = await compressPhoto(file, stamp);
-  const id = 'f' + uid();
+  const id = 'l:' + uid();
   await DB.put('photos', id, blob);
   return id;
 }
-async function photoURL(id) {
-  if (urlCache.has(id)) return urlCache.get(id);
-  const b = await DB.get('photos', id);
-  let u;
-  if (b) u = URL.createObjectURL(b);
-  else if (Sync.enabled) u = Sync.photoSrc(id);
-  else u = '';
-  urlCache.set(id, u); return u;
+const assetURL = ref => '/_blob/' + ref.slice(2);
+async function photoURL(ref) {
+  if (!ref) return '';
+  if (ref.startsWith('a:')) return assetURL(ref);
+  if (urlCache.has(ref)) return urlCache.get(ref);
+  const b = await DB.get('photos', ref);
+  const u = b ? URL.createObjectURL(b) : '';
+  urlCache.set(ref, u); return u;
 }
 async function hydratePhotos(root = document) {
-  for (const img of $$('img[data-ph]', root)) { if (!img.src || img.dataset.loaded !== '1') { img.src = await photoURL(img.dataset.ph); img.dataset.loaded = '1'; } }
+  for (const img of $$('img[data-ph]', root)) if (img.dataset.loaded !== '1') { img.dataset.loaded = '1'; img.src = await photoURL(img.dataset.ph); img.onerror = () => { img.replaceWith(Object.assign(document.createElement('div'), { className: 'fallback', textContent: 'Foto no disponible' })); }; }
 }
+function photoRefs(rec) { return [...(rec.fotos || []), ...(rec.hallazgos || []).flatMap(h => h.fotos || [])]; }
 function lightbox(src) { const d = document.createElement('div'); d.className = 'lightbox'; d.innerHTML = `<img src="${src}">`; d.onclick = () => d.remove(); document.body.appendChild(d); }
 document.addEventListener('click', e => { const im = e.target.closest('.ph img'); if (im) lightbox(im.src); });
 
-// ---------- Sincronización con servidor (exe.dev) ----------
+// ---------- Sincronización en tiempo real ----------
 const Sync = {
-  enabled: false, user: '', state: 'local', timer: null, busy: false,
-  async detect() {
+  timer: null, busy: false, subs: {}, lastErr: '', loading: true,
+  pill(text) {
+    const p = $('#syncpill'); if (!p) return;
+    const n = Object.keys(outbox).length;
+    let st = 'on', t = text;
+    if (!t) {
+      if (!Plat.online) { st = 'err'; t = n ? `Sin conexión · ${n} por enviar` : 'Sin conexión'; }
+      else if (this.lastErr) { st = 'err'; t = this.lastErr; }
+      else if (n) { st = ''; t = `Enviando ${n} cambio${n > 1 ? 's' : ''}…`; }
+      else t = 'En línea · todo enviado';
+    }
+    p.className = 'syncpill ' + st; p.lastElementChild.textContent = t;
+  },
+  schedule() { clearTimeout(this.timer); this.timer = setTimeout(() => this.flush(), 800); this.pill(); },
+  async flush() {
+    if (this.busy || !Plat.db || !Plat.online) { this.pill(); return; }
+    this.busy = true; this.lastErr = '';
     try {
-      const r = await fetch('api/health', { cache: 'no-store' });
-      if (!r.ok) return;
-      const j = await r.json();
-      if (j.app !== 'koa-inspeccion') return;
-      this.enabled = true;
-      const me = await fetch('api/me', { cache: 'no-store' });
-      if (me.status === 401) { location.replace('login'); throw new Error('login'); }
-      if (me.ok) this.user = (await me.json()).user || '';
-    } catch { }
-  },
-  h(extra = {}) { return { ...extra }; },
-  photoSrc(id) { return `api/photos/${id}`; },
-  setPill(state, text) { this.state = state; const p = $('#syncpill'); p.className = 'syncpill ' + (state === 'ok' ? 'on' : state === 'err' ? 'err' : ''); p.lastElementChild.textContent = text; },
-  schedule() { if (!this.enabled) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(), 1200); },
-  async run() {
-    if (!this.enabled || this.busy) return;
-    this.busy = true;
-    try { await this.push(); await this.pull(); this.setPill('ok', 'Sincronizado · ' + new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' })); }
-    catch (e) { if (e.message === 'login') { location.replace('login'); return; } this.setPill('err', 'Sin conexión · guardado local'); }
-    finally { this.busy = false; }
-  },
-  async push() {
-    const uploaded = new Set((await DB.get('meta', 'uploaded')) || []);
-    for (const id of [...dirty]) {
-      if (id === '__inspector') {
-        const r = await fetch('api/inspector', { method: 'PUT', headers: this.h({ 'Content-Type': 'application/json' }), body: JSON.stringify(inspector) });
-        if (r.status === 401) throw new Error('login'); if (!r.ok) throw new Error('net');
-      } else {
-        const rec = recs[id]; if (!rec) { dirty.delete(id); continue; }
-        for (const pid of photoIds(rec)) {
-          if (uploaded.has(pid)) continue;
-          const b = await DB.get('photos', pid); if (!b) continue;
-          const r = await fetch(`api/photos/${pid}`, { method: 'PUT', headers: this.h({ 'Content-Type': 'image/jpeg' }), body: b });
-          if (r.status === 401) throw new Error('login'); if (!r.ok) throw new Error('net');
-          uploaded.add(pid); await DB.put('meta', 'uploaded', [...uploaded]);
+      if (await DB.get('meta', 'perfilPendiente')) { const p = await DB.get('meta', 'perfil'); if (p) { await Plat.db.doc(`perfiles/${p.uid}`).set(p); await DB.del('meta', 'perfilPendiente'); this.subscribeItems(p.uid); } }
+      for (const id of Object.keys(outbox)) {
+        // 1) subir fotos locales, actualizando la cola Y el borrador abierto con el id del servidor
+        const refs = photoRefs(outbox[id]).filter(r => r.startsWith('l:'));
+        for (const ref of refs) {
+          const b = await DB.get('photos', ref);
+          let to = null;
+          if (b) {
+            if (!Plat.assets) throw Object.assign(new Error('Sin permiso para subir fotos: pida acceso de edición al administrador'), { fatal: true });
+            const up = await Plat.assets.upload(b, { type: 'image/jpeg' });
+            to = 'a:' + up.id;
+          }
+          replaceRef(outbox[id], ref, to);
+          if (ed && ed.id === id) replaceRef(ed.draft, ref, to);
+          await DB.put('outbox', id, outbox[id]);
+          await DB.del('photos', ref); urlCache.delete(ref);
         }
-        const r = await fetch(`api/items/${id}`, { method: 'PUT', headers: this.h({ 'Content-Type': 'application/json' }), body: JSON.stringify(rec) });
-        if (r.status === 401) throw new Error('login'); if (!r.ok) throw new Error('net');
+        // 2) escribir el registro; si el usuario siguió editando mientras tanto, se reenvía en la siguiente vuelta
+        const snap = clone(outbox[id]); const ver = snap.updatedAt;
+        const path = snap._path || itemPath(snap._uid || Plat.uid, id);
+        const body = clone(snap); delete body._path;
+        await Plat.db.doc(path).set(body);
+        if (!remote[snap._uid]) remote[snap._uid] = {}; remote[snap._uid][id] = snap;
+        await DB.put('cache', id, snap);
+        if (outbox[id] && outbox[id].updatedAt === ver) { delete outbox[id]; await DB.del('outbox', id); }
       }
-      dirty.delete(id); await DB.put('meta', 'dirty', [...dirty]);
-    }
+      rebuild();
+    } catch (e) {
+      const code = e?.code || '';
+      this.lastErr = e?.fatal ? e.message : code === 'invalid_argument' ? 'Sin permiso para guardar en el servidor' : code === 'quota_exceeded' || code === 'quota_or_state' ? 'Almacenamiento del servidor lleno' : 'Sin conexión con el servidor · reintentando';
+      console.warn('sync', e);
+    } finally { this.busy = false; this.pill(); updateBadges(); if (Object.keys(outbox).length && !this.lastErr) this.schedule(); }
   },
-  async pull() {
-    const r = await fetch('api/state', { headers: this.h(), cache: 'no-store' });
-    if (r.status === 401) throw new Error('login'); if (!r.ok) throw new Error('net');
-    const s = await r.json(); let changed = false;
-    if (s.inspector && (!inspector || (s.inspector.updatedAt || 0) > (inspector.updatedAt || 0))) { inspector = s.inspector; await DB.put('meta', 'inspector', inspector); changed = true; }
-    for (const [id, rec] of Object.entries(s.items || {})) {
-      if (dirty.has(id)) continue;
-      if (!recs[id] || (rec.updatedAt || 0) > (recs[id].updatedAt || 0)) { recs[id] = rec; await DB.put('items', id, rec); changed = true; }
-    }
-    if (changed && !$('.sheet-back')) render();
+  subscribeItems(uid) {
+    if (!uid || this.subs[uid] || !Plat.db) return;
+    this.subs[uid] = Plat.db.collection(`registros/${uid}/items`).limit(1000).onSnapshot(snap => {
+      const m = {}; snap.docs.forEach(d => { if (d.exists) { const r = d.data(); m[d.id] = { ...r, _path: itemPath(uid, d.id) }; } });
+      remote[uid] = m;
+      if (!snap.metadata.fromCache) this.loading = false;
+      rebuild(); onRemoteChange();
+    }, err => { console.warn('items', uid, err); this.loading = false; });
+  },
+  start() {
+    const db = Plat.db;
+    db.collection('perfiles').limit(500).onSnapshot(snap => {
+      snap.docs.forEach(d => { if (d.exists) { profiles[d.id] = d.data(); this.subscribeItems(d.id); } });
+      if (Plat.uid && profiles[Plat.uid] && (!inspector || (profiles[Plat.uid].updatedAt || 0) > (inspector.updatedAt || 0))) { inspector = profiles[Plat.uid]; DB.put('meta', 'perfil', inspector); }
+      onRemoteChange();
+    }, err => console.warn('perfiles', err));
+    db.doc('config/estado').onSnapshot(snap => { config = snap.exists ? snap.data() : { locked: false }; onRemoteChange(true); }, err => console.warn('config', err));
+    if (Plat.uid) this.subscribeItems(Plat.uid);
+    setTimeout(() => { if (this.loading) { this.loading = false; onRemoteChange(); } }, 10000);
+    setInterval(() => this.flush(), 20000);
+    this.flush();
   }
 };
-function photoIds(rec) { return [...(rec.fotos || []), ...(rec.hallazgos || []).flatMap(h => h.fotos || [])]; }
+function replaceRef(rec, from, to) {
+  const fix = arr => { if (!arr) return arr; const i = arr.indexOf(from); if (i >= 0) { if (to) arr[i] = to; else arr.splice(i, 1); } return arr; };
+  fix(rec.fotos); (rec.hallazgos || []).forEach(h => { fix(h.fotos); if (h.escala === from) h.escala = to || ''; });
+}
+let renderT = null;
+function onRemoteChange(force) {
+  clearTimeout(renderT);
+  renderT = setTimeout(() => {
+    updateBadges();
+    if ($('.sheet-back')) { if (ed) { applyLockUI(); if (ed.apt) renderWallTabs(); } return; }
+    render();
+  }, force ? 0 : 400);
+}
 
 // ---------- Reglas de completitud ----------
 function issues(rec) {
   const e = [];
   if (!rec || !rec.status) return ['Elemento sin inspeccionar'];
   const st = rec.status;
-  if (st === 'no_acceso') { if (!(rec.nota || '').trim()) e.push('Indique el motivo por el que no hubo acceso'); e.push('Elemento pendiente: debe reprogramarse la visita'); return e; }
+  if (st === 'no_acceso') {
+    const n = (rec.intentos || []).length;
+    if (!n) e.push('Registre al menos un intento de acceso (fecha y forma de notificación)');
+    if (rec.definitivo) { if (n < 2) e.push('Para cerrar como “sin acceso definitivo” se requieren al menos 2 intentos documentados'); }
+    else e.push(n >= 2 ? 'Reprograme la visita o marque “Sin acceso definitivo”' : 'Elemento pendiente: debe reprogramarse la visita');
+    return e;
+  }
   if (st === 'no_aplica') { if ((rec.nota || '').trim().length < 5) e.push('Explique por qué el elemento no aplica'); return e; }
   if (st === 'sin_dano') { if (!(rec.fotos || []).length) e.push('Falta la foto de evidencia del elemento sin daño'); return e; }
   if (st === 'con_dano') {
@@ -775,29 +854,45 @@ function issues(rec) {
       if (!h.elemento) e.push(p + 'seleccione el elemento afectado');
       if (!h.dano) e.push(p + 'seleccione el tipo de daño');
       if (!h.severidad) e.push(p + 'indique la severidad');
+      if (!h.atrib) e.push(p + 'indique si el daño es atribuible al sismo');
+      if (h.atrib && h.atrib !== 'sismo' && (h.atribJust || '').trim().length < 10) e.push(p + 'justifique la atribución del daño');
       if (!h.rep) e.push(p + 'seleccione la reparación recomendada');
       if (h.rep === 'R99' && !h.unidad) e.push(p + 'indique la unidad de medida');
       if (!(num(h.cantidad) > 0)) e.push(p + 'indique la cantidad de obra a reparar');
       if ((h.espec || '').trim().length < 15) e.push(p + 'describa el procedimiento específico de reparación');
       if ((h.comentario || '').trim().length < 15) e.push(p + 'agregue el comentario técnico');
       if (!(h.fotos || []).length) e.push(p + 'cargue al menos una foto de evidencia');
+      if (isFisura(h.dano) && (h.fotos || []).length && !(h.escala && h.fotos.includes(h.escala))) e.push(p + 'marque una foto como “detalle con escala” (regla o fisurómetro)');
     });
   }
   return e;
 }
+function warnings(rec) {
+  const w = [];
+  (rec?.hallazgos || []).forEach((h, i) => {
+    const p = `Daño ${i + 1}: `; const a = num(h.ancho);
+    if (a >= 3 && h.severidad === 'leve') w.push(p + 'una fisura de 3 mm o más normalmente no es “leve”');
+    if (a > 0 && a < 0.2 && (h.severidad === 'severo' || h.severidad === 'critico')) w.push(p + 'una fisura capilar normalmente no es severa; verifique el ancho');
+    const unit = h.rep === 'R99' ? h.unidad : REP_BY[h.rep]?.unit;
+    if (unit === 'ml' && num(h.longitud) > 0 && Math.abs(num(h.cantidad) - num(h.longitud)) > num(h.longitud) * .5) w.push(p + 'la cantidad (ml) difiere mucho de la longitud medida');
+    if (unit === 'm²' && num(h.area) > 0 && Math.abs(num(h.cantidad) - num(h.area)) > num(h.area) * .5) w.push(p + 'la cantidad (m²) difiere mucho del área medida');
+    if (num(h.area) > 40) w.push(p + 'el área afectada parece muy grande para un solo elemento; verifique');
+  });
+  return w;
+}
 function itemState(id) {
   const r = recs[id];
   if (!r || !r.status) return 'pendiente';
-  if (r.status === 'no_acceso') return 'no_acceso';
+  if (r.status === 'no_acceso') return (r.definitivo && (r.intentos || []).length >= 2) ? 'no_acceso_def' : 'no_acceso';
   return issues(r).length ? 'incompleto' : r.status;
 }
-const isDone = id => ['sin_dano', 'con_dano', 'no_aplica'].includes(itemState(id));
+const isDone = id => ['sin_dano', 'con_dano', 'no_aplica', 'no_acceso_def'].includes(itemState(id));
 function maxSev(rec) { let m = -1; (rec?.hallazgos || []).forEach(h => { const i = SEV_ORDER.indexOf(h.severidad); if (i > m) m = i; }); return m < 0 ? null : SEV_ORDER[m]; }
 function stateColor(id) {
   const s = itemState(id), r = recs[id];
   if (s === 'pendiente') return '#c7c7cc';
   if (s === 'incompleto') return '#ffb340';
-  if (s === 'no_acceso') return STATUS.no_acceso.c;
+  if (s === 'no_acceso' || s === 'no_acceso_def') return STATUS.no_acceso.c;
   if (s === 'no_aplica') return '#a1a1a6';
   if (s === 'sin_dano') return STATUS.sin_dano.c;
   const ms = maxSev(r); return ms ? SEV[ms].c : STATUS.con_dano.c;
@@ -806,21 +901,37 @@ function stateLabel(id) {
   const s = itemState(id), r = recs[id];
   if (s === 'pendiente') return 'Pendiente';
   if (s === 'incompleto') return 'Incompleto';
+  if (s === 'no_acceso_def') return 'Sin acceso definitivo';
   if (s === 'con_dano') { const ms = maxSev(r); return `Con daño · ${SEV[ms]?.n || ''}`; }
   return STATUS[s].n;
 }
 function stats(list = ITEMS) {
-  const o = { total: list.length, done: 0, sin: 0, con: 0, noacc: 0, noapl: 0, inc: 0, pend: 0, sev: { leve: 0, moderado: 0, severo: 0, critico: 0 }, fotos: 0, hall: 0 };
+  const o = { total: list.length, done: 0, sin: 0, con: 0, noacc: 0, noaccdef: 0, noapl: 0, inc: 0, pend: 0, sev: { leve: 0, moderado: 0, severo: 0, critico: 0 }, fotos: 0, hall: 0, hallSismo: 0 };
   list.forEach(it => {
     const s = itemState(it.id), r = recs[it.id];
     if (isDone(it.id)) o.done++;
-    if (s === 'sin_dano') o.sin++; else if (s === 'con_dano') o.con++; else if (s === 'no_acceso') o.noacc++; else if (s === 'no_aplica') o.noapl++; else if (s === 'incompleto') o.inc++; else o.pend++;
-    if (r) { o.fotos += photoIds(r).length; if (r.status === 'con_dano') (r.hallazgos || []).forEach(h => { o.hall++; if (o.sev[h.severidad] != null) o.sev[h.severidad]++; }); }
+    if (s === 'sin_dano') o.sin++; else if (s === 'con_dano') o.con++; else if (s === 'no_acceso') o.noacc++; else if (s === 'no_acceso_def') o.noaccdef++; else if (s === 'no_aplica') o.noapl++; else if (s === 'incompleto') o.inc++; else o.pend++;
+    if (r) { o.fotos += photoRefs(r).length; if (r.status === 'con_dano') (r.hallazgos || []).forEach(h => { o.hall++; if (h.atrib === 'sismo' || h.atrib === 'agravado') o.hallSismo++; if (o.sev[h.severidad] != null) o.sev[h.severidad]++; }); }
   });
   o.pct = o.total ? Math.round(o.done / o.total * 100) : 0;
   return o;
 }
 function floorItems(f) { return ITEMS.filter(it => it.floor === f); }
+
+// ---------- Diálogos propios ----------
+function ask(title, msg, { ok = 'Aceptar', cancel = 'Cancelar', danger = false, input = null } = {}) {
+  return new Promise(resolve => {
+    const b = document.createElement('div'); b.className = 'dlg-back';
+    b.innerHTML = `<div class="dlg" role="dialog"><h4>${esc(title)}</h4><p>${esc(msg)}</p>${input ? `<input id="dlgIn" placeholder="${esc(input)}" autocomplete="off">` : ''}<div class="acts">${cancel ? `<button class="btn" data-r="0">${esc(cancel)}</button>` : ''}<button class="btn ${danger ? 'danger' : 'primary'}" data-r="1">${esc(ok)}</button></div></div>`;
+    b.onclick = e => { const t = e.target.closest('[data-r]'); if (!t && e.target !== b) return; const r = t?.dataset.r === '1'; const v = input ? $('#dlgIn', b).value : true; b.remove(); resolve(r ? (input ? v : true) : false); };
+    document.body.appendChild(b); setTimeout(() => ($('#dlgIn', b) || $('[data-r="1"]', b)).focus(), 30);
+  });
+}
+async function dl(filename, data) {
+  if (!Plat.downloads) { await ask('Descarga no disponible', 'En esta vista no se pueden guardar archivos. Abra el portal desde claude.ai en un computador e intente de nuevo.', { cancel: '' }); return false; }
+  try { await Plat.downloads.save({ filename, data }); toast('Archivo guardado'); return true; }
+  catch (e) { if (e?.code !== 'declined') { console.warn(e); toast('No se pudo guardar el archivo'); } return false; }
+}
 
 // ---------- Íconos ----------
 const IC = {
@@ -831,6 +942,8 @@ const IC = {
   store: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9"/><path d="M4 9h16v2a3 3 0 0 1-5.3 1.9A3 3 0 0 1 12 14a3 3 0 0 1-2.7-1.1A3 3 0 0 1 4 11z"/><path d="M5.5 13.5V20h13v-6.5"/></svg>',
   report: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/></svg>',
   gear: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>',
+  gal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="m21 16-5-5-8 8"/></svg>',
+  admin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg>',
   chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="m9 6 6 6-6 6"/></svg>',
   cam: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>'
 };
@@ -872,27 +985,24 @@ const VIEWS = [
   ['aptos', 'Apartamentos', IC.apt, 'aptos'],
   ['privadas', 'Locales y depósitos', IC.store, 'privadas'],
   ['informe', 'Informe técnico', IC.report, null],
-  ['ajustes', 'Inspector y datos', IC.gear, null]
+  ['admin', 'Administración', IC.admin, null],
+  ['ajustes', 'Mi perfil', IC.gear, null]
 ];
 let current = 'inicio';
 function renderNav() {
-  $('#nav').innerHTML = VIEWS.map(([id, n, ic, g]) => {
+  $('#nav').innerHTML = VIEWS.filter(v => v[0] !== 'admin' || Plat.isOwner).map(([id, n, ic, g]) => {
     let cnt = '';
     if (g) { const s = stats(ITEMS.filter(i => i.group === g)); cnt = `<span class="cnt">${s.done}/${s.total}</span>`; }
     if (id === 'inicio') cnt = `<span class="cnt">${stats().pct}%</span>`;
-    const short = { inicio: 'Inicio', comunes: 'Comunes', fachadas: 'Fachadas', aptos: 'Aptos', privadas: 'Locales', informe: 'Informe', ajustes: 'Datos' }[id];
+    const short = { inicio: 'Inicio', comunes: 'Comunes', fachadas: 'Fachadas', aptos: 'Aptos', privadas: 'Locales', informe: 'Informe', admin: 'Admin', ajustes: 'Perfil' }[id];
     return `<button class="nav ${current === id ? 'active' : ''}" data-view="${id}">${ic}<span class="lg">${n}</span><span class="sm">${short}</span>${cnt}</button>`;
   }).join('');
 }
 function updateBadges() {
   renderNav();
-  $('#inspLabel').textContent = inspector?.nombre ? `Inspector: ${inspector.nombre}` : 'Inspector sin registrar';
-  const ul = $('#userLabel'); if (ul && Sync.user && !ul.dataset.done) { ul.dataset.done = '1'; ul.innerHTML = `<span>Sesión: <b>${esc(Sync.user)}</b></span><button class="btn small" id="logoutBtn">Salir</button>`; $('#logoutBtn').onclick = logout; }
-}
-async function logout() {
-  if (Sync.enabled && dirty.size) { await Sync.run(); if (dirty.size && !confirm('Hay cambios que aún no se han enviado al servidor (se conservan en este equipo). ¿Cerrar sesión de todos modos?')) return; }
-  if (Sync.enabled) { try { await fetch('api/logout', { method: 'POST' }); } catch { } location.replace('login'); }
-  else { localStorage.removeItem('koa_sesion'); location.reload(); }
+  const il = $('#inspLabel'); if (il) il.textContent = inspector?.nombre ? `Inspector: ${inspector.nombre}` : 'Perfil sin registrar';
+  const ul = $('#userLabel'); if (ul) ul.innerHTML = `<span class="role ${Plat.isOwner ? 'owner' : ''}">${Plat.isOwner ? 'Administrador' : 'Inspector'}</span> <span>${esc(Plat.me?.name || '')}</span>${config.locked ? ' <span class="role" style="background:rgba(255,59,48,.15);color:var(--red)">Cerrada</span>' : ''}`;
+  Sync.pill();
 }
 $('#nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) go(b.dataset.view); });
 function go(v, anchor) {
@@ -1058,7 +1168,7 @@ function head(title, sub, actions = '') { $('#vTitle').textContent = title; $('#
 function render() {
   disposeScenes(s => !s.sheet);
   renderNav(); updateBadges();
-  ({ inicio: vInicio, comunes: vComunes, fachadas: vFachadas, aptos: vAptos, privadas: vPrivadas, informe: vInforme, ajustes: vAjustes })[current]();
+  ({ inicio: vInicio, comunes: vComunes, fachadas: vFachadas, aptos: vAptos, privadas: vPrivadas, informe: vInforme, admin: vAdmin, ajustes: vAjustes })[current]();
   hydratePhotos($('#view'));
 }
 function ring(p) {
@@ -1078,13 +1188,14 @@ function vInicio() {
   const grp = Object.entries(GROUPS).map(([g, G]) => { const st = stats(ITEMS.filter(i => i.group === g)); return `<div class="prog"><span>${G.n}</span>${stackBar(st)}<span class="n">${st.done}/${st.total}</span></div>`; }).join('');
   const fl = [12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, -1, -2].map(f => { const st = stats(floorItems(f)); const n = f === 12 ? 'Cubierta' : f < 0 ? `Sótano ${f}` : `Piso ${f}`; return `<div class="prog" style="grid-template-columns:90px 1fr 60px;padding:5px 0;font-size:12.5px"><span>${n}</span>${stackBar(st)}<span class="n">${st.pct}%</span></div>`; }).join('');
   $('#view').innerHTML = `
+  ${config.locked ? `<div class="banner lock">🔒 La inspección está <b>cerrada</b> por la administración${config.lockedAt ? ' desde el ' + fdt(config.lockedAt) : ''}. Los registros son de solo lectura.</div>` : ''}${Sync.loading ? '<div class="banner info">Cargando los registros del servidor…</div>' : ''}
   <div class="hero glass">
     <div class="left">
       <span class="eyebrow">⚠︎ ${PROJECT.eventoCorto}</span>
       <h2>Inspección de daños<br>Edificio KOA Apartamentos</h2>
       <p>${PROJECT.direccion} · Áreas comunes, fachadas y muros de cada apartamento que lindan con zonas comunes.</p>
       <div class="acts">
-        ${inspector?.nombre ? '' : '<button class="btn primary" data-go="ajustes">Registrar datos del inspector</button>'}
+        ${inspector?.nombre ? '' : '<button class="btn primary" data-go="ajustes">Registrar mis datos profesionales</button>'}
         <button class="btn ${inspector?.nombre ? 'primary' : ''}" data-go="aptos">Inspeccionar apartamentos</button>
         <button class="btn" data-go="comunes">Áreas comunes</button>
         <button class="btn" data-go="informe">Informe</button>
@@ -1109,9 +1220,9 @@ function vInicio() {
     </div>
   </div>
   <div class="steps">
-    <div class="step glass"><div class="num">1</div><b>Registre sus datos</b><p>Nombre, matrícula profesional y empresa. Aparecen en cada foto y en el informe.</p></div>
+    <div class="step glass"><div class="num">1</div><b>Registre sus datos</b><p>Nombre, matrícula y equipos. Si olvida hacerlo, el portal se los pedirá al abrir el primer elemento.</p></div>
     <div class="step glass"><div class="num">2</div><b>Recorra cada sección</b><p>Áreas comunes, fachadas por fuera (piso por piso) y los 2 muros de cada apartamento.</p></div>
-    <div class="step glass"><div class="num">3</div><b>Registre cada daño</b><p>Tipo, severidad, medidas, reparación, cantidad de obra, comentario técnico y 1–2 fotos.</p></div>
+    <div class="step glass"><div class="num">3</div><b>Registre cada daño</b><p>Tipo, severidad, atribución al sismo, medidas, reparación, cantidad, comentario y fotos. Todo llega al servidor al instante.</p></div>
     <div class="step glass"><div class="num">4</div><b>Genere el informe</b><p>Con el 100 % completo, el portal produce el informe técnico y el cuadro de cantidades para cotizar.</p></div>
   </div>`;
   buildingScene($('#bld3d'), f => {
@@ -1203,8 +1314,9 @@ function vPrivadas() {
 }
 
 // ---------- Editor de un elemento ----------
-let ed = null; // { id, draft, aptMode, aptScene }
-function blankHz() { return { id: 'h' + uid(), elemento: '', dano: '', severidad: '', ubicacion: '', ancho: '', longitud: '', area: '', rep: '', unidad: '', cantidad: '', espec: '', comentario: '', fotos: [] }; }
+let ed = null; // { id, draft, apt, wall, scene }
+const blankRec = () => ({ status: '', fotos: [], hallazgos: [], nota: '', intentos: [], definitivo: false, atendidoPor: '' });
+function blankHz() { return { id: 'h' + uid(), elemento: '', dano: '', severidad: '', atrib: '', atribJust: '', eje: '', ubicacion: '', ancho: '', longitud: '', area: '', rep: '', unidad: '', cantidad: '', espec: '', comentario: '', fotos: [], escala: '' }; }
 function openSheet(title, sub, bodyHTML, footHTML) {
   closeSheet(true);
   const back = document.createElement('div'); back.className = 'sheet-back';
@@ -1219,12 +1331,15 @@ function closeSheet(silent) {
   b.remove(); ed = null;
   if (!silent) render();
 }
-document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('.lightbox')) $('.lightbox').remove(); else closeSheet(); } });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('.lightbox')) $('.lightbox').remove(); else if ($('.dlg-back')) return; else closeSheet(); } });
 
-function requireInspector() {
-  if (inspector?.nombre && inspector?.matricula) return true;
-  toast('Primero registre los datos del inspector');
-  closeSheet(true); go('ajustes'); return false;
+function hasProfile() { return !!(inspector?.nombre && inspector?.matricula); }
+// Si no hay perfil, se pide dentro de una hoja y al guardar se continúa al elemento tocado (no se cambia de vista).
+function profileGate(then) {
+  if (hasProfile() || Plat.isOwner) return true;
+  openSheet('Complete sus datos profesionales', 'Se estampan en cada foto y aparecen en el informe. Solo se piden una vez.', `<div id="profBody">${profileFormHTML(inspector || {})}</div>`, `<div class="spacer"></div><button class="btn" data-close>Cancelar</button><button class="btn primary" id="profGo">Guardar y continuar →</button>`);
+  $('#profGo').onclick = async () => { const d = readProfileForm(); if (!d) return; await saveProfile(d); toast('Datos guardados'); then(); };
+  return false;
 }
 function nextPending(fromId) {
   const it = BY_ID[fromId];
@@ -1234,33 +1349,41 @@ function nextPending(fromId) {
   return null;
 }
 function openItem(id) {
-  if (!requireInspector()) return;
   const it = BY_ID[id];
   if (it.group === 'aptos') return openApt(it.apt, it.wall);
+  if (!profileGate(() => openItem(id))) return;
   openSheet(esc(it.name), `${esc(it.secName)}${it.nivel ? ' · ' + esc(it.nivel) : ''}`, `<div id="edBody"></div>`, footHTML());
-  ed = { id, draft: clone(recs[id] || { status: '', fotos: [], hallazgos: [], nota: '' }) };
+  ed = { id, draft: clone(recs[id] || blankRec()) };
   renderEditor();
 }
 function openApt(a, wall = 'pasillo') {
-  if (!requireInspector()) return;
+  if (!profileGate(() => openApt(a, wall))) return;
   const id = `a${a}-${wall}`;
   openSheet(`Apartamento ${a}`, `Piso ${aptFloor(a)} · Inspección de los 2 muros que lindan con áreas comunes`,
     `<div id="aptCanvas" class="canvas3d"></div><div class="walltabs" id="wallTabs"></div><div id="edBody"></div>`, footHTML());
-  ed = { id, apt: a, wall, draft: clone(recs[id] || { status: '', fotos: [], hallazgos: [], nota: '' }) };
+  ed = { id, apt: a, wall, draft: clone(recs[id] || blankRec()) };
   aptScene($('#aptCanvas'), wall).then(s => { if (ed) ed.scene = s; });
   renderWallTabs(); renderEditor();
 }
 function renderWallTabs() {
-  if (!ed?.apt) return;
+  if (!ed?.apt || !$('#wallTabs')) return;
   $('#wallTabs').innerHTML = Object.entries(WALLS).map(([w, W]) => { const id = `a${ed.apt}-${w}`; return `<button class="${ed.wall === w ? 'on' : ''}" style="--c:${W.c}" data-wall="${w}"><span class="sw" style="background:${W.c}"></span><span style="flex:1"><b>${w === 'pasillo' ? '1' : '2'} · ${W.n}</b><small>${stateLabel(id)}</small></span><span class="dot ${itemState(id) === 'incompleto' ? 'inc' : ''}" style="${itemState(id) === 'incompleto' ? '' : `background:${stateColor(id)}`}"></span></button>`; }).join('');
-  $('#wallTabs').onclick = e => { const b = e.target.closest('[data-wall]'); if (!b || b.dataset.wall === ed.wall) return; ed.wall = b.dataset.wall; ed.id = `a${ed.apt}-${ed.wall}`; ed.draft = clone(recs[ed.id] || { status: '', fotos: [], hallazgos: [], nota: '' }); ed.scene?.setActive(ed.wall); renderWallTabs(); renderEditor(); $('.sheet-b').scrollTop = $('#wallTabs').offsetTop - 10; };
+  $('#wallTabs').onclick = e => { const b = e.target.closest('[data-wall]'); if (!b || b.dataset.wall === ed.wall) return; ed.wall = b.dataset.wall; ed.id = `a${ed.apt}-${ed.wall}`; ed.draft = clone(recs[ed.id] || blankRec()); ed.scene?.setActive(ed.wall); renderWallTabs(); renderEditor(); $('.sheet-b').scrollTop = $('#wallTabs').offsetTop - 10; };
 }
 function footHTML() {
-  return `<span class="muted" id="saveState" style="font-size:12.5px">Los cambios se guardan automáticamente</span><div class="spacer"></div><button class="btn" data-close>Cerrar</button><button class="btn primary" id="nextBtn">Siguiente pendiente →</button>`;
+  return `<span class="muted" id="saveState" style="font-size:12.5px">Los cambios se guardan y envían automáticamente</span><div class="spacer"></div><button class="btn" data-close>Cerrar</button><button class="btn primary" id="nextBtn">Siguiente pendiente →</button>`;
 }
-function photoBlock(list, key, max, label, required) {
-  return `<div class="photos">${(list || []).map((pid, i) => `<div class="ph"><img data-ph="${pid}" alt="Evidencia"><button class="rm" data-rmph="${key}" data-i="${i}" title="Quitar foto">✕</button></div>`).join('')}
-  ${(list || []).length < max ? `<label class="addph">${IC.cam}<span>${label}</span><input type="file" accept="image/*" capture="environment" data-addph="${key}"></label>` : ''}</div>${required ? '' : ''}`;
+function applyLockUI() {
+  const s = $('.sheet'); if (!s || !ed) return;
+  const ro = readOnly() || !canEditRec(ed.draft);
+  s.classList.toggle('readonly', ro);
+  const b = $('#roBanner'); if (b) b.remove();
+  if (ro) { const d = document.createElement('div'); d.id = 'roBanner'; d.className = 'banner lock'; d.textContent = config.locked && !Plat.isOwner ? `Inspección cerrada por la administración${config.lockedAt ? ' el ' + fdt(config.lockedAt) : ''}. Solo lectura.` : !Plat.uid ? 'Sin identidad en esta vista: no se puede guardar.' : 'Este registro pertenece a otro inspector. Solo lectura.'; $('#edBody')?.prepend(d); }
+}
+function photoBlock(list, key, max, esc_ref) {
+  const refs = list || [];
+  return `<div class="photos">${refs.map((ref, i) => `<div class="ph"><span class="num">${i + 1}</span><img data-ph="${ref}" alt="Evidencia">${esc_ref !== undefined ? `<button class="esc ${esc_ref === ref ? 'on' : ''}" data-escala="${key}" data-i="${i}" type="button" title="Marcar como foto de detalle con escala">${esc_ref === ref ? '✓ con escala' : 'con escala'}</button>` : ''}<button class="rm" data-rmph="${key}" data-i="${i}" title="Quitar foto">✕</button></div>`).join('')}
+  ${refs.length < max ? `<div class="photo-btns"><label class="addph">${IC.cam}<span>Cámara</span><input type="file" accept="image/*" capture="environment" data-addph="${key}"></label><label class="addph">${IC.gal}<span>Galería</span><input type="file" accept="image/*" multiple data-addph="${key}"></label></div>` : ''}</div>`;
 }
 function renderEditor() {
   const it = BY_ID[ed.id], d = ed.draft;
@@ -1268,33 +1391,48 @@ function renderEditor() {
   const statusSeg = `<div class="status-seg">${Object.entries(STATUS).map(([k, S]) => `<button class="${st === k ? 'on' : ''}" style="--c:${S.c}" data-status="${k}"><b><span class="dot" style="background:${S.c};width:10px;height:10px"></span>${S.n}</b><small>${S.d}</small></button>`).join('')}</div>`;
   let body = `<p class="desc"><b>${esc(it.name)}.</b> ${esc(it.desc)}</p>${statusSeg}`;
   if (!st) body += `<div class="blk" style="text-align:center;color:var(--muted)">Seleccione el resultado de la inspección de este elemento.</div>`;
-  if (st === 'sin_dano') body += `<div class="blk"><h4>Foto de evidencia <span class="req">Obligatoria</span></h4><p class="muted" style="margin:0 0 10px;font-size:12.5px">Foto general que demuestre que el elemento fue inspeccionado y no presenta daño (1 a 2 fotos).</p>${photoBlock(d.fotos, 'gen', 2, 'Tomar / subir foto')}</div>`;
-  if (st === 'no_acceso' || st === 'no_aplica') body += `<div class="blk"><div class="f"><label>${st === 'no_acceso' ? 'Motivo por el que no hubo acceso <em>*</em>' : 'Por qué no aplica este elemento <em>*</em>'}</label><textarea data-k="nota" placeholder="${st === 'no_acceso' ? 'Ej.: propietario ausente, se reprograma para el …' : 'Ej.: el apartamento no tiene muro de fachada en esta posición…'}">${esc(d.nota)}</textarea></div></div>`;
-  if (st === 'con_dano') {
-    body += (d.hallazgos || []).map((h, i) => hzHTML(h, i)).join('');
-    body += `<button class="btn primary" id="addHz" style="margin:4px 0 16px">＋ Agregar daño</button>`;
-    body += `<div class="blk"><h4>Fotos generales del elemento <span class="muted" style="font-weight:400;font-size:12px">(opcional)</span></h4>${photoBlock(d.fotos, 'gen', 2, 'Foto general')}</div>`;
+  if (st === 'sin_dano') body += `<div class="blk"><h4>Foto de evidencia <span class="req">Obligatoria</span></h4><p class="muted" style="margin:0 0 10px;font-size:12.5px">Foto general que demuestre que el elemento fue inspeccionado y no presenta daño (1 a 2 fotos).</p>${photoBlock(d.fotos, 'gen', 2)}</div>`;
+  if (st === 'no_acceso') {
+    const its = d.intentos || [];
+    body += `<div class="blk"><h4>Intentos de acceso <span class="req">Mínimo 1 · 2 para cerrar</span></h4>
+      <div class="intentos">${its.map((x, i) => `<div><b>${i + 1}</b><span style="flex:1">${esc(fdt(x.at))} · ${esc(x.nota)}</span><button class="btn small danger" data-delint="${i}" type="button">Quitar</button></div>`).join('') || '<span class="muted" style="font-size:13px">Sin intentos registrados.</span>'}</div>
+      <div class="fg"><div class="f c2"><label>Fecha y hora del intento</label><input type="datetime-local" id="intAt" value="${new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16)}"></div><div class="f c3"><label>Cómo se notificó / qué ocurrió</label><input id="intNota" placeholder="Ej.: se llamó al propietario, no contestó; se dejó aviso en portería"></div><div class="f c1" style="justify-content:flex-end"><button class="btn primary" id="addInt" type="button">Agregar</button></div></div>
+      <label style="display:flex;gap:10px;align-items:center;margin-top:12px;font-size:13.5px"><input type="checkbox" data-k="definitivo" ${d.definitivo ? 'checked' : ''} ${its.length < 2 ? 'disabled' : ''} style="width:18px;height:18px"> <span><b>Sin acceso definitivo.</b> Se agotaron los intentos; el elemento se cierra y el informe deja constancia. <span class="muted">(requiere 2 intentos documentados)</span></span></label>
+      <div class="f" style="margin-top:12px"><label>Observaciones</label><textarea data-k="nota" placeholder="Observaciones adicionales…">${esc(d.nota)}</textarea></div></div>`;
   }
-  if (st === 'sin_dano' || st === 'con_dano') body += `<div class="blk"><div class="f"><label>Observaciones generales del elemento (opcional)</label><textarea data-k="nota" placeholder="Observaciones adicionales…">${esc(d.nota)}</textarea></div></div>`;
+  if (st === 'no_aplica') body += `<div class="blk"><div class="f"><label>Por qué no aplica este elemento <em>*</em></label><textarea data-k="nota" placeholder="Ej.: el apartamento no tiene muro de fachada en esta posición…">${esc(d.nota)}</textarea></div></div>`;
+  if (st === 'con_dano') {
+    body += (d.hallazgos || []).map((h, i) => hzHTML(h, i, it)).join('');
+    body += `<button class="btn primary" id="addHz" style="margin:4px 0 16px">＋ Agregar daño</button>`;
+    body += `<div class="blk"><h4>Fotos generales del elemento <span class="muted" style="font-weight:400;font-size:12px">(opcional)</span></h4>${photoBlock(d.fotos, 'gen', 2)}</div>`;
+  }
+  if (st === 'sin_dano' || st === 'con_dano') {
+    body += `<div class="blk"><div class="fg">${['aptos', 'privadas'].includes(it.group) ? `<div class="f c3"><label>Atendido por (nombre y relación con el inmueble)</label><input data-k="atendidoPor" value="${esc(d.atendidoPor || '')}" placeholder="Ej.: María Pérez, propietaria"></div>` : ''}<div class="f ${['aptos', 'privadas'].includes(it.group) ? 'c3' : 'c6'}"><label>Observaciones generales del elemento (opcional)</label><textarea data-k="nota" placeholder="Observaciones adicionales…">${esc(d.nota)}</textarea></div></div></div>`;
+  }
   body += `<div id="issuesBox"></div>`;
+  if (Plat.isOwner && (d.historial || []).length) body += `<details class="blk" style="font-size:12.5px"><summary style="cursor:pointer;font-weight:600">Historial del registro (${d.historial.length})</summary>${[...d.historial].reverse().map(h => `<div style="padding:6px 0;border-bottom:1px solid var(--hair)"><b>${esc(fdt(h.at))}</b> · ${esc(nameOf(h.uid))} · ${esc(h.accion)}${h.status ? ` · ${STATUS[h.status]?.n || h.status}` : ''}${h.removed ? `<div class="muted">Eliminado: ${esc(JSON.stringify(h.removed)).slice(0, 300)}</div>` : ''}</div>`).join('')}</details>`;
+  if (Plat.isOwner && d.status) body += `<button class="btn danger small" id="reopen" type="button" style="margin-top:4px">Reabrir elemento (borra el estado, conserva el historial)</button>`;
   $('#edBody').innerHTML = body;
-  renderIssues();
-  hydratePhotos($('#edBody'));
+  applyLockUI(); renderIssues(); hydratePhotos($('#edBody'));
 }
-function hzHTML(h, i) {
+function hzHTML(h, i, it) {
   const rep = REP_BY[h.rep];
   const unit = h.rep === 'R99' ? h.unidad : (rep?.unit || '');
   const c = SEV[h.severidad]?.c || '#c7c7cc';
   const opt = (list, v) => `<option value="">Seleccione…</option>` + list.map(x => `<option ${x === v ? 'selected' : ''}>${esc(x)}</option>`).join('');
   const src = unit === 'ml' ? 'longitud' : unit === 'm²' ? 'area' : null;
   const suggest = src && num(h[src]) > 0 && num(h[src]) !== num(h.cantidad) ? `<button class="btn small" data-use="${src}" data-h="${i}" type="button">Usar ${src === 'area' ? 'área' : 'longitud'} medida (${fmt(num(h[src]))} ${unit})</button>` : '';
+  const useEjes = it && (['s1', 's2', 'cub'].includes(it.sec) || /estructura/i.test(it.name));
   return `<div class="blk hz" style="--c:${c}">
-    <div class="hz-h"><b>Daño ${i + 1}</b>${h.severidad ? `<span class="badge" style="background:${c};color:#fff">${SEV[h.severidad].n}</span>` : ''}<button class="btn small danger" data-delhz="${i}" type="button">Eliminar</button></div>
+    <div class="hz-h"><b>Daño ${i + 1}</b>${h.severidad ? `<span class="badge" style="background:${c};color:#fff">${SEV[h.severidad].n}</span>` : ''}${h.atrib ? `<span class="badge">${ATRIB[h.atrib].s}</span>` : ''}<button class="btn small danger" data-delhz="${i}" type="button">Eliminar</button></div>
     <div class="fg">
       <div class="f c3"><label>Elemento afectado <em>*</em></label><select data-h="${i}" data-k="elemento">${opt(ELEMENTOS, h.elemento)}</select></div>
       <div class="f c3"><label>Tipo de daño <em>*</em></label><select data-h="${i}" data-k="dano">${opt(DANOS, h.dano)}</select></div>
       <div class="f c6"><label>Severidad <em>*</em></label><div class="sev">${SEV_ORDER.map(k => `<button type="button" class="${h.severidad === k ? 'on' : ''}" style="--c:${SEV[k].c}" data-sev="${k}" data-h="${i}">${SEV[k].n}<small>${SEV[k].d}</small></button>`).join('')}</div></div>
-      <div class="f c6"><label>Ubicación exacta dentro del elemento</label><input data-h="${i}" data-k="ubicacion" value="${esc(h.ubicacion)}" placeholder="Ej.: esquina superior junto al marco de la puerta, a 1,8 m del piso"></div>
+      <div class="f c3"><label>Atribución del daño <em>*</em></label><select data-h="${i}" data-k="atrib"><option value="">Seleccione…</option>${Object.entries(ATRIB).map(([k, A]) => `<option value="${k}" ${h.atrib === k ? 'selected' : ''}>${A.n}</option>`).join('')}</select></div>
+      <div class="f c3"><label>Justificación de la atribución ${h.atrib && h.atrib !== 'sismo' ? '<em>*</em>' : ''}</label><input data-h="${i}" data-k="atribJust" value="${esc(h.atribJust || '')}" placeholder="${h.atrib === 'sismo' ? 'Opcional (p. ej., patrón de fisuración típico de sismo)' : 'Ej.: manchas de humedad antiguas con fisura reactivada'}"></div>
+      ${useEjes ? `<div class="f c2"><label>Eje / referencia estructural</label><input data-h="${i}" data-k="eje" list="ejesList" value="${esc(h.eje || '')}" placeholder="Ej.: C-5"></div>` : ''}
+      <div class="f ${useEjes ? 'c4' : 'c6'}"><label>Ubicación exacta dentro del elemento</label><input data-h="${i}" data-k="ubicacion" value="${esc(h.ubicacion)}" placeholder="Ej.: esquina superior junto al marco de la puerta, a 1,8 m del piso"></div>
       <div class="f c2"><label>Ancho de fisura (mm)</label><input data-h="${i}" data-k="ancho" inputmode="decimal" value="${esc(h.ancho)}" placeholder="0,5"></div>
       <div class="f c2"><label>Longitud afectada (m)</label><input data-h="${i}" data-k="longitud" inputmode="decimal" value="${esc(h.longitud)}" placeholder="1,20"></div>
       <div class="f c2"><label>Área afectada (m²)</label><input data-h="${i}" data-k="area" inputmode="decimal" value="${esc(h.area)}" placeholder="2,40"></div>
@@ -1303,28 +1441,27 @@ function hzHTML(h, i) {
       <div class="f ${h.rep === 'R99' ? 'c2' : 'c3'}"><label>Cantidad de obra a reparar <em>*</em></label><div class="qty"><input data-h="${i}" data-k="cantidad" inputmode="decimal" value="${esc(h.cantidad)}" placeholder="0"><span class="u">${esc(unit || '—')}</span></div>${suggest ? `<div style="margin-top:4px">${suggest}</div>` : '<span class="hint">Cantidad que el contratista debe cotizar.</span>'}</div>
       <div class="f c6"><label>Procedimiento específico de reparación <em>*</em></label><textarea data-h="${i}" data-k="espec" placeholder="Ej.: retirar revoque suelto 20 cm a cada lado de la fisura, abrir en V, limpiar, aplicar puente de adherencia, malla de fibra de vidrio y mortero de reparación; estucar y pintar el paño completo.">${esc(h.espec)}</textarea></div>
       <div class="f c6"><label>Comentario técnico <em>*</em></label><textarea data-h="${i}" data-k="comentario" placeholder="Descripción técnica del daño observado, patrón de fisuración, extensión y observaciones relevantes para la reparación.">${esc(h.comentario)}</textarea></div>
-      <div class="f c6"><label>Fotos de evidencia del daño <em>*</em> <span class="muted" style="font-weight:400">(1 a 2)</span></label>${photoBlock(h.fotos, 'h' + i, 2, 'Tomar / subir foto')}</div>
+      <div class="f c6"><label>Fotos de evidencia del daño <em>*</em> <span class="muted" style="font-weight:400">(1 a 4 · en fisuras, marque la de detalle con escala)</span></label>${photoBlock(h.fotos, 'h' + i, 4, h.escala || '')}</div>
     </div></div>`;
 }
 function renderIssues() {
   const d = ed.draft; const box = $('#issuesBox'); if (!box) return;
   if (!d.status) { box.innerHTML = ''; return; }
-  const e = issues(d);
-  box.innerHTML = e.length ? `<div class="issues"><b>Para dar por completo este elemento falta:</b><ul>${e.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : `<div class="okbox">✓ Elemento completo · guardado ${fdt(recs[ed.id]?.updatedAt)}</div>`;
+  const e = issues(d), w = warnings(d);
+  box.innerHTML = (e.length ? `<div class="issues"><b>Para dar por completo este elemento falta:</b><ul>${e.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : `<div class="okbox">✓ Elemento completo · ${outbox[ed.id] ? 'pendiente de envío' : 'enviado al servidor'} ${fdt(recs[ed.id]?.updatedAt)}</div>`) +
+    (w.length ? `<div class="issues" style="margin-top:10px;background:rgba(10,132,255,.1);border-color:rgba(10,132,255,.3);color:#0b4f9c"><b>Verifique (no bloquea):</b><ul>${w.map(x => `<li>${esc(x)}</li>`).join('')}</ul></div>` : '');
 }
 let saveT = null;
-function persistSoon(immediate) {
+function persistSoon(immediate, accion) {
   clearTimeout(saveT);
-  const doSave = async () => { await saveRec(ed.id, ed.draft); $('#saveState') && ($('#saveState').textContent = 'Guardado ' + new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' })); renderIssues(); if (ed?.apt) renderWallTabs(); };
+  const doSave = async () => { if (!ed) return; const ok = await saveRec(ed.id, ed.draft, accion); const s = $('#saveState'); if (s) s.textContent = ok ? ('Guardado ' + new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) + (Plat.online ? ' · enviando…' : ' · se enviará al recuperar señal')) : 'No se pudo guardar'; renderIssues(); if (ed?.apt) renderWallTabs(); };
   if (immediate) return doSave();
-  $('#saveState') && ($('#saveState').textContent = 'Guardando…');
+  const s = $('#saveState'); if (s) s.textContent = 'Guardando…';
   saveT = setTimeout(doSave, 500);
 }
-// Delegación de eventos del editor
 document.addEventListener('input', e => {
   if (!ed || !e.target.closest('#edBody')) return;
-  const t = e.target, k = t.dataset.k; if (!k) return;
-  if (t.tagName === 'SELECT') return; // se maneja en change
+  const t = e.target, k = t.dataset.k; if (!k || t.tagName === 'SELECT' || t.type === 'checkbox') return;
   if (t.dataset.h != null) ed.draft.hallazgos[+t.dataset.h][k] = t.value; else ed.draft[k] = t.value;
   persistSoon();
 });
@@ -1332,16 +1469,18 @@ document.addEventListener('change', async e => {
   if (!ed || !e.target.closest('#edBody')) return;
   const t = e.target;
   if (t.dataset.addph) {
-    const f = t.files?.[0]; if (!f) return;
+    const files = [...(t.files || [])]; if (!files.length) return;
     const it = BY_ID[ed.id]; const key = t.dataset.addph;
+    const arr = key === 'gen' ? (ed.draft.fotos ||= []) : (ed.draft.hallazgos[+key.slice(1)].fotos ||= []);
+    const max = key === 'gen' ? 2 : 4;
     toast('Procesando foto…');
     try {
-      const pid = await storePhoto(f, `KOA · ${it.name}${key.startsWith('h') ? ` · Daño ${+key.slice(1) + 1}` : ''}`);
-      if (key === 'gen') (ed.draft.fotos ||= []).push(pid); else (ed.draft.hallazgos[+key.slice(1)].fotos ||= []).push(pid);
-      await persistSoon(true); renderEditor(); toast('Foto guardada');
+      for (const f of files.slice(0, max - arr.length)) arr.push(await storePhoto(f, `KOA · ${it.name}${key.startsWith('h') ? ` · Daño ${+key.slice(1) + 1}` : ''}`));
+      await persistSoon(true, 'foto agregada'); renderEditor(); toast('Foto guardada');
     } catch (err) { console.error(err); toast('No se pudo procesar la foto'); }
     return;
   }
+  if (t.type === 'checkbox' && t.dataset.k === 'definitivo') { ed.draft.definitivo = t.checked; await persistSoon(true, t.checked ? 'cerrado sin acceso definitivo' : 'reabierto'); renderEditor(); return; }
   const k = t.dataset.k; if (!k || t.tagName !== 'SELECT') return;
   const h = ed.draft.hallazgos[+t.dataset.h];
   h[k] = t.value;
@@ -1358,33 +1497,35 @@ document.addEventListener('click', async e => {
     if (n.group === 'aptos') openApt(n.apt, n.wall); else openItem(n.id);
     return;
   }
+  if ($('.sheet').classList.contains('readonly')) return;
   if (t.dataset.status) {
+    if (ed.draft.status && ed.draft.status !== t.dataset.status && ((ed.draft.hallazgos || []).length || (ed.draft.fotos || []).length)) { if (!await ask('Cambiar el resultado', 'Ya hay información registrada en este elemento. Se conservará en el historial, pero dejará de verse. ¿Cambiar el resultado?', { ok: 'Cambiar' })) return; hist(ed.draft, 'cambio de resultado', { removed: { status: ed.draft.status, hallazgos: ed.draft.hallazgos, fotos: ed.draft.fotos } }); }
     ed.draft.status = t.dataset.status;
     if (t.dataset.status === 'con_dano' && !(ed.draft.hallazgos || []).length) ed.draft.hallazgos = [blankHz()];
-    await persistSoon(true); renderEditor(); return;
+    await persistSoon(true, 'resultado: ' + STATUS[t.dataset.status].n); renderEditor(); return;
   }
-  if (t.id === 'addHz') { ed.draft.hallazgos.push(blankHz()); await persistSoon(true); renderEditor(); setTimeout(() => { const b = $$('.hz').pop(); b?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return; }
-  if (t.dataset.delhz != null) { if (!confirm('¿Eliminar este daño y sus fotos?')) return; const [h] = ed.draft.hallazgos.splice(+t.dataset.delhz, 1); for (const p of h.fotos || []) DB.del('photos', p).catch(() => { }); await persistSoon(true); renderEditor(); return; }
+  if (t.id === 'addHz') { ed.draft.hallazgos.push(blankHz()); await persistSoon(true, 'daño agregado'); renderEditor(); setTimeout(() => { const b = $$('.hz').pop(); b?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return; }
+  if (t.dataset.delhz != null) { if (!await ask('Eliminar daño', 'El daño dejará de contar, pero quedará guardado en el historial del registro (el administrador puede verlo). ¿Eliminar?', { ok: 'Eliminar', danger: true })) return; const [h] = ed.draft.hallazgos.splice(+t.dataset.delhz, 1); hist(ed.draft, 'daño eliminado', { removed: h }); await persistSoon(true); renderEditor(); return; }
   if (t.dataset.sev) { ed.draft.hallazgos[+t.dataset.h].severidad = t.dataset.sev; await persistSoon(true); renderEditor(); return; }
   if (t.dataset.use) { const h = ed.draft.hallazgos[+t.dataset.h]; h.cantidad = h[t.dataset.use]; await persistSoon(true); renderEditor(); return; }
+  if (t.dataset.escala) { const h = ed.draft.hallazgos[+t.dataset.escala.slice(1)]; const ref = (h.fotos || [])[+t.dataset.i]; h.escala = h.escala === ref ? '' : (ref || ''); await persistSoon(true); renderEditor(); return; }
   if (t.dataset.rmph) {
-    if (!confirm('¿Quitar esta foto?')) return;
+    if (!await ask('Quitar foto', 'La foto se desvincula de este registro; el archivo se conserva en el servidor y queda en el historial. ¿Quitar?', { ok: 'Quitar', danger: true })) return;
     const key = t.dataset.rmph, i = +t.dataset.i;
     const arr = key === 'gen' ? ed.draft.fotos : ed.draft.hallazgos[+key.slice(1)].fotos;
-    const [pid] = arr.splice(i, 1); DB.del('photos', pid).catch(() => { });
+    const [ref] = arr.splice(i, 1); hist(ed.draft, 'foto quitada', { removed: { foto: ref } });
+    if (ref.startsWith('l:')) { DB.del('photos', ref).catch(() => { }); }
     await persistSoon(true); renderEditor(); return;
   }
+  if (t.id === 'addInt') { const nota = $('#intNota').value.trim(), at = $('#intAt').value; if (nota.length < 5) { toast('Describa cómo se notificó o qué ocurrió'); return; } (ed.draft.intentos ||= []).push({ at: at ? new Date(at).getTime() : Date.now(), nota, uid: Plat.uid }); await persistSoon(true, 'intento de acceso'); renderEditor(); return; }
+  if (t.dataset.delint != null) { ed.draft.intentos.splice(+t.dataset.delint, 1); if (ed.draft.intentos.length < 2) ed.draft.definitivo = false; await persistSoon(true); renderEditor(); return; }
+  if (t.id === 'reopen') { if (!await ask('Reabrir elemento', 'Se borra el resultado y los daños visibles; todo queda en el historial. ¿Reabrir?', { ok: 'Reabrir', danger: true })) return; hist(ed.draft, 'reabierto por administración', { removed: { status: ed.draft.status, hallazgos: ed.draft.hallazgos, fotos: ed.draft.fotos } }); Object.assign(ed.draft, { status: '', hallazgos: [], fotos: [], definitivo: false }); await persistSoon(true); renderEditor(); return; }
 });
 
-// ---------- Ajustes / inspector ----------
-function vAjustes() {
-  head('Inspector y datos', 'Datos del profesional responsable, sincronización y respaldo.');
-  const i = inspector || {};
+// ---------- Perfil del inspector ----------
+function profileFormHTML(i) {
   const f = (k, l, ph, req, type = 'text', span = 'c3') => `<div class="f ${span}"><label>${l}${req ? ' <em>*</em>' : ''}</label><input id="in_${k}" type="${type}" value="${esc(i[k] || '')}" placeholder="${ph}"></div>`;
-  $('#view').innerHTML = `
-  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Profesional responsable de la inspección</h3>
-    <p class="muted" style="font-size:13px;margin-top:-4px">Estos datos se estampan en cada foto de evidencia y en el informe técnico.</p>
-    <div class="fg">
+  return `<div class="fg">
       ${f('nombre', 'Nombre completo', 'Ing. …', true)}
       ${f('profesion', 'Profesión', 'Ingeniero civil', true)}
       ${f('matricula', 'Matrícula profesional', 'N.º de matrícula', true)}
@@ -1392,56 +1533,70 @@ function vAjustes() {
       ${f('telefono', 'Teléfono', '', false, 'tel', 'c2')}
       ${f('email', 'Correo electrónico', '', false, 'email', 'c2')}
       ${f('fechaInicio', 'Fecha de inicio de la inspección', '', true, 'date', 'c2')}
-    </div>
-    <div style="margin-top:14px"><button class="btn primary" id="saveInsp">Guardar datos del inspector</button></div>
-  </div>
-  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">${Sync.enabled ? "Sincronización" : "Dónde se guarda la información"}</h3>
-    ${Sync.enabled ? `<p style="font-size:13.5px">El portal está conectado a su servidor. Todo lo que se registre (datos y fotos) se guarda en el equipo y se envía al servidor automáticamente, así que el propietario lo ve desde cualquier dispositivo.</p>
-      <p class="muted" style="font-size:12.5px">Estado: ${esc($('#syncpill').textContent)} · Cambios pendientes por enviar: ${dirty.size}</p>
-      <button class="btn small" id="syncNow">Sincronizar ahora</button>`
-      : `<p style="font-size:13.5px">La información (registros y fotos) se guarda <b>en este dispositivo</b>, aunque no haya internet. Para entregarla al administrador, use <b>Descargar respaldo</b> y envíe el archivo; el administrador lo abre con <b>Cargar respaldo</b> en su equipo. El informe técnico en PDF se genera desde la sección <b>Informe técnico</b>.</p><p class="muted" style="font-size:12.5px">Recomendación: descargue un respaldo al terminar cada jornada de inspección.</p>`}
+      ${f('equipos', 'Equipos utilizados', 'Ej.: fisurómetro, flexómetro, dron, binoculares', false, 'text', 'c6')}
+    </div>`;
+}
+function readProfileForm() {
+  const d = {}; ['nombre', 'profesion', 'matricula', 'empresa', 'telefono', 'email', 'fechaInicio', 'equipos'].forEach(k => d[k] = $('#in_' + k).value.trim());
+  if (!d.nombre || !d.profesion || !d.matricula || !d.fechaInicio) { toast('Complete nombre, profesión, matrícula y fecha'); return null; }
+  return d;
+}
+function nameOf(uidv) { if (!uidv) return '—'; if (profiles[uidv]?.nombre) return profiles[uidv].nombre; if (uidv === Plat.uid) return Plat.me?.name || 'yo'; return 'Usuario'; }
+
+// ---------- Mi perfil / ajustes ----------
+function vAjustes() {
+  head('Mi perfil', 'Datos del profesional, apariencia y este dispositivo.');
+  const pend = Object.keys(outbox).length;
+  $('#view').innerHTML = `
+  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Profesional responsable de la inspección <span class="role ${Plat.isOwner ? 'owner' : ''}">${Plat.isOwner ? 'Administrador' : 'Inspector'}</span></h3>
+    <p class="muted" style="font-size:13px;margin-top:-4px">Estos datos se estampan en cada foto de evidencia y aparecen en el informe técnico. Sesión: <b>${esc(Plat.me?.name || 'usuario de Claude')}</b>.</p>
+    ${profileFormHTML(inspector || {})}
+    <div style="margin-top:14px"><button class="btn primary" id="saveInsp">Guardar datos</button></div>
   </div>
   <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Apariencia</h3>
     <div class="seg" id="themeSeg">${Object.entries(THEMES).map(([k, n]) => `<button class="${themePref() === k ? 'on' : ''}" data-theme-set="${k}">${themeIcon[k].replace('<svg ', '<svg width="15" height="15" ')}${n}</button>`).join('')}</div>
-    <p class="muted" style="font-size:12.5px;margin-bottom:0">“Automático” sigue la configuración del dispositivo (claro de día, oscuro de noche si así está configurado).</p>
+    <p class="muted" style="font-size:12.5px;margin-bottom:0">“Automático” sigue la configuración del dispositivo.</p>
   </div>
-  <div class="card glass"><h3 style="margin-top:0">Sesión y respaldo</h3>
-    <p class="muted" style="font-size:13px">El respaldo incluye todos los registros y las fotos. Puede cargarse en otro equipo para continuar o revisar la inspección.</p>
-    <div class="rep-actions"><button class="btn" id="logout2">Cerrar sesión (${esc(Sync.user)})</button><button class="btn" id="expJson">Descargar respaldo (.json)</button><label class="btn" style="position:relative">Cargar respaldo<input type="file" accept="application/json,.json" id="impJson" style="position:absolute;inset:0;opacity:0"></label><button class="btn danger" id="wipe">Borrar datos de este equipo</button></div>
+  <div class="card glass"><h3 style="margin-top:0">Este dispositivo</h3>
+    <p style="font-size:13.5px;line-height:1.5">Todo lo que registra se envía al servidor en el momento. Si pierde la señal (por ejemplo en los sótanos), los cambios quedan en una cola y se envían solos al recuperar la conexión; mientras tanto <b>no cierre esta pestaña</b>. Las fotos se borran del dispositivo una vez enviadas.</p>
+    <p class="muted" style="font-size:12.5px">Estado: ${esc($('#syncpill')?.textContent || '')} · Cambios pendientes de envío: <b>${pend}</b></p>
+    <div class="rep-actions"><button class="btn" id="syncNow">Enviar ahora</button><button class="btn" id="clearCache" ${pend ? 'disabled title="Primero deben enviarse los cambios pendientes"' : ''}>Limpiar caché local</button></div>
   </div>`;
-  $('#saveInsp').onclick = async () => {
-    const d = {}; ['nombre', 'profesion', 'matricula', 'empresa', 'telefono', 'email', 'fechaInicio'].forEach(k => d[k] = $('#in_' + k).value.trim());
-    if (!d.nombre || !d.profesion || !d.matricula || !d.fechaInicio) { toast('Complete nombre, profesión, matrícula y fecha'); return; }
-    await saveInspector(d); toast('Datos del inspector guardados'); go('inicio');
-  };
-  $('#syncNow') && ($('#syncNow').onclick = () => Sync.run().then(() => { toast('Sincronización ejecutada'); vAjustes(); }));
-  $('#expJson').onclick = exportJSON;
+  $('#saveInsp').onclick = async () => { const d = readProfileForm(); if (!d) return; await saveProfile(d); toast('Datos guardados'); };
+  $('#syncNow').onclick = () => Sync.flush().then(() => { toast('Sincronización ejecutada'); vAjustes(); });
   $('#themeSeg').onclick = e => { const b = e.target.closest('[data-theme-set]'); if (b) setTheme(b.dataset.themeSet); };
-  $('#logout2').onclick = logout;
-  $('#impJson').onchange = e => e.target.files[0] && importJSON(e.target.files[0]);
-  $('#wipe').onclick = async () => { if (!confirm('Esto borra TODOS los registros y fotos guardados en este equipo. ¿Ya descargó un respaldo?')) return; if (prompt('Escriba BORRAR para confirmar') !== 'BORRAR') return; await Promise.all(['items', 'photos', 'meta'].map(s => DB.clear(s))); recs = {}; inspector = null; dirty = new Set(); urlCache.clear(); toast('Datos borrados'); render(); };
+  $('#clearCache').onclick = async () => { if (!await ask('Limpiar caché local', 'Se borra la copia local de este dispositivo. Los datos del servidor no se tocan.', { ok: 'Limpiar' })) return; await Promise.all(['cache', 'photos'].map(s => DB.clear(s))); urlCache.clear(); toast('Caché limpiada'); };
 }
-const blobToDataURL = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); });
-async function exportJSON() {
-  toast('Preparando respaldo…');
-  const photos = {};
-  for (const [k, v] of await DB.entries('photos')) photos[k] = await blobToDataURL(v);
-  const data = { app: 'koa-inspeccion', version: 1, exportedAt: Date.now(), inspector, recs, photos };
-  download(new Blob([JSON.stringify(data)], { type: 'application/json' }), `KOA-inspeccion-respaldo-${new Date().toISOString().slice(0, 10)}.json`);
+
+// ---------- Administración (solo el dueño) ----------
+function vAdmin() {
+  if (!Plat.isOwner) return go('inicio');
+  head('Administración', 'Control de la inspección, inspectores, actividad y exportaciones.');
+  const s = stats();
+  const insp = Object.values(profiles).map(p => { const n = ITEMS.filter(it => recs[it.id]?._uid === p.uid && recs[it.id]?.status).length; const last = Math.max(0, ...ITEMS.map(it => recs[it.id]?._uid === p.uid ? (recs[it.id].updatedAt || 0) : 0)); return { ...p, n, last }; });
+  const acts = []; Object.values(recs).forEach(r => (r.historial || []).forEach(h => acts.push({ ...h, item: r.item }))); acts.sort((a, b) => b.at - a.at);
+  $('#view').innerHTML = `
+  ${config.locked ? `<div class="banner lock">🔒 Inspección <b>cerrada</b> ${config.lockedAt ? 'el ' + fdt(config.lockedAt) : ''}. Los inspectores solo pueden consultar.</div>` : `<div class="banner info">🟢 Inspección <b>abierta</b>: los inspectores pueden registrar y corregir sus propios elementos.</div>`}
+  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Estado de la inspección</h3>
+    <div class="kpis"><div class="stat glass"><small>Avance</small><b>${s.pct}%</b></div><div class="stat glass"><small>Elementos con daño</small><b>${s.con}</b></div><div class="stat glass"><small>Daños atribuibles al sismo</small><b>${s.hallSismo}<span class="muted" style="font-size:16px"> / ${s.hall}</span></b></div><div class="stat glass"><small>Fotos</small><b>${s.fotos}</b></div></div>
+    <div class="rep-actions">${config.locked ? '<button class="btn" id="unlock">Reabrir inspección</button>' : '<button class="btn danger" id="lock">Cerrar inspección (solo lectura para inspectores)</button>'}</div>
+    <p class="muted" style="font-size:12.5px;margin-bottom:0">Para dar o quitar acceso a un inspector use <b>Compartir</b> (arriba a la derecha en claude.ai): invítelo por correo como <b>Editor</b>. Al quitarlo, deja de ver y escribir de inmediato.</p>
+  </div>
+  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Inspectores</h3>
+    ${insp.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px">${['Nombre', 'Profesión', 'Matrícula', 'Elementos registrados', 'Último registro'].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}${insp.map(p => `<tr><td style="padding:6px">${esc(p.nombre)}${p.uid === Plat.uid ? ' <span class="role owner">yo</span>' : ''}</td><td style="padding:6px">${esc(p.profesion)}</td><td style="padding:6px">${esc(p.matricula)}</td><td style="padding:6px">${p.n}</td><td style="padding:6px">${p.last ? fdt(p.last) : '—'}</td></tr>`).join('')}</table>` : '<p class="muted" style="font-size:13px">Ningún inspector ha registrado su perfil todavía.</p>'}
+  </div>
+  <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Actividad reciente</h3>
+    <div class="act-list">${acts.slice(0, 80).map(a => `<div><span>${esc(fdt(a.at))}</span><span><b>${esc(BY_ID[a.item]?.name || a.item)}</b><br><small>${esc(a.accion)}${a.status ? ' · ' + (STATUS[a.status]?.n || a.status) : ''}${a.removed ? ' · <span style="color:var(--red)">con eliminación</span>' : ''}</small></span><small>${esc(nameOf(a.uid))}</small></div>`).join('') || '<div><span></span><span class="muted">Sin actividad.</span><span></span></div>'}</div>
+  </div>
+  <div class="card glass"><h3 style="margin-top:0">Exportaciones</h3>
+    <div class="rep-actions"><button class="btn" id="expJson">Copia de seguridad (JSON)</button><button class="btn" id="csvQ2">Cuadro de cantidades (CSV)</button><button class="btn" id="csvD2">Detalle de daños (CSV)</button></div>
+    <p class="muted" style="font-size:12.5px;margin-bottom:0">La copia JSON incluye todos los registros con los identificadores de sus fotos; el informe se genera en <b>Informe técnico</b>.</p>
+  </div>`;
+  $('#lock')?.addEventListener('click', async () => { if (!await ask('Cerrar inspección', 'Los inspectores pasarán a solo lectura. Podrá reabrirla cuando quiera.', { ok: 'Cerrar inspección', danger: true })) return; await Plat.db.doc('config/estado').set({ locked: true, lockedAt: Date.now(), lockedBy: Plat.uid }); toast('Inspección cerrada'); });
+  $('#unlock')?.addEventListener('click', async () => { await Plat.db.doc('config/estado').set({ locked: false, lockedAt: null, lockedBy: Plat.uid }); toast('Inspección reabierta'); });
+  $('#expJson').onclick = () => dl(`KOA-respaldo-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ app: 'koa-inspeccion', version: 2, exportedAt: Date.now(), config, profiles, recs }, null, 1));
+  $('#csvQ2').onclick = csvQuantities; $('#csvD2').onclick = csvDetail;
 }
-async function importJSON(file) {
-  try {
-    const data = JSON.parse(await file.text());
-    if (data.app !== 'koa-inspeccion') throw new Error('archivo');
-    let n = 0;
-    for (const [k, v] of Object.entries(data.photos || {})) { if (!(await DB.get('photos', k))) { const b = await (await fetch(v)).blob(); await DB.put('photos', k, b); } }
-    for (const [id, r] of Object.entries(data.recs || {})) { if (!recs[id] || (r.updatedAt || 0) > (recs[id].updatedAt || 0)) { recs[id] = r; await DB.put('items', id, r); dirty.add(id); n++; } }
-    if (data.inspector && (!inspector || (data.inspector.updatedAt || 0) > (inspector.updatedAt || 0))) { inspector = data.inspector; await DB.put('meta', 'inspector', inspector); dirty.add('__inspector'); }
-    await DB.put('meta', 'dirty', [...dirty]); Sync.schedule();
-    toast(`Respaldo cargado: ${n} registros actualizados`); render();
-  } catch { toast('El archivo no es un respaldo válido del portal'); }
-}
-function download(blob, name) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
 
 // ---------- Informe ----------
 function quantities() {
@@ -1453,8 +1608,10 @@ function quantities() {
       const unit = h.rep === 'R99' ? (h.unidad || '') : REP_BY[h.rep].unit;
       const name = h.rep === 'R99' ? `Otra: ${(h.espec || '').split(/[.\n]/)[0].slice(0, 60)}` : REP_BY[h.rep].name;
       const key = h.rep === 'R99' ? `R99|${name}|${unit}` : h.rep;
-      const q = (map[key] ||= { code: h.rep, name, unit, total: 0, n: 0, comunes: 0, fachadas: 0, aptos: 0, privadas: 0 });
+      const q = (map[key] ||= { code: h.rep, name, unit, total: 0, sismo: 0, otros: 0, n: 0, comunes: 0, fachadas: 0, aptos: 0, privadas: 0, pisos: {} });
       const c = num(h.cantidad); q.total += c; q.n++; q[it.group] += c;
+      if (h.atrib === 'sismo' || h.atrib === 'agravado') q.sismo += c; else q.otros += c;
+      const fl = it.floor == null ? 'Gral' : it.floor; q.pisos[fl] = (q.pisos[fl] || 0) + c;
     });
   });
   return Object.values(map).sort((a, b) => a.code.localeCompare(b.code));
@@ -1468,7 +1625,7 @@ function vInforme() {
   $('#view').innerHTML = `
   <div class="card glass">
     <h3 style="margin-top:0">${complete ? '✅ Inspección completa' : '⏳ Inspección en curso'}</h3>
-    <p class="muted" style="font-size:13.5px;margin-top:-4px">${complete ? 'Todos los elementos están inspeccionados y documentados. El informe técnico se puede generar como versión final.' : `Faltan <b>${pend.length}</b> elementos por completar. Puede generar un <b>borrador</b>, que llevará la marca “BORRADOR · inspección incompleta” y la lista de pendientes.`}</p>
+    <p class="muted" style="font-size:13.5px;margin-top:-4px">${complete ? 'Todos los elementos están inspeccionados y documentados. El informe se puede generar como versión final.' : `Faltan <b>${pend.length}</b> elementos por completar. Puede generar un <b>borrador</b>, que llevará la marca “BORRADOR · inspección incompleta” y la lista de pendientes.`}</p>
     <div class="kpis">
       <div class="stat glass"><small>Avance</small><b>${s.pct}%</b></div>
       <div class="stat glass"><small>Con daño</small><b>${s.con}</b></div>
@@ -1476,65 +1633,73 @@ function vInforme() {
       <div class="stat glass"><small>Actividades a cotizar</small><b>${q.length}</b></div>
     </div>
     <div class="rep-actions">
-      <button class="btn primary" id="genRep" ${inspector?.nombre ? '' : 'disabled'}>${complete ? 'Generar informe técnico' : 'Generar borrador del informe'}</button>
-      <button class="btn" id="csvQ">Cuadro de cantidades (CSV / Excel)</button>
-      <button class="btn" id="csvD">Detalle de daños (CSV / Excel)</button>
+      <button class="btn primary" id="genRep">${complete ? 'Ver informe técnico' : 'Ver borrador del informe'}</button>
+      <button class="btn" id="csvQ">Cuadro de cantidades (CSV)</button>
+      <button class="btn" id="csvD">Detalle de daños (CSV)</button>
     </div>
-    ${inspector?.nombre ? '' : '<p class="muted" style="font-size:12.5px">Registre primero los datos del inspector.</p>'}
+    <p class="muted" style="font-size:12.5px;margin-bottom:0">El informe se descarga como archivo <b>.html</b> con las fotos incluidas; ábralo en el navegador y use <i>Imprimir → Guardar como PDF</i>.</p>
   </div>
   ${pend.length ? `<div class="card glass" style="margin-top:16px"><h3 style="margin-top:0">Elementos pendientes (${pend.length})</h3><div class="pend-list">${pend.slice(0, 400).map(it => `<button data-item="${it.id}"><span class="dot ${itemState(it.id) === 'incompleto' ? 'inc' : ''}" style="${itemState(it.id) === 'incompleto' ? '' : `background:${stateColor(it.id)}`}"></span>${esc(it.name)}<small>${esc(GROUPS[it.group].short)} · ${stateLabel(it.id)}</small></button>`).join('')}</div></div>` : ''}
-  ${q.length ? `<div class="card glass" style="margin-top:16px"><h3 style="margin-top:0">Vista previa · cuadro de cantidades</h3><div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">${['Código', 'Actividad', 'Unidad', 'Cantidad', 'Ubicaciones'].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}${q.map(r => `<tr><td style="padding:6px">${r.code}</td><td style="padding:6px">${esc(r.name)}</td><td style="padding:6px">${esc(r.unit)}</td><td style="padding:6px;text-align:right">${fmt(r.total)}</td><td style="padding:6px;text-align:right">${r.n}</td></tr>`).join('')}</table></div></div>` : ''}`;
+  ${q.length ? `<div class="card glass" style="margin-top:16px"><h3 style="margin-top:0">Vista previa · cuadro de cantidades</h3><div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">${['Código', 'Actividad', 'Unidad', 'Cantidad', 'Atrib. sismo', 'Ubicaciones'].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}${q.map(r => `<tr><td style="padding:6px">${r.code}</td><td style="padding:6px">${esc(r.name)}</td><td style="padding:6px">${esc(r.unit)}</td><td style="padding:6px;text-align:right">${fmt(r.total)}</td><td style="padding:6px;text-align:right">${fmt(r.sismo)}</td><td style="padding:6px;text-align:right">${r.n}</td></tr>`).join('')}</table></div></div>` : ''}`;
   $('#genRep').onclick = () => buildReport(!complete);
   $('#csvQ').onclick = csvQuantities; $('#csvD').onclick = csvDetail;
 }
 function csv(rows) { return '﻿' + rows.map(r => r.map(c => { const s = String(c ?? ''); return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(';')).join('\r\n'); }
 function csvQuantities() {
   const q = quantities();
-  const rows = [['Código', 'Actividad', 'Unidad', 'Cantidad total', 'N.º ubicaciones', 'Áreas comunes', 'Fachadas', 'Apartamentos', 'Locales y depósitos', 'Valor unitario', 'Valor total']];
-  q.forEach(r => rows.push([r.code, r.name, r.unit, fmt(r.total), r.n, fmt(r.comunes), fmt(r.fachadas), fmt(r.aptos), fmt(r.privadas), '', '']));
-  download(new Blob([csv(rows)], { type: 'text/csv;charset=utf-8' }), 'KOA-cuadro-de-cantidades.csv');
+  const floors = [-2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 'Gral'];
+  const rows = [['Código', 'Actividad', 'Unidad', 'Cantidad total', 'Atribuible al sismo', 'Otros / indeterminado', 'N.º ubicaciones', 'Áreas comunes', 'Fachadas', 'Apartamentos', 'Locales y depósitos', ...floors.map(f => f === 'Gral' ? 'General' : f === 12 ? 'Cubierta' : f < 0 ? `Sótano ${f}` : `Piso ${f}`), 'Valor unitario', 'Valor total']];
+  q.forEach(r => rows.push([r.code, r.name, r.unit, fmt(r.total), fmt(r.sismo), fmt(r.otros), r.n, fmt(r.comunes), fmt(r.fachadas), fmt(r.aptos), fmt(r.privadas), ...floors.map(f => r.pisos[f] ? fmt(r.pisos[f]) : ''), '', '']));
+  dl('KOA-cuadro-de-cantidades.csv', csv(rows));
 }
 function csvDetail() {
-  const rows = [['Componente', 'Sección', 'Elemento inspeccionado', 'Estado', 'N.º daño', 'Elemento afectado', 'Tipo de daño', 'Severidad', 'Ubicación', 'Ancho fisura (mm)', 'Longitud (m)', 'Área (m²)', 'Código reparación', 'Reparación', 'Unidad', 'Cantidad', 'Procedimiento de reparación', 'Comentario técnico', 'Fotos', 'Fecha registro', 'Inspector']];
+  const rows = [['Componente', 'Sección', 'Elemento inspeccionado', 'Estado', 'Atendido por', 'N.º daño', 'Elemento afectado', 'Tipo de daño', 'Severidad', 'Atribución', 'Justificación', 'Eje', 'Ubicación', 'Ancho fisura (mm)', 'Longitud (m)', 'Área (m²)', 'Código reparación', 'Reparación', 'Unidad', 'Cantidad', 'Procedimiento de reparación', 'Comentario técnico', 'Fotos', 'Fecha registro', 'Inspector']];
   ITEMS.forEach(it => {
     const r = recs[it.id];
-    const base = [GROUPS[it.group].n, it.secName, it.name, stateLabel(it.id)];
-    if (r?.status === 'con_dano' && r.hallazgos?.length) r.hallazgos.forEach((h, i) => rows.push([...base, i + 1, h.elemento, h.dano, SEV[h.severidad]?.n || '', h.ubicacion, h.ancho, h.longitud, h.area, h.rep, REP_BY[h.rep]?.name || '', h.rep === 'R99' ? h.unidad : REP_BY[h.rep]?.unit || '', h.cantidad, h.espec, h.comentario, (h.fotos || []).length, fdt(r.updatedAt), r.by]));
-    else rows.push([...base, '', '', '', '', '', '', '', '', '', '', '', '', r?.nota || '', '', (r?.fotos || []).length, fdt(r?.updatedAt), r?.by || '']);
+    const base = [GROUPS[it.group].n, it.secName, it.name, stateLabel(it.id), r?.atendidoPor || ''];
+    if (r?.status === 'con_dano' && r.hallazgos?.length) r.hallazgos.forEach((h, i) => rows.push([...base, i + 1, h.elemento, h.dano, SEV[h.severidad]?.n || '', ATRIB[h.atrib]?.n || '', h.atribJust || '', h.eje || '', h.ubicacion, h.ancho, h.longitud, h.area, h.rep, REP_BY[h.rep]?.name || '', h.rep === 'R99' ? h.unidad : REP_BY[h.rep]?.unit || '', h.cantidad, h.espec, h.comentario, (h.fotos || []).length, fdt(r.updatedAt), nameOf(r._uid)]));
+    else rows.push([...base, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', r?.nota || (r?.intentos || []).map(x => `${fdt(x.at)}: ${x.nota}`).join(' | '), (r?.fotos || []).length, fdt(r?.updatedAt), r ? nameOf(r._uid) : '']);
   });
-  download(new Blob([csv(rows)], { type: 'text/csv;charset=utf-8' }), 'KOA-detalle-de-danos.csv');
+  dl('KOA-detalle-de-danos.csv', csv(rows));
 }
-function pill(sev) { return sev ? `<span class="pill" style="background:${SEV[sev].c}">${SEV[sev].n}</span>` : ''; }
-function stPill(id) { return `<span class="pill" style="background:${stateColor(id)}">${stateLabel(id)}</span>`; }
-function hzTable(it, r) {
+const pill = sev => sev ? `<span class="pill" style="background:${SEV[sev].c}">${SEV[sev].n}</span>` : '';
+const stPill = id => `<span class="pill" style="background:${stateColor(id)}">${stateLabel(id)}</span>`;
+// Numeración de fotos para el informe
+function photoIndex() { const idx = new Map(); let n = 0; ITEMS.forEach(it => { const r = recs[it.id]; if (!r) return; photoRefs(r).forEach(ref => { if (!idx.has(ref)) idx.set(ref, 'F-' + String(++n).padStart(4, '0')); }); }); return idx; }
+function hzTable(it, r, PI) {
+  const ph = (refs, esc_) => `<div class="rphotos">${(refs || []).map(p => `<figure><img data-ph="${p}"><figcaption>${PI.get(p) || ''}${esc_ === p ? ' · detalle con escala' : ''}</figcaption></figure>`).join('')}</div>`;
   return (r.hallazgos || []).map((h, i) => {
     const unit = h.rep === 'R99' ? h.unidad : REP_BY[h.rep]?.unit;
-    return `<div class="item"><div class="ih"><span>${esc(it.name)} — Daño ${i + 1}</span>${pill(h.severidad)}</div>
+    return `<div class="item"><div class="ih"><span>${esc(it.name)} — Daño ${i + 1}</span><span>${h.atrib ? `<span class="pill" style="background:#555">${ATRIB[h.atrib].n}</span> ` : ''}${pill(h.severidad)}</span></div>
     <table><tr><th style="width:24%">Elemento afectado</th><td>${esc(h.elemento)}</td><th style="width:18%">Tipo de daño</th><td>${esc(h.dano)}</td></tr>
-    <tr><th>Ubicación</th><td colspan="3">${esc(h.ubicacion || '—')}</td></tr>
+    <tr><th>Ubicación</th><td colspan="3">${h.eje ? `Eje ${esc(h.eje)} · ` : ''}${esc(h.ubicacion || '—')}</td></tr>
     <tr><th>Medidas</th><td colspan="3">Ancho de fisura: ${h.ancho ? fmt(num(h.ancho)) + ' mm' : '—'} · Longitud: ${h.longitud ? fmt(num(h.longitud)) + ' m' : '—'} · Área: ${h.area ? fmt(num(h.area)) + ' m²' : '—'}</td></tr>
+    ${h.atribJust ? `<tr><th>Atribución</th><td colspan="3">${esc(ATRIB[h.atrib]?.n || '')}: ${esc(h.atribJust)}</td></tr>` : ''}
     <tr><th>Reparación recomendada</th><td colspan="3"><b>${esc(h.rep)} · ${esc(REP_BY[h.rep]?.name || '')}</b> — Cantidad: <b>${fmt(num(h.cantidad))} ${esc(unit || '')}</b></td></tr>
     <tr><th>Procedimiento de reparación</th><td colspan="3">${esc(h.espec).replace(/\n/g, '<br>')}</td></tr>
     <tr><th>Comentario técnico</th><td colspan="3">${esc(h.comentario).replace(/\n/g, '<br>')}</td></tr></table>
-    <div class="rphotos">${(h.fotos || []).map(p => `<img data-ph="${p}">`).join('')}</div></div>`;
-  }).join('') + (r.nota ? `<p><b>Observaciones:</b> ${esc(r.nota)}</p>` : '') + ((r.fotos || []).length ? `<div class="rphotos">${r.fotos.map(p => `<img data-ph="${p}">`).join('')}</div>` : '');
+    ${ph(h.fotos, h.escala)}</div>`;
+  }).join('') + (r.atendidoPor ? `<p><b>Atendido por:</b> ${esc(r.atendidoPor)}</p>` : '') + (r.nota ? `<p><b>Observaciones:</b> ${esc(r.nota)}</p>` : '') + ((r.fotos || []).length ? ph(r.fotos) : '');
 }
-async function buildReport(draft) {
-  const s = stats(), q = quantities();
+function reportHTML(draft) {
+  const s = stats(), q = quantities(), PI = photoIndex();
   const dates = Object.values(recs).map(r => r.updatedAt).filter(Boolean);
   const dmin = dates.length ? Math.min(...dates) : null, dmax = dates.length ? Math.max(...dates) : null;
-  const grpRows = Object.entries(GROUPS).map(([g, G]) => { const st = stats(ITEMS.filter(i => i.group === g)); return `<tr><td>${G.n}</td><td class="num">${st.total}</td><td class="num">${st.sin}</td><td class="num">${st.con}</td><td class="num">${st.noapl}</td><td class="num">${st.noacc + st.inc + st.pend}</td><td class="num">${st.sev.leve}</td><td class="num">${st.sev.moderado}</td><td class="num">${st.sev.severo}</td><td class="num">${st.sev.critico}</td></tr>`; }).join('');
+  const insp = Object.values(profiles).map(p => ({ ...p, n: ITEMS.filter(it => recs[it.id]?._uid === p.uid && recs[it.id]?.status).length })).sort((a, b) => b.n - a.n);
+  const main = insp[0] || inspector || {};
+  const inspLine = p => `${esc(p.nombre || '')} · ${esc(p.profesion || '')} · Matrícula ${esc(p.matricula || '')}${p.empresa ? ' · ' + esc(p.empresa) : ''}`;
+  const grpRows = Object.entries(GROUPS).map(([g, G]) => { const st = stats(ITEMS.filter(i => i.group === g)); return `<tr><td>${G.n}</td><td class="num">${st.total}</td><td class="num">${st.sin}</td><td class="num">${st.con}</td><td class="num">${st.noapl}</td><td class="num">${st.noaccdef}</td><td class="num">${st.noacc + st.inc + st.pend}</td><td class="num">${st.sev.leve}</td><td class="num">${st.sev.moderado}</td><td class="num">${st.sev.severo}</td><td class="num">${st.sev.critico}</td></tr>`; }).join('');
   const detailFor = group => SECTIONS.filter(x => x.group === group).map(sec => {
     const dam = sec.items.filter(it => recs[it.id]?.status === 'con_dano');
     if (!dam.length) return '';
-    return `<h3>${esc(sec.name)}${sec.nivel ? ` <span style="font-weight:400;color:#666">· ${esc(sec.nivel)}</span>` : ''}</h3>` + dam.map(it => hzTable(it, recs[it.id])).join('');
+    return `<h3>${esc(sec.name)}${sec.nivel ? ` <span style="font-weight:400;color:#666">· ${esc(sec.nivel)}</span>` : ''}</h3>` + dam.map(it => hzTable(it, recs[it.id], PI)).join('');
   }).join('') || '<p>No se registraron daños en este componente.</p>';
   const statusTable = group => `<table><tr><th>Elemento</th><th>Sección</th><th>Estado</th><th class="num">Daños</th></tr>${ITEMS.filter(i => i.group === group).map(it => `<tr><td>${esc(it.name)}</td><td>${esc(it.secName)}</td><td>${stPill(it.id)}</td><td class="num">${(recs[it.id]?.status === 'con_dano' ? recs[it.id].hallazgos.length : 0) || ''}</td></tr>`).join('')}</table>`;
-  const aptTable = `<table><tr><th>Apto</th><th>Piso</th><th>Muro hacia pasillo</th><th>Muro de fachada</th><th class="num">Daños</th></tr>${APTS.map(a => { const p = `a${a}-pasillo`, f = `a${a}-fachada`; const n = [p, f].reduce((t, id) => t + (recs[id]?.status === 'con_dano' ? recs[id].hallazgos.length : 0), 0); return `<tr><td><b>${a}</b></td><td>${aptFloor(a)}</td><td>${stPill(p)}</td><td>${stPill(f)}</td><td class="num">${n || ''}</td></tr>`; }).join('')}</table>`;
+  const aptTable = `<table><tr><th>Apto</th><th>Piso</th><th>Muro hacia pasillo</th><th>Muro de fachada</th><th class="num">Daños</th><th>Atendido por</th></tr>${APTS.map(a => { const p = `a${a}-pasillo`, f = `a${a}-fachada`; const n = [p, f].reduce((t, id) => t + (recs[id]?.status === 'con_dano' ? recs[id].hallazgos.length : 0), 0); return `<tr><td><b>${a}</b></td><td>${aptFloor(a)}</td><td>${stPill(p)}</td><td>${stPill(f)}</td><td class="num">${n || ''}</td><td>${esc(recs[p]?.atendidoPor || recs[f]?.atendidoPor || '')}</td></tr>`; }).join('')}</table>`;
   const pend = ITEMS.filter(it => !isDone(it.id));
   const sinDano = ITEMS.filter(it => recs[it.id]?.status === 'sin_dano' && (recs[it.id].fotos || []).length);
-  const totalCant = q.length;
-  const html = `
+  const equipos = [...new Set(insp.map(p => p.equipos).filter(Boolean))].join('; ');
+  return `
   ${draft ? '<div class="watermark">BORRADOR · INSPECCIÓN INCOMPLETA</div>' : ''}
   <section class="cover">
     <div class="top">
@@ -1545,45 +1710,43 @@ async function buildReport(draft) {
     <table style="font-size:12.5px">
       <tr><th style="width:32%">Objeto</th><td>Identificación, cuantificación y recomendaciones de reparación de los daños en áreas comunes, fachadas y muros de unidades privadas que lindan con áreas comunes, como base para el cálculo de la indemnización y la cotización de las reparaciones.</td></tr>
       <tr><th>Evento</th><td>${PROJECT.evento}</td></tr>
-      <tr><th>Profesional responsable</th><td>${esc(inspector?.nombre)} · ${esc(inspector?.profesion)} · Matrícula ${esc(inspector?.matricula)}${inspector?.empresa ? ' · ' + esc(inspector.empresa) : ''}</td></tr>
-      <tr><th>Período de inspección</th><td>${inspector?.fechaInicio ? fdate(inspector.fechaInicio + 'T12:00') : fdate(dmin)} — ${fdate(dmax)}</td></tr>
+      <tr><th>Profesional responsable</th><td>${inspLine(main)}${insp.length > 1 ? `<br><span style="color:#555">Con la participación de: ${insp.slice(1).map(inspLine).join('; ')}</span>` : ''}</td></tr>
+      <tr><th>Período de inspección</th><td>${main.fechaInicio ? fdate(main.fechaInicio + 'T12:00') : fdate(dmin)} — ${fdate(dmax)}</td></tr>
       <tr><th>Fecha del informe</th><td>${fdate(Date.now())}</td></tr>
-      <tr><th>Estado</th><td>${draft ? `<b style="color:#d70015">BORRADOR</b> · ${s.pct}% de los elementos completos (${pend.length} pendientes)` : '<b>Versión final</b> · 100% de los elementos inspeccionados'}</td></tr>
+      <tr><th>Estado</th><td>${draft ? `<b style="color:#d70015">BORRADOR</b> · ${s.pct}% de los elementos completos (${pend.length} pendientes)` : '<b>Versión final</b> · 100% de los elementos inspeccionados'}${config.locked ? ' · Inspección cerrada por la administración el ' + fdt(config.lockedAt) : ''}</td></tr>
     </table>
   </section>
-
   <h2 class="pb">1. Información general</h2>
   <table>
     <tr><th style="width:30%">Proyecto</th><td>${PROJECT.nombre}</td></tr>
     <tr><th>Dirección</th><td>${PROJECT.direccion}</td></tr>
     <tr><th>Descripción</th><td>${PROJECT.descripcion}</td></tr>
     <tr><th>Evento</th><td>${PROJECT.evento}</td></tr>
-    <tr><th>Inspector</th><td>${esc(inspector?.nombre)} · ${esc(inspector?.profesion)} · Mat. ${esc(inspector?.matricula)}${inspector?.telefono ? ' · Tel. ' + esc(inspector.telefono) : ''}${inspector?.email ? ' · ' + esc(inspector.email) : ''}</td></tr>
+    <tr><th>Inspector(es)</th><td>${insp.map(p => inspLine(p) + (p.telefono ? ' · Tel. ' + esc(p.telefono) : '') + (p.email ? ' · ' + esc(p.email) : '')).join('<br>') || inspLine(main)}</td></tr>
+    ${equipos ? `<tr><th>Equipos utilizados</th><td>${esc(equipos)}</td></tr>` : ''}
   </table>
-
   <h2>2. Alcance</h2>
   <p>La inspección cubre: (a) las <b>áreas comunes</b> del edificio: sótanos −1 y −2 (parqueaderos de forma global, rampas, muros de contención, cuartos técnicos y circulaciones), piso 1 (acceso, lobby, zona común y piscina), puntos fijos y pasillos de los pisos 2 a 11, cubierta e instalaciones comunes; (b) las <b>fachadas exteriores</b>, inspeccionadas desde el exterior y divididas en paños por piso; (c) en cada uno de los <b>130 apartamentos</b>, los dos muros que lindan con áreas comunes: el <b>muro hacia el pasillo</b> y el <b>muro de fachada</b> (cara interior); y (d) los muros de los <b>2 locales comerciales</b> y los <b>9 depósitos</b> que lindan con áreas comunes. En total se definieron <b>${ITEMS.length}</b> elementos de inspección.</p>
   <p>El alcance se limita a la identificación, medición y recomendación de reparación de los daños observados.</p>
-
   <h2>3. Metodología</h2>
-  <p>Inspección visual elemento por elemento. Cada elemento se clasifica como <i>sin daño</i> (con foto de evidencia), <i>con daño</i>, <i>sin acceso</i> o <i>no aplica</i>. Para cada daño se registra el elemento afectado, el tipo de daño, la severidad, la ubicación, las medidas (ancho de fisura, longitud y área), la reparación recomendada con su cantidad de obra, el procedimiento específico de reparación, un comentario técnico y 1 a 2 fotografías con sello de fecha, ubicación e inspector.</p>
+  <p>Inspección visual elemento por elemento${equipos ? `, con apoyo de ${esc(equipos)}` : ''}. Cada elemento se clasifica como <i>sin daño</i> (con foto de evidencia), <i>con daño</i>, <i>sin acceso</i> (con registro de intentos) o <i>no aplica</i>. Para cada daño se registra el elemento afectado, el tipo de daño, la severidad, la atribución al sismo, la ubicación, las medidas (ancho de fisura, longitud y área), la reparación recomendada con su cantidad de obra, el procedimiento específico de reparación, un comentario técnico y de 1 a 4 fotografías numeradas con sello de fecha, ubicación e inspector; en fisuras y grietas, una de ellas es de detalle con escala.</p>
   <table><tr><th>Severidad</th><th>Criterio</th></tr>
     <tr><td>${pill('leve')}</td><td>Daño superficial o estético (p. ej., fisuras capilares en revoque o pintura) que no compromete el funcionamiento del elemento.</td></tr>
     <tr><td>${pill('moderado')}</td><td>Daño que requiere reparación localizada del elemento (p. ej., fisuras de 1 a 3 mm, desprendimientos parciales, desajuste de carpinterías).</td></tr>
     <tr><td>${pill('severo')}</td><td>Daño extenso que requiere reconstrucción o reposición del elemento (p. ej., grietas mayores, mampostería fracturada o desplazada).</td></tr>
     <tr><td>${pill('critico')}</td><td>Daño que representa riesgo para las personas y requiere acción inmediata (apuntalamiento, aislamiento del área).</td></tr></table>
-
+  <table><tr><th>Atribución</th><th>Criterio</th></tr>${Object.values(ATRIB).map(a => `<tr><td>${a.n}</td><td>${a.n === ATRIB.sismo.n ? 'El daño es consecuencia directa del evento sísmico.' : a.n === ATRIB.agravado.n ? 'Existía una afectación previa que el sismo amplió o reactivó; se repara la condición actual.' : a.n === ATRIB.no_sismo.n ? 'El daño obedece a otra causa (humedad, desgaste, uso) sin relación con el sismo.' : 'No es posible determinar la causa con la inspección visual.'}</td></tr>`).join('')}</table>
   <h2>4. Resumen de resultados</h2>
-  <table class="keep"><tr><th>Componente</th><th class="num">Elementos</th><th class="num">Sin daño</th><th class="num">Con daño</th><th class="num">No aplica</th><th class="num">Pendientes</th><th class="num">Leves</th><th class="num">Moderados</th><th class="num">Severos</th><th class="num">Críticos</th></tr>${grpRows}
-  <tr><th>Total</th><th class="num">${s.total}</th><th class="num">${s.sin}</th><th class="num">${s.con}</th><th class="num">${s.noapl}</th><th class="num">${s.noacc + s.inc + s.pend}</th><th class="num">${s.sev.leve}</th><th class="num">${s.sev.moderado}</th><th class="num">${s.sev.severo}</th><th class="num">${s.sev.critico}</th></tr></table>
-  <p>Se registraron <b>${s.hall}</b> daños en <b>${s.con}</b> elementos, que dan lugar a <b>${totalCant}</b> actividades de reparación (sección 5). Las severidades leve, moderado, severo y crítico se cuentan por daño.</p>
-
+  <table class="keep"><tr><th>Componente</th><th class="num">Elementos</th><th class="num">Sin daño</th><th class="num">Con daño</th><th class="num">No aplica</th><th class="num">Sin acceso def.</th><th class="num">Pendientes</th><th class="num">Leves</th><th class="num">Moderados</th><th class="num">Severos</th><th class="num">Críticos</th></tr>${grpRows}
+  <tr><th>Total</th><th class="num">${s.total}</th><th class="num">${s.sin}</th><th class="num">${s.con}</th><th class="num">${s.noapl}</th><th class="num">${s.noaccdef}</th><th class="num">${s.noacc + s.inc + s.pend}</th><th class="num">${s.sev.leve}</th><th class="num">${s.sev.moderado}</th><th class="num">${s.sev.severo}</th><th class="num">${s.sev.critico}</th></tr></table>
+  <p>Se registraron <b>${s.hall}</b> daños en <b>${s.con}</b> elementos, de los cuales <b>${s.hallSismo}</b> se atribuyen al sismo (directamente o como agravamiento). Dan lugar a <b>${q.length}</b> actividades de reparación (sección 5).</p>
   <h2 class="pb">5. Cuadro de cantidades de obra (para cotización)</h2>
-  <p>Cantidades consolidadas a partir de los daños registrados. Los contratistas deben diligenciar el valor unitario y el valor total de cada actividad.</p>
-  <table><tr><th>Código</th><th style="width:30%">Actividad</th><th>Unidad</th><th class="num">Cantidad</th><th class="num">Ubic.</th><th class="num">Comunes</th><th class="num">Fachadas</th><th class="num">Aptos</th><th class="num">Locales / dep.</th><th style="width:11%">Valor unitario</th><th style="width:11%">Valor total</th></tr>
-  ${q.map(r => `<tr><td>${r.code}</td><td>${esc(r.name)}</td><td>${esc(r.unit)}</td><td class="num"><b>${fmt(r.total)}</b></td><td class="num">${r.n}</td><td class="num">${fmt(r.comunes)}</td><td class="num">${fmt(r.fachadas)}</td><td class="num">${fmt(r.aptos)}</td><td class="num">${fmt(r.privadas)}</td><td></td><td></td></tr>`).join('') || '<tr><td colspan="11">Sin actividades registradas.</td></tr>'}
-  <tr><th colspan="9" style="text-align:right">Total costo directo</th><td colspan="2"></td></tr></table>
-
+  <p>Cantidades consolidadas a partir de los daños registrados. Los contratistas deben diligenciar el valor unitario y el valor total de cada actividad. La columna “Atrib. sismo” separa la cantidad correspondiente a daños atribuibles al sismo o agravados por él.</p>
+  <table><tr><th>Código</th><th style="width:28%">Actividad</th><th>Unidad</th><th class="num">Cantidad</th><th class="num">Atrib. sismo</th><th class="num">Ubic.</th><th class="num">Comunes</th><th class="num">Fachadas</th><th class="num">Aptos</th><th class="num">Loc./dep.</th><th style="width:10%">Valor unitario</th><th style="width:10%">Valor total</th></tr>
+  ${q.map(r => `<tr><td>${r.code}</td><td>${esc(r.name)}</td><td>${esc(r.unit)}</td><td class="num"><b>${fmt(r.total)}</b></td><td class="num">${fmt(r.sismo)}</td><td class="num">${r.n}</td><td class="num">${fmt(r.comunes)}</td><td class="num">${fmt(r.fachadas)}</td><td class="num">${fmt(r.aptos)}</td><td class="num">${fmt(r.privadas)}</td><td></td><td></td></tr>`).join('') || '<tr><td colspan="12">Sin actividades registradas.</td></tr>'}
+  <tr><th colspan="10" style="text-align:right">Total costo directo</th><td colspan="2"></td></tr></table>
+  <h3>5.1 Cantidades por nivel</h3>
+  <table><tr><th>Código</th><th>Unidad</th>${[-2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(f => `<th class="num">${f === 12 ? 'Cub.' : f < 0 ? 'S' + f : 'P' + f}</th>`).join('')}<th class="num">Gral.</th></tr>${q.map(r => `<tr><td>${r.code}</td><td>${esc(r.unit)}</td>${[-2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(f => `<td class="num">${r.pisos[f] ? fmt(r.pisos[f]) : ''}</td>`).join('')}<td class="num">${r.pisos.Gral ? fmt(r.pisos.Gral) : ''}</td></tr>`).join('')}</table>
   <h2 class="pb">6. Detalle de daños — áreas comunes</h2>${detailFor('comunes')}
   <h2 class="pb">7. Detalle de daños — fachadas exteriores</h2>${detailFor('fachadas')}
   <h2 class="pb">8. Apartamentos</h2>
@@ -1591,80 +1754,74 @@ async function buildReport(draft) {
   <h3>8.2 Detalle de daños por apartamento</h3>${detailFor('aptos')}
   <h2 class="pb">9. Locales comerciales y depósitos</h2>${statusTable('privadas')}${detailFor('privadas')}
   <h2 class="pb">10. Elementos sin acceso, no aplicables o pendientes</h2>
-  ${(() => { const rows = ITEMS.filter(it => ['no_acceso', 'no_aplica', 'pendiente', 'incompleto'].includes(itemState(it.id))); return rows.length ? `<table><tr><th>Elemento</th><th>Componente</th><th>Estado</th><th>Observación</th></tr>${rows.map(it => `<tr><td>${esc(it.name)}</td><td>${GROUPS[it.group].n}</td><td>${stPill(it.id)}</td><td>${esc(recs[it.id]?.nota || '')}</td></tr>`).join('')}</table>` : '<p>Ninguno. Todos los elementos fueron inspeccionados.</p>'; })()}
+  ${(() => { const rows = ITEMS.filter(it => ['no_acceso', 'no_acceso_def', 'no_aplica', 'pendiente', 'incompleto'].includes(itemState(it.id))); return rows.length ? `<table><tr><th>Elemento</th><th>Componente</th><th>Estado</th><th>Intentos / observación</th></tr>${rows.map(it => { const r = recs[it.id]; return `<tr><td>${esc(it.name)}</td><td>${GROUPS[it.group].n}</td><td>${stPill(it.id)}</td><td>${(r?.intentos || []).map(x => `${esc(fdt(x.at))}: ${esc(x.nota)}`).join('<br>')}${r?.nota ? (r.intentos?.length ? '<br>' : '') + esc(r.nota) : ''}</td></tr>`; }).join('')}</table>` : '<p>Ninguno. Todos los elementos fueron inspeccionados.</p>'; })()}
   <h2 class="pb">11. Anexo fotográfico — elementos sin daño</h2>
-  ${sinDano.length ? `<div class="thumbs">${sinDano.map(it => `<figure><img data-ph="${recs[it.id].fotos[0]}"><figcaption>${esc(it.name)}</figcaption></figure>`).join('')}</div>` : '<p>Sin registros.</p>'}
+  ${sinDano.length ? `<div class="thumbs">${sinDano.map(it => `<figure><img data-ph="${recs[it.id].fotos[0]}"><figcaption>${PI.get(recs[it.id].fotos[0]) || ''} · ${esc(it.name)}</figcaption></figure>`).join('')}</div>` : '<p>Sin registros.</p>'}
   <h2 class="pb">12. Firma del profesional responsable</h2>
-  <p>El presente informe fue elaborado con base en la inspección visual realizada por el profesional que lo suscribe, quien es responsable de su contenido técnico.</p>
-  <div class="sign"><div>${esc(inspector?.nombre)}<br>${esc(inspector?.profesion)} · Matrícula profesional ${esc(inspector?.matricula)}${inspector?.empresa ? '<br>' + esc(inspector.empresa) : ''}</div><div>Fecha: ${fdate(Date.now())}</div></div>
+  <p>El presente informe fue elaborado con base en la inspección visual realizada por el (los) profesional(es) que lo suscribe(n), responsable(s) de su contenido técnico.</p>
+  <div class="sign">${insp.length ? insp.map(p => `<div>${esc(p.nombre)}<br>${esc(p.profesion)} · Matrícula profesional ${esc(p.matricula)}${p.empresa ? '<br>' + esc(p.empresa) : ''}</div>`).join('') : `<div>${esc(main.nombre || '')}</div>`}<div>Fecha: ${fdate(Date.now())}</div></div>
   <div class="foot">Generado con el Portal de Inspección KOA · ${new Date().toLocaleString('es-CO')}</div>`;
+}
+const REPORT_CSS = `body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;margin:0;background:#fff;color:#111}.paper{max-width:900px;margin:0 auto;padding:40px 48px;font-size:12.5px;line-height:1.5;position:relative}.paper h1{font-size:24px;margin:0 0 6px}.paper h2{font-size:16px;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #0a84ff}.paper h3{font-size:13.5px;margin:18px 0 8px}.paper table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:11.5px}.paper th,.paper td{border:1px solid #d6d6db;padding:5px 7px;text-align:left;vertical-align:top}.paper th{background:#f2f4f8;font-weight:700}.paper td.num,.paper th.num{text-align:right}.paper .cover{min-height:820px;display:flex;flex-direction:column;justify-content:space-between}.paper .cover .top{border-left:6px solid #0a84ff;padding-left:18px}.paper .cover .kicker{font-size:12px;color:#c2410c;font-weight:700;letter-spacing:.5px;text-transform:uppercase}.paper .cover h1{font-size:30px;line-height:1.15;margin:10px 0}.paper .watermark{position:absolute;top:220px;left:0;right:0;text-align:center;font-size:54px;font-weight:800;color:rgba(255,59,48,.12);transform:rotate(-18deg);pointer-events:none}.paper .item{border:1px solid #e1e1e6;border-radius:8px;padding:10px 12px;margin:10px 0;break-inside:avoid}.paper .item .ih{display:flex;justify-content:space-between;gap:10px;font-weight:700;margin-bottom:6px}.paper .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10.5px;font-weight:700;color:#fff}.paper .rphotos{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.paper .rphotos figure{margin:0}.paper .rphotos img{width:240px;height:180px;object-fit:cover;border-radius:4px;border:1px solid #ddd}.paper .rphotos figcaption,.paper .thumbs figcaption{font-size:9.5px;color:#555;margin-top:2px}.paper .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.paper .thumbs figure{margin:0;break-inside:avoid}.paper .thumbs img{width:100%;height:110px;object-fit:cover;border-radius:4px;border:1px solid #ddd}.paper .sign{margin-top:60px;display:grid;grid-template-columns:1fr 1fr;gap:40px}.paper .sign div{border-top:1px solid #333;padding-top:6px;font-size:11.5px}.paper .pb{break-before:page}.paper .foot{margin-top:30px;color:#888;font-size:10px;text-align:center}.fallback{width:240px;height:180px;display:grid;place-items:center;background:#eee;color:#888;font-size:11px;border-radius:4px}@media print{@page{size:letter;margin:14mm}.paper{padding:0;max-width:none}.paper tr,.paper .keep{break-inside:avoid}.paper .cover{min-height:auto;gap:60px}}`;
+async function buildReport(draft) {
+  const html = reportHTML(draft);
   $('#paper').innerHTML = html;
   $('#report').style.display = 'block'; $('#report').scrollTop = 0;
+  $('#repDl').onclick = () => downloadReport(draft);
   await hydratePhotos($('#paper'));
 }
+async function blobToDataURL(b) { return new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); }); }
+async function downloadReport(draft) {
+  const btn = $('#repDl'); btn.disabled = true; btn.textContent = 'Preparando archivo…';
+  try {
+    const tmp = document.createElement('div'); tmp.innerHTML = reportHTML(draft);
+    const imgs = $$('img[data-ph]', tmp); let k = 0;
+    for (const img of imgs) {
+      k++; if (k % 10 === 0) btn.textContent = `Incluyendo fotos ${k}/${imgs.length}…`;
+      try {
+        const ref = img.dataset.ph; let blob;
+        if (ref.startsWith('a:')) { const r = await fetch(assetURL(ref)); if (!r.ok) throw 0; blob = await r.blob(); }
+        else blob = await DB.get('photos', ref);
+        if (!blob) throw 0;
+        const small = await compressPhoto(blob, null, 900, .62);
+        img.src = await blobToDataURL(small);
+      } catch { img.replaceWith(Object.assign(document.createElement('div'), { className: 'fallback', textContent: 'Foto no disponible' })); }
+      img.removeAttribute('data-ph');
+    }
+    const doc = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Informe de inspección · KOA</title><style>${REPORT_CSS}</style></head><body><div class="paper">${tmp.innerHTML}</div></body></html>`;
+    await dl(`KOA-informe-inspeccion-${draft ? 'BORRADOR-' : ''}${new Date().toISOString().slice(0, 10)}.html`, new Blob([doc], { type: 'text/html' }));
+  } finally { btn.disabled = false; btn.textContent = 'Descargar informe (.html)'; }
+}
 $('#repClose').onclick = () => { $('#report').style.display = 'none'; };
-$('#repPrint').onclick = async () => { const imgs = $$('#paper img'); await Promise.all(imgs.map(i => i.complete ? 0 : new Promise(r => { i.onload = i.onerror = r; }))); window.print(); };
-
-// ---------- Acceso con usuario y contraseña (modo GitHub Pages) ----------
-// Solo se guardan huellas PBKDF2 de las contraseñas, nunca las contraseñas.
-const LOCAL_USERS = {
-  fabig76: { s: '4353144834120d06e8f309a6a4f99484', h: '9792a8bd64fbdfc8ebb8852205762710df6c3ba2fed1d5a3878259b9104c7a6e' },
-  ingeniero: { s: '3d9061334ba810936140452b2170d0cc', h: 'ec6902dfba322ffe0dff27fc8258cf5d813f689776094ae2b045ebe81a3588e9' }
-};
-const hex2b = h => new Uint8Array(h.match(/../g).map(x => parseInt(x, 16)));
-const b2hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
-async function pbkdf2(pass, saltHex) {
-  const key = await crypto.subtle.importKey('raw', new TextEncoder().encode(pass), 'PBKDF2', false, ['deriveBits']);
-  return b2hex(await crypto.subtle.deriveBits({ name: 'PBKDF2', hash: 'SHA-256', salt: hex2b(saltHex), iterations: 210000 }, key, 256));
-}
-function localSession() {
-  try { const s = JSON.parse(localStorage.getItem('koa_sesion') || 'null'); if (s && s.exp > Date.now() && LOCAL_USERS[s.user]) return s.user; } catch { }
-  return null;
-}
-function localGate() {
-  const u = localSession();
-  if (u) return Promise.resolve(u);
-  document.body.classList.add('locked');
-  $('#gate').hidden = false; setTimeout(() => $('#gU').focus(), 50);
-  return new Promise(resolve => {
-    let fails = +(localStorage.getItem('koa_fallos') || 0), until = +(localStorage.getItem('koa_bloqueo') || 0);
-    $('#gateForm').onsubmit = async ev => {
-      ev.preventDefault();
-      const e = $('#gE'), b = $('#gB'); e.textContent = '';
-      if (until > Date.now()) { e.textContent = `Demasiados intentos. Espere ${Math.ceil((until - Date.now()) / 60000)} min.`; return; }
-      b.disabled = true; b.textContent = 'Verificando…';
-      const user = $('#gU').value.trim().toLowerCase(), pass = $('#gP').value;
-      const rec = LOCAL_USERS[user];
-      const ok = rec && (await pbkdf2(pass, rec.s)) === rec.h;
-      b.disabled = false; b.textContent = 'Iniciar sesión';
-      if (!ok) {
-        fails++; if (fails >= 5) { fails = 0; until = Date.now() + 10 * 60e3; localStorage.setItem('koa_bloqueo', until); }
-        localStorage.setItem('koa_fallos', fails);
-        e.textContent = 'Usuario o contraseña incorrectos'; $('#gP').value = ''; $('#gP').focus(); return;
-      }
-      localStorage.setItem('koa_fallos', 0);
-      localStorage.setItem('koa_sesion', JSON.stringify({ user, exp: Date.now() + 30 * 864e5 }));
-      $('#gate').hidden = true; document.body.classList.remove('locked');
-      resolve(user);
-    };
-  });
-}
 
 // ---------- Inicio ----------
+function gateScreen(title, msg) {
+  document.body.classList.add('locked');
+  const g = $('#gate'); g.hidden = false;
+  g.innerHTML = `<div class="lcard"><div class="logo">K</div><h1>${esc(title)}</h1><p>${msg}</p><div class="foot">Edificio KOA Apartamentos · Sismo del 10 de agosto de 2026 · Armenia, Quindío</div></div>`;
+}
 (async function init() {
-  try { await DB.open(); } catch { document.body.innerHTML = '<p style="padding:40px;font-family:sans-serif">Este navegador no permite guardar datos (IndexedDB). Use Safari, Chrome o Edge actualizados y sin modo privado.</p>'; return; }
+  try { await DB.open(); } catch { }
   try { navigator.storage?.persist?.(); } catch { }
-  await loadAll();
-  await Sync.detect();
-  if (!Sync.enabled) {
-    Sync.user = await localGate();
-    Sync.setPill('', 'Guardado en este equipo');
-  } else {
-    Sync.setPill('', 'Conectando…'); Sync.run(); setInterval(() => Sync.run(), 30000); window.addEventListener('online', () => Sync.run());
-  }
+  if (!window.claude?.use) { gateScreen('Acceso restringido', 'Este portal solo funciona desde su enlace oficial en claude.ai, con la cuenta a la que la administración le dio acceso.<br><br>Solicite el enlace a la administración del edificio.'); return; }
+  gateScreen('Conectando…', 'Verificando su acceso al portal.');
+  const [user, db, assets, downloads] = await Promise.all([claude.use('user'), claude.use('db'), claude.use('assets'), claude.use('downloads')]);
+  Plat.user = user; Plat.db = db; Plat.assets = assets; Plat.downloads = downloads;
+  if (user) { Plat.me = await user.me(); Plat.uid = Plat.me.id; Plat.isOwner = Plat.me.isOwner; Plat.canEdit = Plat.me.canEdit; }
+  if (!db || !Plat.uid) { gateScreen('Inicie sesión para continuar', 'Este portal es privado. Inicie sesión en claude.ai con el correo al que la administración envió la invitación y vuelva a abrir el enlace.<br><br>Si ya inició sesión y sigue viendo este mensaje, pida al administrador que verifique que lo invitó como <b>Editor</b>.'); return; }
+  // Caché local (lectura inmediata) y cola pendiente
+  (await DB.entries('cache')).forEach(([k, v]) => { if (!remote[v._uid]) remote[v._uid] = {}; remote[v._uid][k] = v; });
+  (await DB.entries('outbox')).forEach(([k, v]) => { outbox[k] = v; });
+  inspector = (await DB.get('meta', 'perfil')) || null; if (inspector && inspector.uid !== Plat.uid) inspector = null;
+  if (inspector) profiles[Plat.uid] = inspector;
+  rebuild();
+  $('#gate').hidden = true; document.body.classList.remove('locked');
+  const ejes = document.createElement('datalist'); ejes.id = 'ejesList'; ejes.innerHTML = EJES.map(e => `<option value="${e}">`).join(''); document.body.appendChild(ejes);
+  Sync.start(); Sync.pill();
   render();
 })();
-window.__koa = { ITEMS, SECTIONS, recs: () => recs, stats };
+window.__koa = { ITEMS, SECTIONS, recs: () => recs, stats, Plat, outbox: () => outbox };
+
 </script>
 </body>
 </html>
