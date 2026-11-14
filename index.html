@@ -1930,6 +1930,31 @@ async function localLogout() {
   if (Plat.rest) { if (Object.keys(outbox).length) { await Sync.flush(); if (Object.keys(outbox).length && !await ask('Cambios sin enviar', 'Hay cambios que aún no llegan al servidor; se conservan en este equipo y se enviarán al volver a entrar. ¿Cerrar sesión de todos modos?', { ok: 'Cerrar sesión' })) return; } await Rest.logout(); }
   try { localStorage.removeItem('koa_sesion'); } catch { } location.reload();
 }
+// Primer arranque del servidor: el dueño crea su cuenta de administrador
+function setupGate() {
+  document.body.classList.add('locked');
+  const g = $('#gate'); g.hidden = false;
+  g.innerHTML = `<form class="lcard" id="setupForm" autocomplete="on" style="text-align:center"><div class="logo">K</div><h1>Crear administrador</h1><p>Primer ingreso al servidor del portal. Cree su usuario y contraseña de administrador. Solo se hace una vez.</p>
+    <div class="f" style="text-align:left;margin-bottom:12px"><label for="sU">Usuario</label><input id="sU" name="username" autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false" required></div>
+    <div class="f" style="text-align:left;margin-bottom:12px"><label for="sP">Contraseña (mínimo 8 caracteres)</label><input id="sP" name="new-password" type="password" autocomplete="new-password" required></div>
+    <div class="f" style="text-align:left;margin-bottom:14px"><label for="sP2">Repita la contraseña</label><input id="sP2" type="password" autocomplete="new-password" required></div>
+    <button class="btn primary" id="sB" type="submit" style="width:100%;justify-content:center;padding:12px">Crear administrador</button>
+    <div class="err" id="sE" role="alert" style="min-height:20px;color:var(--red);font-size:13px;margin-top:12px"></div></form>`;
+  setTimeout(() => $('#sU').focus(), 50);
+  return new Promise(resolve => {
+    $('#setupForm').onsubmit = async ev => {
+      ev.preventDefault(); const e = $('#sE'); e.textContent = '';
+      const user = $('#sU').value.trim().toLowerCase(), pass = $('#sP').value;
+      if (pass !== $('#sP2').value) { e.textContent = 'Las contraseñas no coinciden'; return; }
+      try {
+        const r = await fetch(Rest.url('api/setup'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user, pass }) });
+        const j = await r.json().catch(() => ({}));
+        if (!r.ok) { e.textContent = j.error || 'No se pudo crear'; return; }
+        await Rest.login(user, pass); toast('Administrador creado'); location.reload();
+      } catch { e.textContent = 'Sin conexión con el servidor'; }
+    };
+  });
+}
 // Pantalla de inicio de sesión contra el servidor
 function serverGate(health) {
   document.body.classList.add('locked');
@@ -1987,6 +2012,7 @@ function gateScreen(title, msg) {
       Plat.rest = Rest;
       let me = null;
       if (Rest.token) { try { me = await Rest.me(); } catch { Rest.token = ''; } }
+      if (!me && health.users === false) await setupGate();
       if (!me) { const j = await serverGate(health); me = { user: j.user, role: j.role, name: j.user }; }
       Plat.uid = me.user; Plat.me = { id: me.user, name: me.user, isOwner: me.role === 'admin', canEdit: true }; Plat.isOwner = me.role === 'admin'; Plat.canEdit = true;
       (await DB.entries('cache')).forEach(([k, v]) => { if (!remote[v._uid]) remote[v._uid] = {}; remote[v._uid][k] = v; });

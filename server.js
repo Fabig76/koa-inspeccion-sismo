@@ -93,6 +93,14 @@ const server = http.createServer(async (req, res) => {
 
     // ---- público ----
     if (p === '/api/health') return json(res, 200, { ok: true, app: 'koa-inspeccion', v: 2, auth: 'token', users: Object.keys(users).length > 0 });
+    if (p === '/api/setup' && req.method === 'POST') {
+      // Primer arranque: crea el administrador solo si aún no existe ningún usuario
+      if (Object.keys(users).length) return json(res, 409, { error: 'El administrador ya existe' });
+      let b; try { b = JSON.parse(await body(req, 4096)); } catch { return json(res, 400, { error: 'Solicitud inválida' }); }
+      try { setUser(String(b.user || '').trim().toLowerCase(), String(b.pass || ''), 'admin'); } catch (e) { return json(res, 400, { error: e.message }); }
+      audit({ ev: 'setup_admin', user: String(b.user).toLowerCase(), ip: clientIp(req) });
+      return json(res, 200, { ok: true });
+    }
     if (p === '/api/login' && req.method === 'POST') {
       const ip = clientIp(req);
       let b; try { b = JSON.parse(await body(req, 4096)); } catch { return json(res, 400, { error: 'Solicitud inválida' }); }
