@@ -1003,7 +1003,7 @@ function renderNav() {
 function updateBadges() {
   renderNav();
   const il = $('#inspLabel'); if (il) il.textContent = inspector?.nombre ? `Inspector: ${inspector.nombre}` : 'Perfil sin registrar';
-  const ul = $('#userLabel'); if (ul) ul.innerHTML = `<span class="role ${Plat.isOwner ? 'owner' : ''}">${Plat.isOwner ? 'Administrador' : 'Inspector'}</span> <span>${esc(Plat.me?.name || '')}</span>${config.locked ? ' <span class="role" style="background:rgba(255,59,48,.15);color:var(--red)">Cerrada</span>' : ''}`;
+  const ul = $('#userLabel'); if (ul) { ul.innerHTML = `<span class="role ${Plat.isOwner ? 'owner' : ''}">${Plat.isOwner ? 'Administrador' : 'Inspector'}</span> <span>${esc(Plat.me?.name || '')}</span>${config.locked ? ' <span class="role" style="background:rgba(255,59,48,.15);color:var(--red)">Cerrada</span>' : ''}${Plat.local ? ' <button class="btn small" id="logoutSide">Salir</button>' : ''}`; $('#logoutSide')?.addEventListener('click', localLogout); }
   Sync.pill();
 }
 $('#nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) go(b.dataset.view); });
@@ -1889,6 +1889,7 @@ function gateScreen(title, msg) {
     try { config = JSON.parse(localStorage.getItem('koa_config') || '{"locked":false}'); } catch { }
     rebuild();
     const ejesL = document.createElement('datalist'); ejesL.id = 'ejesList'; ejesL.innerHTML = EJES.map(e => `<option value="${e}">`).join(''); document.body.appendChild(ejesL);
+    const lb = document.createElement('button'); lb.className = 'btn small'; lb.id = 'logoutTop'; lb.title = 'Cerrar sesión'; lb.textContent = 'Salir'; lb.onclick = localLogout; $('#themeBtn').after(lb);
     Sync.loading = false; Sync.pill(); render(); return;
   }
   gateScreen('Conectando…', 'Verificando su acceso al portal.');
