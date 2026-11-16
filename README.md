@@ -63,35 +63,52 @@ El destino se configura en `/etc/koa-respaldo.env` con `DRIVE_WEBHOOK`, la direc
 
 ## Roles
 
-| | Administrador | Inspector | Consulta |
-|---|---|---|---|
-| Ver todas las secciones, daños y fotos | ✅ | ✅ | ✅ |
-| Inspeccionar y registrar | ✅ | ✅ (solo sus registros) | — |
-| Crear / bloquear usuarios, cambiar contraseñas | ✅ | — | — |
-| Cerrar / reabrir la inspección | ✅ | — | — |
-| Ver historial y reabrir elementos | ✅ | — | — |
-| Informe y cuadro de cantidades (CSV) | ✅ | ✅ | ✅ |
-| Copia de seguridad y auditoría | ✅ | — | — |
-| Borrar datos del servidor | nadie | nadie | nadie |
+| | Administrador | Inspector (ingeniero) | Captura de fachada | Consulta |
+|---|---|---|---|---|
+| Ver secciones, daños y fotos | ✅ | ✅ | solo fachadas | ✅ |
+| Inspeccionar y registrar | ✅ | ✅ sus registros y los de captura | ✅ solo celdas de fachada | — |
+| Clasificar daños levantados en fachada | ✅ | ✅ | — | — |
+| Usuarios, cuadrícula de fachadas, cierre de la inspección | ✅ | — | — | — |
+| Ver versiones anteriores de un registro | ✅ | — | — | — |
+| Informe y cuadro de cantidades (CSV) | ✅ | ✅ | — | ✅ |
+| Borrar datos del servidor | nadie | nadie | nadie | nadie |
 
-El rol **Consulta** es para empresas cotizantes, miembros del consejo o la interventoría. El servidor rechaza cualquier escritura de ese rol.
+El servidor aplica estas reglas; la página solo las refleja. Una celda de fachada que el ingeniero ya revisó queda en solo lectura para el usuario de captura.
+
+## Fachadas: levantamiento por bajadas
+
+- Cada fachada (`F1`…`F6`) se divide en **bajadas** (franjas verticales de un descenso en cuerda, numeradas de izquierda a derecha mirando desde afuera) y **niveles** (remate y pisos 11 a 1). Cada celda tiene un código, p. ej. `F1-B05-P08`, y cada daño el suyo, `F1-B05-P08-D1`, que se marca con tiza en el muro y queda estampado en las fotos.
+- La cuadrícula (nombre, ejes, largo, número de bajadas y referencias visibles) se ajusta en **Administración → Cuadrícula de fachadas**. Los valores iniciales son aproximados, tomados de los planos.
+- **Modo descenso** (botón `B01 ▼`): pantalla de botones grandes para el técnico. Por cada celda: *Sin daño* (foto), *Hay daño* (daño típico, foto general, foto de detalle con regla, posición, medidas, nota de voz) o *No se pudo revisar*.
+- El ingeniero ve las celdas levantadas en **Por clasificar** y completa severidad, atribución, reparación, cantidad y comentario.
+- El informe se puede generar por partes (una fachada a la vez) e incluye el **plano de daños** de cada fachada.
+
+## Garantías de los datos
+
+- **Versiones en el servidor** (`data/versiones.ndjson`): antes de reemplazar un registro, el servidor guarda la versión anterior completa si se quitó algo, si cambió de autor o cada 2 minutos de edición.
+- **Numeración fija de fotos** (`data/fotos.json`): el número F‑0001… se asigna al llegar la foto y no cambia.
+- **Control de cambios por revisión** del servidor, sin depender del reloj del celular.
+- **Sin señal**: el portal abre (`sw.js`), guarda en el dispositivo y envía al recuperar la conexión. Si una foto pendiente se pierde antes de llegar, el elemento queda marcado y no se da por completo.
+- **Respaldo**: `respaldo.js` deja su resultado en `data/respaldo-estado.json` y Administración avisa si falló o lleva más de 36 horas sin correr. Las notas de voz van a la carpeta `datos` de Drive con el prefijo `audio-`.
 
 ## Archivos
 
 | Archivo | Para qué sirve |
 |---|---|
-| `index.html` | El portal (interfaz, modelos 3D, inspección, informe) |
+| `index.html` | El portal (interfaz, modelos 3D, inspección, modo descenso, informe) |
 | `server.js` | Servidor (Node 18+, sin dependencias) |
+| `sw.js`, `manifest.webmanifest`, `icono*.png` | Aplicación instalable y apertura sin señal |
 | `config.js` | Dirección del servidor para la copia de GitHub Pages |
-| `respaldo.js` | Respaldo diario a Google Drive |
+| `respaldo.js`, `respaldo-drive.gs` | Respaldo diario a Google Drive |
 | `vendor/` | Librería 3D (Three.js, MIT) incluida |
-| `SPEC-correcciones-v2.md` | Especificación de la versión 2 |
-| `pruebas/` | Pruebas automatizadas (Playwright): `test_rest.py` (servidor), `test_local.py`, `test_v2.py` |
+| `presentacion/` | Presentación al Consejo |
+| `SPEC-v3-fachadas.md` | Especificación de la versión 3 |
+| `pruebas/` | `test_v3_servidor.py` (API) y `test_v3_portal.py` (portal, con Playwright) |
 | `legacy/` | Versión anterior |
 
 ## Pruebas locales
 
 ```bash
-KOA_ADMIN='fabig76:AdminPrueba123' ORIGENES=http://127.0.0.1:8100 PORT=8500 node server.js &
-python3 pruebas/test_rest.py
+rm -rf /tmp/koadata; KOA_ADMIN='admin1:AdminPrueba123' PORT=8123 DATA_DIR=/tmp/koadata node server.js &
+python3 pruebas/test_v3_servidor.py && python3 pruebas/test_v3_portal.py
 ```
