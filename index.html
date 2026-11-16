@@ -8,6 +8,9 @@
 <meta name="robots" content="noindex, nofollow">
 <script>try{var t=localStorage.getItem('koa_tema')||'auto';var d=t==='dark'||(t==='auto'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=d?'dark':'light';}catch(e){document.documentElement.dataset.theme='light';}</script>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230a84ff'/%3E%3Cpath d='M18 50V14h8v15l13-15h10L35 30l15 20H40L30 36l-4 4v10z' fill='white'/%3E%3C/svg%3E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icono-192.png">
+<meta name="theme-color" content="#0a84ff">
 <script type="importmap">
 { "imports": {
   "three": "./vendor/three.module.min.js",
@@ -138,6 +141,42 @@ h2,h3,h4{letter-spacing:-.3px}
 /* Facades */
 .facgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
 .fac{border-radius:var(--radius);padding:16px}
+.gridwrap{overflow-x:auto;padding-bottom:4px}
+.gridf{border-collapse:separate;border-spacing:2px;font-size:11px}
+.gridf th{font-weight:600;color:var(--muted);padding:0 4px;white-space:nowrap;text-align:center}
+.gridf td{padding:0}
+.gc{width:34px;height:26px;border:0;border-radius:5px;color:#fff;font-weight:700;font-size:11.5px;display:block}
+.gc.pend{background:rgba(142,142,147,.28);color:var(--text)}
+.gc.inc{background:repeating-linear-gradient(45deg,rgba(255,159,10,.45) 0 5px,rgba(255,159,10,.22) 5px 10px);color:var(--text)}
+.gc:hover{outline:2px solid var(--blue)}
+.bajbtn{border:1px solid var(--hair);background:rgba(10,132,255,.12);color:var(--blue);border-radius:6px;font-size:10.5px;font-weight:700;padding:3px 0;width:34px;display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.bajbtn span{font-size:8px}
+.legend{display:flex;flex-wrap:wrap;gap:10px 16px;font-size:12px;margin:12px 0}
+.legend i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.sheet.descent .sheet-b{padding-bottom:20px}
+.dhead{text-align:center;margin-bottom:14px}
+.dcode{font-size:34px;font-weight:800;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.dsub{color:var(--muted);font-size:13.5px}
+.ddots{display:flex;gap:4px;justify-content:center;margin-top:10px;flex-wrap:wrap}
+.ddots button{width:22px;height:22px;border-radius:6px;border:0;font-size:9.5px;font-weight:700;color:#fff;padding:0}
+.ddots button.pend{background:rgba(142,142,147,.3);color:var(--text)}
+.ddots button.cur{outline:3px solid var(--blue);outline-offset:1px}
+.dbig{display:grid;gap:12px}
+.bigbtn{position:relative;display:flex;align-items:center;gap:14px;justify-content:center;min-height:76px;border-radius:18px;border:1px solid var(--hair);background:var(--card,rgba(255,255,255,.6));font-size:19px;font-weight:700;color:var(--text);width:100%;padding:10px 16px;text-align:left}
+.bigbtn svg{width:30px;height:30px;flex:none}
+.bigbtn small{display:block;font-size:12.5px;font-weight:500;opacity:.8}
+.bigbtn.ok{background:#34c759;color:#fff;border-color:transparent}.bigbtn.bad{background:#ff3b30;color:#fff;border-color:transparent}
+.bigbtn input{position:absolute;inset:0;opacity:0;width:100%;height:100%}
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.chips button{border:1.5px solid var(--hair);background:transparent;color:var(--text);border-radius:999px;padding:10px 14px;font-size:14px;font-weight:600}
+.chips button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.pos9{display:grid;grid-template-columns:repeat(3,44px);gap:4px}
+.pos9 button{height:36px;border-radius:7px;border:1.5px solid var(--hair);background:transparent}
+.pos9 button.on{background:#ff9f0a;border-color:#ff9f0a}
+.btn.big{font-size:16px;padding:14px 20px}
+.dfotos{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.dfotos .ph{width:92px;height:92px}
+[data-theme=dark] .bigbtn{background:rgba(255,255,255,.07)}[data-theme=dark] .bigbtn.ok{background:#30d158}[data-theme=dark] .bigbtn.bad{background:#ff453a}
 .fac h3{margin:0 0 2px;font-size:15px}.fac .muted{font-size:12px;margin-bottom:12px}
 .elev{display:flex;flex-direction:column;gap:3px;padding:10px;border-radius:12px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.8)}
 .lvl{display:flex;align-items:center;gap:8px;border:0;border-radius:6px;padding:5px 8px;font-size:12px;text-align:left;color:#fff;font-weight:600;min-height:24px}
@@ -486,8 +525,8 @@ const PROJECT = {
 };
 
 // ---------- Catálogos técnicos ----------
-const ELEMENTOS = ['Muro de mampostería', 'Revoque / pañete', 'Estuco y pintura', 'Enchape de muro', 'Columna', 'Viga', 'Pantalla / muro de concreto', 'Placa / losa', 'Escalera', 'Piso / enchape de piso', 'Cielo raso', 'Ventanería y vidrios', 'Puerta y marco', 'Barandas / pasamanos', 'Carpintería metálica', 'Junta de dilatación / construcción', 'Impermeabilización', 'Estructura metálica de cubierta', 'Instalación hidrosanitaria', 'Instalación eléctrica', 'Instalación de gas', 'Equipo (ascensor, bomba, otro)', 'Otro'];
-const DANOS = ['Fisura capilar (< 0,2 mm)', 'Fisura fina (0,2 – 1 mm)', 'Fisura media (1 – 3 mm)', 'Grieta (3 – 6 mm)', 'Grieta mayor (> 6 mm)', 'Fisura / grieta diagonal', 'Fisura / grieta horizontal', 'Fisura / grieta vertical', 'Separación muro – estructura', 'Desprendimiento de revoque o enchape', 'Aplastamiento / pérdida de material', 'Descascaramiento de concreto', 'Acero de refuerzo expuesto', 'Deformación / desplome', 'Vidrio roto o fisurado', 'Desajuste de puerta o ventana', 'Daño en junta', 'Filtración / humedad', 'Daño en instalación o equipo', 'Reparación reciente evidente (resane previo a la visita)', 'Colapso parcial', 'Otro'];
+const ELEMENTOS = ['Muro de mampostería', 'Revoque / pañete', 'Estuco y pintura', 'Enchape de muro', 'Columna', 'Viga', 'Pantalla / muro de concreto', 'Placa / losa', 'Escalera', 'Piso / enchape de piso', 'Cielo raso', 'Ventanería y vidrios', 'Puerta y marco', 'Barandas / pasamanos', 'Carpintería metálica', 'Balcón / antepecho', 'Placa de fachada (fibrocemento)', 'Sello perimetral de ventana', 'Alfajía / remate de vano', 'Puerta de emergencia', 'Junta de dilatación / construcción', 'Impermeabilización', 'Estructura metálica de cubierta', 'Instalación hidrosanitaria', 'Instalación eléctrica', 'Instalación de gas', 'Equipo (ascensor, bomba, otro)', 'Otro'];
+const DANOS = ['Fisura capilar (< 0,2 mm)', 'Fisura fina (0,2 – 1 mm)', 'Fisura media (1 – 3 mm)', 'Grieta (3 – 6 mm)', 'Grieta mayor (> 6 mm)', 'Fisura / grieta diagonal', 'Fisura / grieta horizontal', 'Fisura / grieta vertical', 'Separación muro – estructura', 'Desprendimiento de revoque o enchape', 'Pañete soplado (suena hueco al golpe)', 'Desprendimiento de pintura', 'Placa de fachada suelta o fisurada', 'Cinta de junta desprendida (drywall)', 'Aplastamiento / pérdida de material', 'Descascaramiento de concreto', 'Acero de refuerzo expuesto', 'Deformación / desplome', 'Vidrio roto o fisurado', 'Desajuste de puerta o ventana', 'Daño en junta', 'Filtración / humedad', 'Daño en instalación o equipo', 'Reparación reciente evidente (resane previo a la visita)', 'Colapso parcial', 'Otro'];
 const isFisura = d => /fisura|grieta|separaci/i.test(d || '');
 const SEV = {
   leve: { n: 'Leve', c: '#e0b400', d: 'Superficial o estético' },
@@ -521,8 +560,32 @@ const REP = [
   ['R16', 'Reparación de instalaciones', 'gl'],
   ['R17', 'Apuntalamiento / medida de seguridad temporal', 'und'],
   ['R18', 'Evaluación especializada adicional (estructura / equipos)', 'gl'],
+  ['R19', 'Reposición de sello perimetral de ventana / puerta-ventana', 'ml'],
+  ['R20', 'Reposición de placa de fachada en fibrocemento', 'm²'],
+  ['R21', 'Tratamiento de juntas de drywall (cinta, masilla y pintura)', 'ml'],
+  ['R22', 'Pintura de fachada por paño completo (incluye preparación)', 'm²'],
+  ['R23', 'Retiro de pañete suelto o soplado (medida de seguridad)', 'm²'],
   ['R99', 'Otra actividad (especificar)', '']
 ];
+// Daños típicos: llenan elemento, tipo, reparación y un procedimiento sugerido que el ingeniero revisa y ajusta
+const TIPICOS = [
+  { k: 'T01', n: 'Pañete desprendido en línea de placa', f: 1, el: 'Revoque / pañete', da: 'Desprendimiento de revoque o enchape', rep: 'R04', esp: 'Retirar el pañete suelto hasta encontrar material firme, limpiar la superficie, aplicar puente de adherencia y reponer el pañete con malla de refuerzo sobre la junta placa–muro; estucar y pintar el paño completo.' },
+  { k: 'T02', n: 'Pañete soplado (suena hueco)', f: 1, el: 'Revoque / pañete', da: 'Pañete soplado (suena hueco al golpe)', rep: 'R04', esp: 'Delimitar por percusión la zona hueca, demoler el pañete soplado, limpiar, aplicar puente de adherencia y reponer el pañete; estucar y pintar el paño completo.' },
+  { k: 'T03', n: 'Pañete desprendido bajo ventana', f: 1, el: 'Revoque / pañete', da: 'Desprendimiento de revoque o enchape', rep: 'R04', esp: 'Retirar el pañete suelto bajo el vano hasta material firme, reponer con puente de adherencia y malla en las esquinas del vano; rehacer el remate de la alfajía, estucar y pintar el paño completo.' },
+  { k: 'T04', n: 'Fisura en muro o pañete', f: 1, el: 'Revoque / pañete', da: 'Fisura fina (0,2 – 1 mm)', rep: 'R03', esp: 'Abrir la fisura en V, limpiar, aplicar puente de adherencia, colocar malla de fibra de vidrio de 20 cm centrada y resanar con mortero de reparación; estucar y pintar el paño completo.' },
+  { k: 'T05', n: 'Junta columna–muro abierta', f: 1, el: 'Junta de dilatación / construcción', da: 'Separación muro – estructura', rep: 'R07', esp: 'Retirar el material suelto de la junta en toda su altura, limpiar, colocar fondo de junta y sello flexible; reponer el pañete de borde con malla y rehacer la dilatación; estucar y pintar.' },
+  { k: 'T06', n: 'Fisura en antepecho de balcón', f: 1, el: 'Balcón / antepecho', da: 'Fisura / grieta vertical', rep: 'R03', esp: 'Abrir la fisura en V por ambas caras del antepecho, limpiar, aplicar puente de adherencia, malla de refuerzo y mortero de reparación; estucar y pintar el antepecho completo.' },
+  { k: 'T07', n: 'Sello de ventana desprendido', f: 1, el: 'Sello perimetral de ventana', da: 'Daño en junta', rep: 'R19', esp: 'Retirar el sello existente en todo el perímetro del vano, limpiar y secar, aplicar sellante elastomérico para exteriores con fondo de junta y verificar la estanqueidad con prueba de agua.' },
+  { k: 'T08', n: 'Placa de fachada suelta o fisurada', f: 1, el: 'Placa de fachada (fibrocemento)', da: 'Placa de fachada suelta o fisurada', rep: 'R20', esp: 'Desmontar la placa afectada, revisar y ajustar la estructura de soporte y las fijaciones, instalar placa nueva con tratamiento de juntas y aplicar el acabado de pintura igual al existente.' },
+  { k: 'T09', n: 'Pintura desprendida', f: 1, el: 'Estuco y pintura', da: 'Desprendimiento de pintura', rep: 'R22', esp: 'Raspar la pintura suelta, lijar, resanar, aplicar sellador y dos manos de pintura para exteriores en el paño completo, igualando el color existente.' },
+  { k: 'T10', n: 'Humedad o filtración', f: 1, el: 'Impermeabilización', da: 'Filtración / humedad', rep: 'R15', esp: 'Ubicar el punto de ingreso del agua, sellar fisuras y juntas del sector, reponer la impermeabilización afectada y verificar con prueba de agua antes de reponer los acabados.' },
+  { k: 'T11', n: 'Vidrio roto o ventana desajustada', f: 1, el: 'Ventanería y vidrios', da: 'Desajuste de puerta o ventana', rep: 'R12', esp: 'Revisar la escuadra y las fijaciones del marco, ajustar o reponer la nave afectada, reemplazar los vidrios fisurados y rehacer el sello perimetral.' },
+  { k: 'T12', n: 'Cinta de cielorraso desprendida', f: 0, el: 'Cielo raso', da: 'Cinta de junta desprendida (drywall)', rep: 'R21', esp: 'Retirar la cinta desprendida, revisar las fijaciones de las placas, aplicar cinta y masilla nuevas en tres capas, lijar y pintar el cielorraso completo del tramo.' },
+  { k: 'T13', n: 'Pérdida de recubrimiento en columna', f: 0, el: 'Columna', da: 'Descascaramiento de concreto', rep: 'R08', esp: 'Retirar el concreto suelto, verificar el estado del acero de refuerzo, limpiarlo y pasivarlo si está expuesto, aplicar puente de adherencia y reponer el recubrimiento con mortero estructural de reparación; reponer pañete y pintura.' },
+  { k: 'T14', n: 'Puerta de emergencia desajustada', f: 0, el: 'Puerta de emergencia', da: 'Desajuste de puerta o ventana', rep: 'R12', esp: 'Revisar la escuadra del marco y sus anclajes, corregir o reponer el marco, ajustar bisagras, barra antipánico y cierre, y verificar que la puerta abre y cierra libremente en todo su recorrido.' }
+];
+const TIP_BY = Object.fromEntries(TIPICOS.map(t => [t.k, t]));
+const POS9 = ['Arriba izq.', 'Arriba centro', 'Arriba der.', 'Medio izq.', 'Centro', 'Medio der.', 'Abajo izq.', 'Abajo centro', 'Abajo der.'];
 const REP_BY = Object.fromEntries(REP.map(r => [r[0], { code: r[0], name: r[1], unit: r[2] }]));
 const UNITS = ['ml', 'm²', 'm³', 'und', 'gl'];
 const STATUS = {
@@ -575,13 +638,15 @@ addSec('comunes', 'p1', 'Piso 1 — acceso y zonas comunes', 1, 'N ±0,00', [
   ['hall', 'Hall de ascensores piso 1', 'Muros, puertas de ascensor, pisos y cielo.']
 ]);
 for (let f = 2; f <= 11; f++) addSec('comunes', `p${f}`, `Piso ${f} — punto fijo y pasillo`, f, `N +${fmt((f - 1) * 2.75)}`, [
-  ['pasillo', `Pasillo y hall de ascensores piso ${f}`, 'Muros (cara del pasillo), pisos, cielos, puertas de ascensor, iluminación y señalización.'],
-  ['escal', `Escalera — tramo piso ${f}`, 'Peldaños, descansos, muros del foso, barandas y puertas cortafuego.']
+  ['pasillo', `Pasillo y hall de ascensores piso ${f} — muros y pisos`, 'Muros (cara del pasillo), juntas columna–muro, pisos y puertas de ascensor. En cada daño indique frente a qué apartamento está.'],
+  ['cielo', `Cielorraso y luminarias del pasillo piso ${f}`, 'Cielorraso en drywall, cinta de las juntas, dilataciones, luminarias y señalización.'],
+  ['pemerg', `Puerta de emergencia piso ${f}`, 'Puerta de emergencia, marco, barra antipánico y cierre: debe abrir y cerrar libremente.'],
+  ['escal', `Escalera — tramo piso ${f}`, 'Peldaños, descansos, muros del foso y barandas.']
 ]);
 addSec('comunes', 'cub', 'Cubierta', 12, 'N +30,25', [
-  ['placa', 'Placa de cubierta e impermeabilización', 'Placa, membrana impermeable, pendientes, sifones y bajantes.'],
-  ['metal', 'Estructura metálica de cubierta', 'Perfiles, conexiones, anclajes y tejas.'],
-  ['tanques', 'Tanques elevados y cuarto de máquinas', 'Tanques, soportes, cuarto de máquinas de ascensores.'],
+  ['placa', 'Cubierta en teja de fibrocemento', 'Tejas, fijaciones, caballetes, canales y bajantes; filtraciones hacia el piso 11.'],
+  ['metal', 'Estructura de soporte de la cubierta', 'Vigas, viguetas metálicas, conexiones y anclajes.'],
+  ['tanques', 'Cuarto de máquinas y equipos en cubierta', 'Cuarto de máquinas de ascensores y demás equipos ubicados en la cubierta. Si no existe, marque “No aplica”.'],
   ['remates', 'Antepechos, remates y flanches', 'Antepechos perimetrales, remates de muros, flanches y bordes.']
 ]);
 addSec('comunes', 'inst', 'Instalaciones y equipos comunes', null, 'Todo el edificio', [
@@ -591,21 +656,53 @@ addSec('comunes', 'inst', 'Instalaciones y equipos comunes', null, 'Todo el edif
   ['gas', 'Red de gas común', 'Tuberías a la vista, centros de medición y soportes.'],
   ['rci', 'Red contra incendio y señalización', 'Gabinetes, tuberías, detectores, señalización y luces de emergencia.']
 ]);
-// Fachadas exteriores (inspección desde el exterior)
-const FACHADAS = [
-  ['frontal', 'Fachada frontal', true],
-  ['posterior', 'Fachada posterior (Av. Montenegro)', true],
-  ['latizq', 'Fachada lateral izquierda', true],
-  ['latder', 'Fachada lateral derecha', true],
-  ['interior', 'Fachadas interiores (hacia zona común / piscina)', false]
+// Fachadas exteriores: cuadrícula de celdas por fachada, bajada (franja vertical de un descenso en cuerda) y piso.
+// Las medidas son aproximadas, tomadas de los planos; la administración las ajusta en Administración → Cuadrícula de fachadas.
+const FACH_DEF = [
+  { id: 'F1', nombre: 'Fachada frontal (eje H)', ejes: 'Ejes 1 a 9', largo: 44, bajadas: 16, notas: [] },
+  { id: 'F2', nombre: 'Fachada lateral derecha (eje 9)', ejes: 'Ejes H a A', largo: 42, bajadas: 15, notas: [] },
+  { id: 'F3', nombre: 'Testero norte (eje A)', ejes: 'Ejes 9 a 7', largo: 11, bajadas: 4, notas: [] },
+  { id: 'F4', nombre: 'Fachada interior del ala 7–9 (hacia la zona común)', ejes: 'Ejes A a F', largo: 31, bajadas: 11, notas: [] },
+  { id: 'F5', nombre: 'Fachada interior del ala 1–7 (hacia la zona común)', ejes: 'Ejes 7 a 1', largo: 33, bajadas: 12, notas: [] },
+  { id: 'F6', nombre: 'Testero occidental (eje 1)', ejes: 'Ejes F a H', largo: 11, bajadas: 4, notas: [] }
 ];
-FACHADAS.forEach(([k, name]) => {
-  const list = [];
-  if (k === 'posterior') list.push(['sot', 'Sótanos −1 y −2 (expuestos sobre la avenida)', 'Paños de fachada de los sótanos y locales visibles desde la Av. Montenegro.', -1]);
-  for (let f = 1; f <= 11; f++) list.push([`p${f}`, `Piso ${f}`, `Paño de fachada del piso ${f}: mampostería, revoque, pintura, ventanería, balcones, barandas y dilataciones.`, f]);
-  list.push(['rem', 'Remate y antepecho de cubierta', 'Antepecho, cornisa, remates y flanches.', 12]);
-  addSec('fachadas', `f-${k}`, name, null, 'Inspección desde el exterior', list);
-});
+const LEVELS = ['REM', ...Array.from({ length: 11 }, (_, i) => 'P' + String(11 - i).padStart(2, '0'))];
+const lvlName = l => l === 'REM' ? 'Remate' : 'Piso ' + (+l.slice(1));
+const ALTO_PISO = 2.75;
+let FACH = FACH_DEF;
+const cellId = (f, b, l) => `${f}-B${String(b).padStart(2, '0')}-${l}`;
+function buildFachadas(cfg) {
+  FACH = Array.isArray(cfg) && cfg.length ? cfg : FACH_DEF;
+  for (let i = ITEMS.length - 1; i >= 0; i--) if (ITEMS[i].group === 'fachadas') { delete BY_ID[ITEMS[i].id]; ITEMS.splice(i, 1); }
+  for (let i = SECTIONS.length - 1; i >= 0; i--) if (SECTIONS[i].group === 'fachadas') SECTIONS.splice(i, 1);
+  FACH.forEach(f => {
+    const sec = { group: 'fachadas', id: 'f-' + f.id, name: `${f.id} · ${f.nombre}`, floor: null, nivel: f.ejes || '', items: [], fach: f };
+    const w = f.largo / f.bajadas;
+    for (let b = 1; b <= f.bajadas; b++) for (const l of LEVELS) {
+      const floor = l === 'REM' ? 12 : +l.slice(1); const id = cellId(f.id, b, l);
+      const nota = (f.notas || [])[b - 1];
+      const it = { id, group: 'fachadas', sec: sec.id, secName: sec.name, nivel: lvlName(l), name: `${id} · ${lvlName(l)}, bajada ${b}`, desc: `${f.nombre}. Bajada ${b} de ${f.bajadas}, contada de izquierda a derecha mirando la fachada desde afuera (franja de ≈ ${fmt(w)} m de ancho)${nota ? ' · Referencia: ' + nota : ''}.`, floor, cell: true, fach: f.id, baj: b, lvl: l, area: Math.round(w * (l === 'REM' ? 1.2 : ALTO_PISO) * 100) / 100 };
+      sec.items.push(it); ITEMS.push(it); BY_ID[id] = it;
+    }
+    SECTIONS.push(sec);
+  });
+}
+// Puntos a verificar tomados del informe de diagnóstico anterior (FH-KOA-01, septiembre de 2026)
+function hintOf(it) {
+  const h = []; const f = it.floor; const k = it.id.split('-').pop();
+  if (it.group === 'comunes' && /^p\d+$/.test(it.sec)) {
+    if (k === 'pasillo' && f >= 6 && f <= 10) h.push('fisuras verticales en las juntas columna–muro (principalmente pisos 6 a 10)');
+    if (k === 'pasillo' && f >= 6 && f <= 9) h.push('pérdida de recubrimiento de concreto en columnas de este piso; verificar el estado del refuerzo');
+    if (k === 'pasillo' && (f === 2 || f === 3)) h.push('fisuras diagonales en muros de este piso');
+    if (k === 'pemerg' && [2, 3, 4, 5, 7, 11].includes(f)) h.push('puerta de emergencia con geometría afectada' + (f === 11 ? ' y desprendimiento de la puerta de sello' : ''));
+    if (k === 'cielo') h.push('desprendimiento de la cinta del cielorraso de drywall en corredores (≈ 30 % en el edificio)');
+    if (k === 'cielo' && f === 11) h.push('fisuras y humedades en el cielorraso (≈ 18 × 1,20 m) y seis lámparas desprendidas');
+    if (k === 'cielo' && f === 9) h.push('daño en cielorraso por ruptura de tubería (≈ 8 m²)');
+  }
+  if (it.id === 'a803-fachada') h.push('humedades en el apartamento 803');
+  if (it.cell) h.push('en fachada: pañete y pintura desprendidos en la línea de las placas, bajo las ventanas de los pisos altos y en remates y aristas; fisuras en balcones; sellos de ventana afectados');
+  return h;
+}
 // Apartamentos: dos muros por apartamento
 const WALLS = {
   pasillo: { n: 'Muro hacia el pasillo', c: '#0a84ff', d: 'Cara interior del muro que el apartamento comparte con el pasillo / hall común, incluida la puerta de acceso y su marco.' },
@@ -625,15 +722,16 @@ addSec('privadas', 'locales', 'Locales comerciales', -1, 'Sótano −1', [
 ]);
 addSec('privadas', 'depositos', 'Depósitos', -2, 'Sótano −2', Array.from({ length: 9 }, (_, i) => [`d${i + 1}`, `Depósito ${i + 1} — Muros hacia circulación común`, 'Muros y puerta del depósito que lindan con la circulación común.']));
 
+buildFachadas((() => { try { return JSON.parse(localStorage.getItem('koa_fach') || 'null'); } catch { return null; } })());
 const GROUPS = {
   comunes: { n: 'Áreas comunes', short: 'Comunes' },
-  fachadas: { n: 'Fachadas exteriores', short: 'Fachadas' },
+  fachadas: { n: 'Fachadas exteriores (celdas)', short: 'Fachadas' },
   aptos: { n: 'Apartamentos (2 muros c/u)', short: 'Aptos' },
   privadas: { n: 'Locales y depósitos', short: 'Locales' }
 };
 
 // ---------- Plataforma (identidad, base de datos, archivos) ----------
-const Plat = { user: null, db: null, assets: null, downloads: null, rest: null, me: null, uid: null, viewer: false, isOwner: false, canEdit: false, local: false, online: navigator.onLine };
+const Plat = { user: null, db: null, assets: null, downloads: null, rest: null, me: null, uid: null, viewer: false, captura: false, roles: {}, fotoN: {}, isOwner: false, canEdit: false, local: false, online: navigator.onLine };
 
 // ---------- Servidor propio (VPS): API JSON con usuario y contraseña ----------
 const Rest = {
@@ -654,11 +752,16 @@ const Rest = {
   async login(user, pass) { const r = await fetch(this.url('api/login'), { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ user, pass }) }); const j = await r.json().catch(() => ({})); if (!r.ok) throw new Error(j.error || 'No se pudo iniciar sesión'); this.token = j.token; try { localStorage.setItem('koa_tok', j.token); } catch { } return j; },
   async logout() { try { await this.req('POST', 'api/logout'); } catch { } this.token = ''; try { localStorage.removeItem('koa_tok'); } catch { } },
   me() { return this.req('GET', 'api/me'); },
-  state(since) { return this.req('GET', 'api/state?since=' + (since || 0)); },
+  state(since) { return this.req('GET', 'api/state?since=' + (since || 0) + '&fn=' + Math.max(0, ...Object.values(Plat.fotoN))); },
   putItem(id, rec) { return this.req('PUT', 'api/items/' + id, rec); },
   putPerfil(d) { return this.req('PUT', 'api/perfil', d); },
   putPhoto(id, blob) { return this.req('PUT', 'api/photos/' + id, blob, true); },
-  photoURL(id) { return this.url('api/photos/' + id) + '?t=' + encodeURIComponent(this.token); },
+  blobs: new Map(),
+  async blob(p) { const r = await fetch(this.url(p), { headers: { Authorization: 'Bearer ' + this.token } }); if (!r.ok) throw new Error('no disponible'); return r.blob(); },
+  async blobURL(p) { if (this.blobs.has(p)) return this.blobs.get(p); const u = URL.createObjectURL(await this.blob(p)); this.blobs.set(p, u); if (this.blobs.size > 400) { const k = this.blobs.keys().next().value; URL.revokeObjectURL(this.blobs.get(k)); this.blobs.delete(k); } return u; },
+  async hasPhoto(id) { try { const r = await fetch(this.url('api/photos/' + id), { method: 'GET', headers: { Authorization: 'Bearer ' + this.token, Range: 'bytes=0-0' } }); return r.ok; } catch { return null; } },
+  putAudio(id, blob) { return fetch(this.url('api/audios/' + id), { method: 'PUT', headers: { Authorization: 'Bearer ' + this.token, 'Content-Type': (blob.type || 'audio/webm').split(';')[0] }, body: blob }).then(async r => { if (r.status === 401) throw Object.assign(new Error('login'), { code: 'login' }); if (!r.ok) throw Object.assign(new Error('audio'), { code: 'net' }); return r.json(); }); },
+  versiones(id) { return this.req('GET', 'api/versiones/' + id); },
   putConfig(d) { return this.req('PUT', 'api/config', d); },
   users() { return this.req('GET', 'api/users'); },
   addUser(d) { return this.req('POST', 'api/users', d); },
@@ -675,8 +778,8 @@ const DB = {
   db: null,
   open() {
     return new Promise((res, rej) => {
-      const r = indexedDB.open('koa-inspeccion-v2', 1);
-      r.onupgradeneeded = () => { const d = r.result; ['cache', 'outbox', 'photos', 'meta'].forEach(n => d.objectStoreNames.contains(n) || d.createObjectStore(n)); };
+      const r = indexedDB.open('koa-inspeccion-v2', 2);
+      r.onupgradeneeded = () => { const d = r.result; ['cache', 'outbox', 'photos', 'meta', 'conflictos'].forEach(n => d.objectStoreNames.contains(n) || d.createObjectStore(n)); };
       r.onsuccess = () => { this.db = r.result; res(); };
       r.onerror = () => rej(r.error);
     });
@@ -690,6 +793,7 @@ const DB = {
 };
 
 // ---------- Estado ----------
+let desc = null;          // modo descenso de fachada: { fid, b, i, f, id, draft }
 let recs = {};            // itemId -> registro vigente (fusión servidor + cola local)
 let remote = {};          // uid -> { itemId -> registro }
 let outbox = {};          // itemId -> registro pendiente de envío (ya con _uid/_path)
@@ -699,7 +803,7 @@ let config = { locked: false };
 const urlCache = new Map();
 const itemPath = (uid, id) => `registros/${uid}/items/${id}`;
 const readOnly = () => !Plat.uid || Plat.viewer || (config.locked && !Plat.isOwner);
-const canEditRec = rec => Plat.isOwner || !rec?._uid || rec._uid === Plat.uid;
+const canEditRec = rec => Plat.isOwner || !rec?._uid || (Plat.captura ? rec._uid === Plat.uid && (!rec.lastUid || rec.lastUid === Plat.uid || Plat.roles[rec.lastUid] === 'captura') : rec._uid === Plat.uid || (!Plat.viewer && Plat.roles[rec._uid] === 'captura'));
 
 function rebuild() {
   const m = {};
@@ -708,13 +812,13 @@ function rebuild() {
   recs = m;
 }
 function hist(rec, accion, extra) {
-  rec.historial = (rec.historial || []).slice(-24);
+  rec.historial = (rec.historial || []).slice(-199);
   rec.historial.push({ at: Date.now(), uid: Plat.uid, accion, status: rec.status || '', n: (rec.hallazgos || []).length, ...(extra || {}) });
 }
 async function saveRec(id, rec, accion) {
   if (readOnly()) { toast('La inspección está cerrada: solo lectura'); return false; }
   if (!canEditRec(rec)) { toast('Este registro pertenece a otro inspector'); return false; }
-  if (!profiles[Plat.uid]) await saveProfile({ nombre: inspector?.nombre || Plat.me?.name || 'Administrador', profesion: inspector?.profesion || '', matricula: inspector?.matricula || '', rol: Plat.isOwner ? 'admin' : 'inspector' });
+  if (!profiles[Plat.uid]) await saveProfile({ nombre: inspector?.nombre || Plat.me?.name || 'Administrador', profesion: inspector?.profesion || '', matricula: inspector?.matricula || '', rol: Plat.isOwner ? 'admin' : Plat.captura ? 'captura' : 'inspector' });
   rec._uid = rec._uid || Plat.uid; rec._path = itemPath(rec._uid, id); rec.item = id;
   rec.createdAt = rec.createdAt || Date.now(); rec.updatedAt = Date.now(); rec.lastUid = Plat.uid;
   if (accion) hist(rec, accion);
@@ -740,7 +844,7 @@ async function loadImage(file) {
   try { return await createImageBitmap(file, { imageOrientation: 'from-image' }); }
   catch { return await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); }); }
 }
-async function compressPhoto(file, stamp, max = 1600, q = .74) {
+async function compressPhoto(file, stamp, max = 2000, q = .78) {
   const img = await loadImage(file);
   const s = Math.min(1, max / Math.max(img.width, img.height));
   const c = document.createElement('canvas'); c.width = Math.round(img.width * s); c.height = Math.round(img.height * s);
@@ -748,7 +852,8 @@ async function compressPhoto(file, stamp, max = 1600, q = .74) {
   if (stamp) {
     const fs = Math.max(14, Math.round(c.width / 55));
     g.font = `600 ${fs}px -apple-system, Helvetica, Arial`;
-    const lines = [stamp, `${new Date().toLocaleString('es-CO')}  ·  ${inspector?.nombre || Plat.me?.name || ''}`];
+    const tomada = file.lastModified && Math.abs(Date.now() - file.lastModified) > 120e3 ? file.lastModified : Date.now();
+    const lines = [stamp, `${new Date(tomada).toLocaleString('es-CO')}  ·  ${inspector?.nombre || Plat.me?.name || ''}`];
     const pad = fs * .6, lh = fs * 1.35, bh = lines.length * lh + pad * 1.4;
     g.fillStyle = 'rgba(0,0,0,.55)'; g.fillRect(0, c.height - bh, c.width, bh);
     g.fillStyle = '#fff'; lines.forEach((l, i) => g.fillText(l, pad, c.height - bh + pad + lh * (i + .75)));
@@ -761,19 +866,32 @@ async function storePhoto(file, stamp) {
   await DB.put('photos', id, blob);
   return id;
 }
-const assetURL = ref => ref.startsWith('p:') ? Rest.photoURL(ref.slice(2)) : '/_blob/' + ref.slice(2);
+const assetURL = ref => '/_blob/' + ref.slice(2);
+async function photoBlob(ref) { if (ref.startsWith('p:')) return Rest.blob('api/photos/' + ref.slice(2)); if (ref.startsWith('a:')) { const r = await fetch(assetURL(ref)); if (!r.ok) throw 0; return r.blob(); } return DB.get('photos', ref); }
 async function photoURL(ref) {
   if (!ref) return '';
-  if (ref.startsWith('a:') || ref.startsWith('p:')) return assetURL(ref);
+  if (ref.startsWith('p:')) { try { return await Rest.blobURL('api/photos/' + ref.slice(2)); } catch { return ''; } }
+  if (ref.startsWith('a:')) return assetURL(ref);
   if (urlCache.has(ref)) return urlCache.get(ref);
   const b = await DB.get('photos', ref);
   const u = b ? URL.createObjectURL(b) : '';
   urlCache.set(ref, u); return u;
 }
+async function loadPh(img) {
+  if (img.dataset.loaded === '1') return; img.dataset.loaded = '1';
+  const fb = () => img.replaceWith(Object.assign(document.createElement('div'), { className: 'fallback', textContent: 'Foto no disponible' }));
+  img.onerror = fb; const u = await photoURL(img.dataset.ph); if (u) img.src = u; else fb();
+}
+const phObs = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { phObs.unobserve(e.target); loadPh(e.target); } }), { rootMargin: '600px' }) : null;
 async function hydratePhotos(root = document) {
-  for (const img of $$('img[data-ph]', root)) if (img.dataset.loaded !== '1') { img.dataset.loaded = '1'; img.src = await photoURL(img.dataset.ph); img.onerror = () => { img.replaceWith(Object.assign(document.createElement('div'), { className: 'fallback', textContent: 'Foto no disponible' })); }; }
+  for (const img of $$('img[data-ph]', root)) if (img.dataset.loaded !== '1') { if (phObs) phObs.observe(img); else await loadPh(img); }
+  for (const el of $$('[data-audio]', root)) if (el.dataset.loaded !== '1') { el.dataset.loaded = '1'; const ref = el.dataset.audio; try { const u = ref.startsWith('m:') ? URL.createObjectURL(await DB.get('photos', ref)) : await Rest.blobURL('api/audios/' + ref.slice(2)); el.innerHTML = `<audio controls preload="none" src="${u}" style="width:100%;height:36px"></audio>`; } catch { el.textContent = 'Nota de voz no disponible sin conexión'; } }
 }
 function photoRefs(rec) { return [...(rec.fotos || []), ...(rec.hallazgos || []).flatMap(h => h.fotos || [])]; }
+function mediaRefs(rec) { return [...photoRefs(rec), ...(rec.hallazgos || []).map(h => h.audio).filter(Boolean)]; }
+const fotoCode = ref => ref && ref.startsWith('p:') && Plat.fotoN[ref.slice(2)] ? 'F-' + String(Plat.fotoN[ref.slice(2)]).padStart(4, '0') : ref ? 'F-(por enviar)' : '';
+const dCode = (it, h, i) => `${it.cell ? it.id : it.id.toUpperCase()}-D${h.n || i + 1}`;
+function nextD(rec) { rec.nd = Math.max(rec.nd || 0, ...(rec.hallazgos || []).map(h => h.n || 0)) + 1; return rec.nd; }
 function lightbox(src) { const d = document.createElement('div'); d.className = 'lightbox'; d.innerHTML = `<img src="${src}">`; d.onclick = () => d.remove(); document.body.appendChild(d); }
 document.addEventListener('click', e => { const im = e.target.closest('.ph img'); if (im) lightbox(im.src); });
 
@@ -799,42 +917,59 @@ const Sync = {
     this.busy = true; this.lastErr = '';
     try {
       if (await DB.get('meta', 'perfilPendiente')) { const p = await DB.get('meta', 'perfil'); if (p) { if (Plat.rest) await Rest.putPerfil(p); else { await Plat.db.doc(`perfiles/${p.uid}`).set(p); this.subscribeItems(p.uid); } await DB.del('meta', 'perfilPendiente'); } }
+      let fallos = 0;
       for (const id of Object.keys(outbox)) {
-        // 1) subir fotos locales, actualizando la cola Y el borrador abierto con el id del servidor
-        const refs = photoRefs(outbox[id]).filter(r => r.startsWith('l:'));
-        for (const ref of refs) {
-          const b = await DB.get('photos', ref);
-          let to = null;
-          if (b) {
-            if (Plat.rest) { const pid = ref.slice(2); await Rest.putPhoto(pid, b); to = 'p:' + pid; }
-            else {
-              if (!Plat.assets) throw Object.assign(new Error('Sin permiso para subir fotos: pida acceso de edición al administrador'), { fatal: true });
-              const up = await Plat.assets.upload(b, { type: 'image/jpeg' });
-              to = 'a:' + up.id;
+        try {
+          // 1) subir fotos y notas de voz locales, actualizando la cola Y el borrador abierto con el id del servidor
+          const refs = mediaRefs(outbox[id]).filter(r => r.startsWith('l:') || r.startsWith('m:'));
+          for (const ref of refs) {
+            const b = await DB.get('photos', ref); const mid = ref.slice(2);
+            let to = null;
+            if (b) {
+              if (!Plat.rest) { if (!Plat.assets) throw Object.assign(new Error('Sin permiso para subir fotos: pida acceso de edición al administrador'), { fatal: true }); const up = await Plat.assets.upload(b, { type: 'image/jpeg' }); to = 'a:' + up.id; }
+              else if (ref.startsWith('m:')) { await Rest.putAudio(mid, b); to = 'u:' + mid; }
+              else { const r = await Rest.putPhoto(mid, b); if (r.n) Plat.fotoN[mid] = r.n; to = 'p:' + mid; }
+            } else if (Plat.rest && ref.startsWith('l:')) {
+              // El archivo ya no está en este dispositivo: si el servidor lo tiene, se enlaza; si no, se deja constancia (nunca se quita en silencio)
+              const ok = await Rest.hasPhoto(mid); if (ok === null) throw new Error('red');
+              if (ok) to = 'p:' + mid;
             }
+            if (!to) { (outbox[id].perdidas ||= []).push({ ref, at: Date.now(), uid: Plat.uid }); hist(outbox[id], 'archivo no encontrado en el dispositivo', { removed: { archivo: ref } }); if (ed && ed.id === id) (ed.draft.perdidas ||= []).push({ ref, at: Date.now() }); if (desc && desc.id === id) (desc.draft.perdidas ||= []).push({ ref, at: Date.now() }); ask('Falta una foto', `Una foto o nota de voz de “${BY_ID[id]?.name || id}” ya no está en este dispositivo y no llegó al servidor. Vuelva a tomarla. El elemento queda marcado para revisión.`, { cancel: '' }); }
+            replaceRef(outbox[id], ref, to);
+            if (ed && ed.id === id) replaceRef(ed.draft, ref, to);
+            if (desc && desc.id === id) replaceRef(desc.draft, ref, to);
+            await DB.put('outbox', id, outbox[id]);
+            await DB.del('photos', ref); urlCache.delete(ref);
           }
-          replaceRef(outbox[id], ref, to);
-          if (ed && ed.id === id) replaceRef(ed.draft, ref, to);
-          await DB.put('outbox', id, outbox[id]);
-          await DB.del('photos', ref); urlCache.delete(ref);
+          // 2) escribir el registro; si el usuario siguió editando mientras tanto, se reenvía en la siguiente vuelta
+          const snap = clone(outbox[id]); const ver = snap.updatedAt;
+          const path = snap._path || itemPath(snap._uid || Plat.uid, id);
+          const body = clone(snap); delete body._path;
+          if (Plat.rest) {
+            try { const r = await Rest.putItem(id, body); if (r.rev) { snap.rev = r.rev; snap.serverAt = r.serverAt; if (outbox[id]) outbox[id].rev = r.rev; if (ed && ed.id === id) ed.draft.rev = r.rev; if (desc && desc.id === id) desc.draft.rev = r.rev; } }
+            catch (e) {
+              if (e.code === 'conflict' && e.payload?.current) { const c = e.payload.current; (remote[c._uid] ||= {})[id] = c; await DB.put('conflictos', id + '@' + Date.now(), snap).catch(() => { }); delete outbox[id]; await DB.del('outbox', id); await DB.put('cache', id, c); ask('Cambio no aplicado', `“${BY_ID[id]?.name || id}” fue modificado por otro usuario mientras usted lo editaba. Se muestra la versión del servidor; su versión quedó guardada en este dispositivo y puede pedirle al administrador que la recupere.`, { cancel: '' }); continue; }
+              if (e.code === 'forbidden' || e.code === 'locked') { delete outbox[id]; await DB.del('outbox', id); toast(e.code === 'locked' ? 'La inspección está cerrada: el cambio no se guardó' : 'Sin permiso sobre este registro: el cambio no se guardó'); continue; }
+              throw e;
+            }
+          } else await Plat.db.doc(path).set(body);
+          if (!remote[snap._uid]) remote[snap._uid] = {}; remote[snap._uid][id] = snap;
+          await DB.put('cache', id, snap);
+          if (outbox[id] && outbox[id].updatedAt === ver) { delete outbox[id]; await DB.del('outbox', id); }
+        } catch (e) {
+          // Sin respuesta del servidor o sesión vencida: se detiene la vuelta. Un error de un solo registro no frena a los demás.
+          if (!e?.code || e.code === 'login' || e.fatal) throw e;
+          fallos++; console.warn('sync item', id, e);
         }
-        // 2) escribir el registro; si el usuario siguió editando mientras tanto, se reenvía en la siguiente vuelta
-        const snap = clone(outbox[id]); const ver = snap.updatedAt;
-        const path = snap._path || itemPath(snap._uid || Plat.uid, id);
-        const body = clone(snap); delete body._path;
-        if (Plat.rest) { try { await Rest.putItem(id, body); } catch (e) { if (e.code === 'conflict' && e.payload?.current) { const c = e.payload.current; (remote[c._uid] ||= {})[id] = c; delete outbox[id]; await DB.del('outbox', id); await DB.put('cache', id, c); toast('El elemento fue actualizado por otro usuario; se muestra la versión del servidor'); continue; } if (e.code === 'forbidden' || e.code === 'locked') { delete outbox[id]; await DB.del('outbox', id); toast(e.code === 'locked' ? 'La inspección está cerrada: el cambio no se guardó' : 'Sin permiso sobre este registro: el cambio no se guardó'); continue; } throw e; } }
-        else await Plat.db.doc(path).set(body);
-        if (!remote[snap._uid]) remote[snap._uid] = {}; remote[snap._uid][id] = snap;
-        await DB.put('cache', id, snap);
-        if (outbox[id] && outbox[id].updatedAt === ver) { delete outbox[id]; await DB.del('outbox', id); }
       }
+      if (fallos) this.lastErr = `${fallos} registro${fallos > 1 ? 's' : ''} no se pudo${fallos > 1 ? 'ieron' : ''} enviar · reintentando`;
       rebuild();
     } catch (e) {
       const code = e?.code || '';
       if (code === 'login') { toast('La sesión expiró. Inicie sesión de nuevo.'); setTimeout(() => location.reload(), 1500); return; }
       this.lastErr = e?.fatal ? e.message : code === 'invalid_argument' ? 'Sin permiso para guardar en el servidor' : code === 'quota_exceeded' || code === 'quota_or_state' ? 'Almacenamiento del servidor lleno' : 'Sin conexión con el servidor · reintentando';
       console.warn('sync', e);
-    } finally { this.busy = false; this.pill(); updateBadges(); if (Object.keys(outbox).length && !this.lastErr) this.schedule(); }
+    } finally { this.busy = false; this.pill(); updateBadges(); if (Object.keys(outbox).length && !this.lastErr) this.schedule(); else if (this.lastErr) { clearTimeout(this.timer); this.timer = setTimeout(() => this.flush(), 15000); } }
   },
   subscribeItems(uid) {
     if (!uid || this.subs[uid] || !Plat.db) return;
@@ -855,7 +990,9 @@ const Sync = {
       let changed = false;
       for (const [id, r] of Object.entries(s.items || {})) { const uid = r._uid || 'srv'; (remote[uid] ||= {})[id] = { ...r, _path: itemPath(uid, id) }; DB.put('cache', id, remote[uid][id]); changed = true; }
       const lk = !!s.config?.locked; if (lk !== !!config.locked || this.loading) changed = true;
+      const fj = JSON.stringify(s.config?.fachadas || null); if (fj !== JSON.stringify(config.fachadas || null)) { try { localStorage.setItem('koa_fach', fj); } catch { } buildFachadas(s.config?.fachadas); changed = true; }
       config = s.config || { locked: false }; if (s.users) Plat.users = s.users;
+      if (s.fotos && Object.keys(s.fotos).length) { Object.assign(Plat.fotoN, s.fotos); try { localStorage.setItem('koa_fotoN', JSON.stringify(Plat.fotoN)); } catch { } } if (s.roles) { Plat.roles = s.roles; try { localStorage.setItem('koa_roles', JSON.stringify(s.roles)); } catch { } } if ('respaldo' in s) Plat.respaldo = s.respaldo;
       this.since = s.now || Date.now(); this.loading = false; this.lastErr = '';
       if (changed) { rebuild(); onRemoteChange(); } else this.pill();
     } catch (e) { if (e.code === 'login') { toast('La sesión expiró. Inicie sesión de nuevo.'); setTimeout(() => location.reload(), 1500); return; } this.loading = false; this.lastErr = 'Sin conexión con el servidor'; this.pill(); }
@@ -881,14 +1018,14 @@ const Sync = {
 };
 function replaceRef(rec, from, to) {
   const fix = arr => { if (!arr) return arr; const i = arr.indexOf(from); if (i >= 0) { if (to) arr[i] = to; else arr.splice(i, 1); } return arr; };
-  fix(rec.fotos); (rec.hallazgos || []).forEach(h => { fix(h.fotos); if (h.escala === from) h.escala = to || ''; });
+  fix(rec.fotos); (rec.hallazgos || []).forEach(h => { fix(h.fotos); if (h.escala === from) h.escala = to || ''; if (h.audio === from) h.audio = to || ''; });
 }
 let renderT = null;
 function onRemoteChange(force) {
   clearTimeout(renderT);
   renderT = setTimeout(() => {
     updateBadges();
-    if ($('.sheet-back')) { if (ed) { applyLockUI(); if (ed.apt) renderWallTabs(); } return; }
+    if ($('.sheet-back')) { if (ed) { applyLockUI(); if (ed.apt) renderWallTabs(); } if (desc) renderDescDots(); return; }
     render();
   }, force ? 0 : 400);
 }
@@ -907,6 +1044,7 @@ function issues(rec) {
   }
   if (st === 'no_aplica') { if ((rec.nota || '').trim().length < 5) e.push('Explique por qué el elemento no aplica'); return e; }
   if (st === 'sin_dano') { if (!(rec.fotos || []).length) e.push('Falta la foto de evidencia del elemento sin daño'); return e; }
+  if ((rec.perdidas || []).length && !rec.perdidasOk) e.push('Se perdió una foto o nota de voz antes de llegar al servidor: vuelva a tomarla y confirme la revisión');
   if (st === 'con_dano') {
     const hs = rec.hallazgos || [];
     if (!hs.length) e.push('Registre al menos un daño');
@@ -941,11 +1079,14 @@ function warnings(rec) {
   });
   return w;
 }
+// Captura en fachada: el técnico deja tipo de daño y fotos; el ingeniero clasifica después
+const capOK = r => r.status === 'con_dano' && (r.hallazgos || []).length > 0 && r.hallazgos.every(h => h.dano && (h.fotos || []).length);
 function itemState(id) {
   const r = recs[id];
   if (!r || !r.status) return 'pendiente';
   if (r.status === 'no_acceso') return (r.definitivo && (r.intentos || []).length >= 2) ? 'no_acceso_def' : 'no_acceso';
-  return issues(r).length ? 'incompleto' : r.status;
+  if (!issues(r).length) return r.status;
+  return BY_ID[id]?.cell && capOK(r) && !(r.perdidas || []).length ? 'por_clasificar' : 'incompleto';
 }
 const isDone = id => ['sin_dano', 'con_dano', 'no_aplica', 'no_acceso_def'].includes(itemState(id));
 function maxSev(rec) { let m = -1; (rec?.hallazgos || []).forEach(h => { const i = SEV_ORDER.indexOf(h.severidad); if (i > m) m = i; }); return m < 0 ? null : SEV_ORDER[m]; }
@@ -953,6 +1094,7 @@ function stateColor(id) {
   const s = itemState(id), r = recs[id];
   if (s === 'pendiente') return '#c7c7cc';
   if (s === 'incompleto') return '#ffb340';
+  if (s === 'por_clasificar') return '#30b0c7';
   if (s === 'no_acceso' || s === 'no_acceso_def') return STATUS.no_acceso.c;
   if (s === 'no_aplica') return '#a1a1a6';
   if (s === 'sin_dano') return STATUS.sin_dano.c;
@@ -962,6 +1104,7 @@ function stateLabel(id) {
   const s = itemState(id), r = recs[id];
   if (s === 'pendiente') return 'Pendiente';
   if (s === 'incompleto') return 'Incompleto';
+  if (s === 'por_clasificar') return 'Por clasificar';
   if (s === 'no_acceso_def') return 'Sin acceso definitivo';
   if (s === 'con_dano') { const ms = maxSev(r); return `Con daño · ${SEV[ms]?.n || ''}`; }
   return STATUS[s].n;
@@ -971,7 +1114,7 @@ function stats(list = ITEMS) {
   list.forEach(it => {
     const s = itemState(it.id), r = recs[it.id];
     if (isDone(it.id)) o.done++;
-    if (s === 'sin_dano') o.sin++; else if (s === 'con_dano') o.con++; else if (s === 'no_acceso') o.noacc++; else if (s === 'no_acceso_def') o.noaccdef++; else if (s === 'no_aplica') o.noapl++; else if (s === 'incompleto') o.inc++; else o.pend++;
+    if (s === 'sin_dano') o.sin++; else if (s === 'con_dano') o.con++; else if (s === 'no_acceso') o.noacc++; else if (s === 'no_acceso_def') o.noaccdef++; else if (s === 'no_aplica') o.noapl++; else if (s === 'incompleto' || s === 'por_clasificar') { o.inc++; if (s === 'por_clasificar') o.clas = (o.clas || 0) + 1; } else o.pend++;
     if (r) { o.fotos += photoRefs(r).length; if (r.status === 'con_dano') (r.hallazgos || []).forEach(h => { o.hall++; if (h.atrib === 'sismo' || h.atrib === 'agravado') o.hallSismo++; if (o.sev[h.severidad] != null) o.sev[h.severidad]++; }); }
   });
   o.pct = o.total ? Math.round(o.done / o.total * 100) : 0;
@@ -1052,7 +1195,7 @@ const VIEWS = [
 ];
 let current = 'inicio';
 function renderNav() {
-  $('#nav').innerHTML = VIEWS.filter(v => v[0] !== 'admin' || Plat.isOwner).map(([id, n, ic, g]) => {
+  $('#nav').innerHTML = VIEWS.filter(v => Plat.captura ? ['fachadas', 'ajustes'].includes(v[0]) : v[0] !== 'admin' || Plat.isOwner).map(([id, n, ic, g]) => {
     let cnt = '';
     if (g) { const s = stats(ITEMS.filter(i => i.group === g)); cnt = `<span class="cnt">${s.done}/${s.total}</span>`; }
     if (id === 'inicio') cnt = `<span class="cnt">${stats().pct}%</span>`;
@@ -1062,8 +1205,8 @@ function renderNav() {
 }
 function updateBadges() {
   renderNav();
-  const il = $('#inspLabel'); if (il) il.textContent = Plat.viewer ? 'Solo lectura' : inspector?.nombre ? `Inspector: ${inspector.nombre}` : 'Perfil sin registrar';
-  const ul = $('#userLabel'); if (ul) { ul.innerHTML = `<span class="role ${Plat.isOwner ? 'owner' : ''}">${Plat.isOwner ? 'Administrador' : Plat.viewer ? 'Consulta' : 'Inspector'}</span> <span>${esc(Plat.me?.name || '')}</span>${config.locked ? ' <span class="role" style="background:rgba(255,59,48,.15);color:var(--red)">Cerrada</span>' : ''}${Plat.local ? ' <button class="btn small" id="logoutSide">Salir</button>' : ''}`; $('#logoutSide')?.addEventListener('click', localLogout); }
+  const il = $('#inspLabel'); if (il) il.textContent = Plat.viewer ? 'Solo lectura' : inspector?.nombre ? `${Plat.captura ? 'Técnico' : 'Inspector'}: ${inspector.nombre}` : 'Perfil sin registrar';
+  const ul = $('#userLabel'); if (ul) { ul.innerHTML = `<span class="role ${Plat.isOwner ? 'owner' : ''}">${Plat.isOwner ? 'Administrador' : Plat.viewer ? 'Consulta' : Plat.captura ? 'Captura de fachada' : 'Inspector'}</span> <span>${esc(Plat.me?.name || '')}</span>${config.locked ? ' <span class="role" style="background:rgba(255,59,48,.15);color:var(--red)">Cerrada</span>' : ''}${Plat.local ? ' <button class="btn small" id="logoutSide">Salir</button>' : ''}`; $('#logoutSide')?.addEventListener('click', localLogout); }
   Sync.pill();
 }
 $('#nav').addEventListener('click', e => { const b = e.target.closest('[data-view]'); if (b) go(b.dataset.view); });
@@ -1074,7 +1217,8 @@ function go(v, anchor) {
 }
 document.addEventListener('click', e => {
   const g = e.target.closest('[data-go]'); if (g) { go(g.dataset.go, g.dataset.anchor); return; }
-  const it = e.target.closest('[data-item]'); if (it) { openItem(it.dataset.item); return; }
+  const dz = e.target.closest('[data-desc]'); if (dz && !e.target.closest('.sheet')) { const [f, b] = dz.dataset.desc.split('|'); openDescent(f, +b); return; }
+  const it = e.target.closest('[data-item]'); if (it) { if (BY_ID[it.dataset.item]) openItem(it.dataset.item); return; }
   const ap = e.target.closest('[data-apt]'); if (ap) { openApt(+ap.dataset.apt); return; }
 });
 
@@ -1310,19 +1454,164 @@ function vComunes() {
   $('#view').innerHTML = `<div class="filters"><span class="muted" style="font-size:12.5px">Ir a:</span>${SECTIONS.filter(s => s.group === 'comunes').map(s => `<button class="btn small" data-go="comunes" data-anchor="sec-${s.id}">${esc(s.name.split(' — ')[0])}</button>`).join('')}</div>` +
     SECTIONS.filter(s => s.group === 'comunes').map(secCard).join('');
 }
+const pad2 = n => String(n).padStart(2, '0');
+function gridHTML(f, live) {
+  const cols = Array.from({ length: f.bajadas }, (_, i) => i + 1);
+  return `<div class="gridwrap"><table class="gridf"><tr><th></th>${cols.map(b => `<th>${live && !Plat.viewer ? `<button class="bajbtn" data-desc="${f.id}|${b}" title="Iniciar el descenso por la bajada ${b}${(f.notas || [])[b - 1] ? ' · ' + esc(f.notas[b - 1]) : ''}">B${pad2(b)}<span>▼</span></button>` : 'B' + pad2(b)}</th>`).join('')}</tr>
+  ${LEVELS.map(l => `<tr><th>${l === 'REM' ? 'Rem.' : 'P' + (+l.slice(1))}</th>${cols.map(b => { const id = cellId(f.id, b, l), st = itemState(id); const n = recs[id]?.status === 'con_dano' ? (recs[id].hallazgos || []).length : 0; const cls = st === 'pendiente' ? 'pend' : st === 'incompleto' ? 'inc' : ''; return `<td><button class="gc ${cls}" style="${cls ? '' : `background:${stateColor(id)}`}" data-item="${id}" title="${id} · ${stateLabel(id)}">${n || (st === 'sin_dano' ? '✓' : '')}</button></td>`; }).join('')}</tr>`).join('')}</table></div>`;
+}
 function vFachadas() {
-  head('Fachadas exteriores', 'Inspección desde el exterior (dron, binoculares, andamio o equipo de altura), paño por paño en cada piso.');
+  head('Fachadas exteriores', 'Levantamiento desde el exterior por bajadas (descensos en cuerda). Cada celda —fachada, bajada y piso— tiene un código único.');
+  const porClas = Plat.captura ? [] : ITEMS.filter(it => it.cell && itemState(it.id) === 'por_clasificar');
   const cards = SECTIONS.filter(s => s.group === 'fachadas').map(s => {
-    const st = stats(s.items);
-    const lv = [...s.items].reverse().map(it => {
-      const state = itemState(it.id);
-      const cls = state === 'pendiente' ? 'pend' : state === 'incompleto' ? 'inc' : '';
-      const bg = cls ? '' : `background:${stateColor(it.id)}`;
-      return `<button class="lvl ${cls}" style="${bg}" data-item="${it.id}">${esc(it.name.replace('Remate y antepecho de cubierta', 'Remate / cubierta').replace(/\s*\(.*\)/, ''))}<span>${stateLabel(it.id)}</span></button>`;
-    }).join('');
-    return `<div class="fac glass" id="sec-${s.id}"><h3>${esc(s.name)}</h3><div class="muted">${st.done}/${st.total} paños completos</div><div class="elev">${lv}</div></div>`;
+    const f = s.fach, st = stats(s.items);
+    return `<div class="fac glass" id="sec-${s.id}" style="margin-bottom:16px"><h3>${esc(s.name)}</h3><div class="muted">${esc(f.ejes || '')} · ≈ ${fmt(f.largo)} m · ${f.bajadas} bajadas · ${st.done}/${st.total} celdas completas${st.clas ? ` · <b>${st.clas} por clasificar</b>` : ''}</div>${gridHTML(f, true)}</div>`;
   }).join('');
-  $('#view').innerHTML = `<div class="card glass" style="margin-bottom:16px;font-size:13.5px;line-height:1.5"><b>Cómo inspeccionar las fachadas.</b> <span class="muted">Cada fachada se divide en paños por piso. Registre los daños de la cara exterior: fisuras en mampostería y revoque, desprendimientos, ventanería, balcones, barandas y juntas. La cara interior del muro de fachada se registra en cada apartamento.</span></div><div class="facgrid">${cards}</div>${LEGEND}`;
+  $('#view').innerHTML = `<div class="card glass" style="margin-bottom:16px;font-size:13.5px;line-height:1.5"><b>Cómo se levanta la fachada.</b> <span class="muted">Las bajadas se cuentan de izquierda a derecha mirando la fachada desde afuera. Toque <b>B01 ▼</b> para iniciar el descenso por esa bajada: el técnico registra cada piso con fotos, tipo de daño, medidas y nota de voz, y marca con tiza el código del daño en el muro. Después el ingeniero clasifica cada daño (severidad, atribución, reparación y cantidad). Toque una celda para abrirla.</span>
+    <div class="legend"><span><i style="background:rgba(142,142,147,.4)"></i>Pendiente</span><span><i style="background:#34c759"></i>Sin daño</span><span><i style="background:#30b0c7"></i>Capturado · por clasificar</span><span><i style="background:#ffb340"></i>Incompleto</span><span><i style="background:${SEV.leve.c}"></i>Leve</span><span><i style="background:${SEV.moderado.c}"></i>Moderado</span><span><i style="background:${SEV.severo.c}"></i>Severo</span><span><i style="background:${SEV.critico.c}"></i>Crítico</span><span><i style="background:${STATUS.no_acceso.c}"></i>Sin acceso</span></div></div>
+  ${porClas.length ? `<div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Por clasificar (${porClas.length})</h3><p class="muted" style="font-size:12.5px;margin-top:-4px">Celdas levantadas en fachada que esperan la clasificación del ingeniero.</p><div class="pend-list">${porClas.slice(0, 300).map(it => `<button data-item="${it.id}"><span class="dot" style="background:#30b0c7"></span>${esc(it.id)}<small>${(recs[it.id].hallazgos || []).length} daño(s) · ${esc(nameOf(recs[it.id]._uid))}</small></button>`).join('')}</div></div>` : ''}
+  ${cards}`;
+}
+// ---------- Fachadas: modo descenso (captura en cuerda) ----------
+let recState = null;
+function aptoSug(it) { if (!it?.cell || it.floor < 1 || it.floor > 11) return null; for (const l of LEVELS) { const r = recs[cellId(it.fach, it.baj, l)]; if (r?.apto) { const c = it.floor * 100 + (+r.apto % 100); return APTS.includes(c) ? c : null; } } return null; }
+function setTip(h, k) {
+  h.tipico = k; const t = TIP_BY[k];
+  if (!t) { if (k === 'otro') { h.elemento = h.elemento || 'Otro'; h.dano = h.dano || 'Otro'; } return; }
+  h.elemento = t.el; h.dano = t.da; h.rep = t.rep; h.unidad = REP_BY[t.rep].unit;
+  if (!(h.espec || '').trim() || h.especAuto) { h.espec = t.esp; h.especAuto = true; }
+  if (h.unidad === 'ml' && num(h.longitud) > 0 && !num(h.cantidad)) h.cantidad = h.longitud;
+  if (h.unidad === 'm²' && num(h.area) > 0 && !num(h.cantidad)) h.cantidad = h.area;
+}
+function openDescent(fid, b, lvl) {
+  if (!profileGate(() => openDescent(fid, b, lvl))) return;
+  const f = FACH.find(x => x.id === fid); if (!f || b < 1 || b > f.bajadas) return;
+  let i = lvl ? LEVELS.indexOf(lvl) : LEVELS.findIndex(l => itemState(cellId(fid, b, l)) === 'pendiente');
+  if (i < 0) i = 0;
+  const back = openSheet(`Descenso · ${esc(fid)} · bajada ${b}`, esc(f.nombre), `<div id="descBody"></div>`, `<button class="btn big" id="dUp">▲</button><span class="muted" id="saveState" style="font-size:12px;flex:1;text-align:center"></span><button class="btn primary big" id="dDown">Bajar ▼</button>`);
+  $('.sheet').classList.add('descent');
+  desc = { fid, b, i, f }; loadDesc();
+  back.addEventListener('click', descClick); back.addEventListener('change', descChange); back.addEventListener('input', descInput);
+}
+function loadDesc() { desc.id = cellId(desc.fid, desc.b, LEVELS[desc.i]); desc.draft = clone(recs[desc.id] || blankRec()); renderDesc(); const sb = $('.sheet-b'); if (sb) sb.scrollTop = 0; }
+async function saveDesc(accion) {
+  const d = desc; if (!d) return false;
+  clearTimeout(descT); d.draft.capturado = d.draft.capturado || { uid: Plat.uid, at: Date.now() };
+  const ok = await saveRec(d.id, d.draft, accion);
+  const s = $('#saveState'); if (s) s.textContent = ok ? 'Guardado ' + new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' }) + (Plat.online ? '' : ' · sin señal, se envía luego') : 'No se pudo guardar';
+  return ok;
+}
+function renderDescDots() {
+  const el = $('#dDots'); if (!el || !desc) return;
+  el.innerHTML = LEVELS.map((l, k) => { const id = cellId(desc.fid, desc.b, l), st = itemState(id); return `<button class="${st === 'pendiente' ? 'pend' : ''} ${k === desc.i ? 'cur' : ''}" style="${st === 'pendiente' ? '' : `background:${stateColor(id)}`}" data-dgo="${k}" title="${lvlName(l)} · ${stateLabel(id)}">${l === 'REM' ? 'R' : +l.slice(1)}</button>`; }).join('');
+}
+function dHz(x, k, it, ro) {
+  const fot = x.fotos || [];
+  return `<div class="blk hz" style="--c:#ff3b30"><div class="hz-h"><b style="font-size:17px">${esc(dCode(it, x, k))}</b><span class="muted" style="font-size:12px;flex:1">Marque este código con tiza junto al daño</span>${ro ? '' : `<button class="btn small danger" data-ddel="${k}" type="button">Quitar</button>`}</div>
+    <div class="chips">${TIPICOS.filter(t => t.f).map(t => `<button type="button" class="${x.tipico === t.k ? 'on' : ''}" data-dtip="${t.k}" data-h="${k}">${esc(t.n)}</button>`).join('')}<button type="button" class="${x.tipico === 'otro' ? 'on' : ''}" data-dtip="otro" data-h="${k}">Otro</button></div>
+    <div class="dfotos">${fot.map(ref => `<div class="ph"><span class="num">${x.escala === ref ? 'Detalle' : 'General'}</span><img data-ph="${ref}" alt="Foto"></div>`).join('')}
+      ${fot.length < 4 && !ro ? `<label class="addph">${IC.cam}<span>Foto general</span><input type="file" accept="image/*" capture="environment" data-dph="g${k}"></label><label class="addph">${IC.cam}<span>Detalle con regla</span><input type="file" accept="image/*" capture="environment" data-dph="e${k}"></label>` : ''}</div>
+    <div style="display:flex;gap:16px;align-items:flex-start;flex-wrap:wrap"><div><label style="font-size:12px;font-weight:600;display:block;margin-bottom:4px">Posición en la celda</label><div class="pos9">${POS9.map(p => `<button type="button" class="${x.pos === p ? 'on' : ''}" data-dpos="${esc(p)}" data-h="${k}" title="${esc(p)}" aria-label="${esc(p)}"></button>`).join('')}</div></div>
+      <div class="fg" style="flex:1;min-width:210px"><div class="f c2"><label>Largo (m)</label><input inputmode="decimal" data-dk="longitud" data-h="${k}" value="${esc(x.longitud)}" placeholder="0,0"></div><div class="f c2"><label>Área (m²)</label><input inputmode="decimal" data-dk="area" data-h="${k}" value="${esc(x.area)}" placeholder="0,0"></div><div class="f c2"><label>Ancho fisura (mm)</label><input inputmode="decimal" data-dk="ancho" data-h="${k}" value="${esc(x.ancho)}" placeholder="0,0"></div></div></div>
+    <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">${ro ? '' : `<button class="btn" type="button" data-drec="${k}" style="${recState && recState.h === k ? 'background:#ff3b30;color:#fff' : ''}">${recState && recState.h === k ? '■ Detener grabación' : (x.audio ? '● Grabar de nuevo' : '● Nota de voz')}</button>`}${x.audio ? `<div data-audio="${x.audio}" style="flex:1;min-width:200px"></div>` : ''}</div>
+    <div class="f" style="margin-top:10px"><input data-dk="ubicacion" data-h="${k}" value="${esc(x.ubicacion)}" placeholder="Nota corta (opcional): p. ej., junto a la ventana izquierda"></div></div>`;
+}
+function renderDesc() {
+  if (!desc || !$('#descBody')) return;
+  const it = BY_ID[desc.id], d = desc.draft, lvl = LEVELS[desc.i];
+  const ro = readOnly() || !canEditRec(d);
+  const nota = (desc.f.notas || [])[desc.b - 1]; const sug = !d.apto && aptoSug(it);
+  let h = `<div class="dhead"><div class="dcode">${esc(desc.id)}</div><div class="dsub">${lvlName(lvl)} · bajada ${desc.b} de ${desc.f.bajadas}${nota ? ' · ' + esc(nota) : ''}</div><div class="ddots" id="dDots"></div></div>`;
+  if (ro) h += `<div class="banner lock">${Plat.viewer ? 'Acceso de consulta: solo lectura.' : config.locked ? 'Inspección cerrada: solo lectura.' : 'Esta celda ya fue revisada por el ingeniero o la registró otro usuario: solo lectura.'}</div>`;
+  if (!d.status) h += ro ? '<div class="blk muted" style="text-align:center">Celda sin revisar.</div>' : `<div class="dbig">
+      <label class="bigbtn ok">${IC.cam}<span>Sin daño<small>Tome la foto de la celda</small></span><input type="file" accept="image/*" capture="environment" data-dph="sin"></label>
+      <button class="bigbtn bad" type="button" data-dact="dano"><span>Hay daño<small>Registrar, medir y fotografiar</small></span></button>
+      <button class="bigbtn" type="button" data-dact="noacc"><span>No se pudo revisar<small>Obstáculo o fuera de alcance</small></span></button></div>`;
+  else if (d.status === 'sin_dano') h += `<div class="okbox">✓ Celda sin daño</div><div class="dfotos">${(d.fotos || []).map(ref => `<div class="ph"><img data-ph="${ref}" alt="Foto"></div>`).join('')}${(d.fotos || []).length < 2 && !ro ? `<label class="addph">${IC.cam}<span>Otra foto</span><input type="file" accept="image/*" capture="environment" data-dph="sin"></label>` : ''}</div>${ro ? '' : '<button class="btn" type="button" data-dact="dano">Corregir: sí hay daño</button>'}`;
+  else if (d.status === 'con_dano') h += (d.hallazgos || []).map((x, k) => dHz(x, k, it, ro)).join('') + (ro ? '' : `<button class="bigbtn" type="button" data-dact="dano" style="min-height:56px;font-size:16px"><span>＋ Otro daño en esta celda</span></button>`);
+  else h += `<div class="blk"><b>${STATUS[d.status]?.n || ''}</b><div class="muted" style="font-size:13px;margin-top:4px">${(d.intentos || []).map(x => `${esc(fdt(x.at))}: ${esc(x.nota)}`).join('<br>') || esc(d.nota || '')}</div>${ro ? '' : '<button class="btn" type="button" data-dact="reset" style="margin-top:10px">Volver a revisar esta celda</button>'}</div>`;
+  if (lvl !== 'REM') h += `<div class="blk" style="margin-top:12px"><div class="f"><label>Apartamento detrás de esta celda (opcional)</label><select data-dapto ${ro ? 'disabled' : ''}><option value="">No sé / no aplica</option>${APTS.filter(a => aptFloor(a) === it.floor).map(a => `<option ${+d.apto === a ? 'selected' : ''}>${a}</option>`).join('')}</select>${sug && !ro ? `<button class="btn small" type="button" data-dact="sug" data-v="${sug}" style="margin-top:6px">Confirmar apto ${sug} (según el piso de arriba)</button>` : ''}</div></div>`;
+  $('#descBody').innerHTML = h; renderDescDots(); hydratePhotos($('#descBody'));
+  $('#dDown').textContent = desc.i < LEVELS.length - 1 ? `Bajar a ${lvlName(LEVELS[desc.i + 1])} ▼` : 'Terminar bajada ✓';
+  $('#dUp').disabled = desc.i === 0;
+}
+let descT = null;
+async function descMove(to) {
+  if (descT) await saveDesc();
+  const d = desc.draft, ro = readOnly() || !canEditRec(d);
+  if (to > desc.i && !ro) {
+    if (!d.status && !await ask('Celda sin revisar', `${desc.id} queda pendiente. ¿Continuar de todos modos?`, { ok: 'Continuar' })) return;
+    if (d.status === 'con_dano' && !capOK(d) && !await ask('Falta información', 'Algún daño de esta celda no tiene tipo o no tiene foto. ¿Continuar de todos modos?', { ok: 'Continuar' })) return;
+  }
+  if (!desc) return;
+  if (to >= LEVELS.length) { const pend = LEVELS.filter(l => itemState(cellId(desc.fid, desc.b, l)) === 'pendiente').length; closeSheet(); toast(pend ? `Bajada terminada · quedan ${pend} celdas pendientes` : 'Bajada terminada y completa'); return; }
+  if (to < 0) return; desc.i = to; loadDesc();
+}
+async function descClick(e) {
+  if (!desc) return;
+  const t = e.target.closest('button'); if (!t) return;
+  if (t.id === 'dDown') return descMove(desc.i + 1);
+  if (t.id === 'dUp') return descMove(desc.i - 1);
+  if (t.dataset.dgo != null) return descMove(+t.dataset.dgo);
+  const d = desc.draft; if (readOnly() || !canEditRec(d)) return;
+  const a = t.dataset.dact;
+  if (a === 'dano') {
+    if (d.status === 'sin_dano' && (d.fotos || []).length) hist(d, 'cambio de resultado', { removed: { status: d.status, fotos: d.fotos } });
+    if (d.status !== 'con_dano') { d.status = 'con_dano'; d.hallazgos = []; }
+    d.hallazgos.push(Object.assign(blankHz(), { n: nextD(d), cap: Plat.uid }));
+    await saveDesc('daño agregado'); renderDesc(); setTimeout(() => $$('#descBody .hz').pop()?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 60); return;
+  }
+  if (a === 'noacc') { const m = await ask('No se pudo revisar', 'Indique el motivo (obstáculo, fuera de alcance, clima…).', { ok: 'Guardar', input: 'Motivo' }); if (!m || !desc) return; d.status = 'no_acceso'; (d.intentos ||= []).push({ at: Date.now(), nota: 'Descenso en cuerda: ' + m, uid: Plat.uid }); await saveDesc('sin acceso desde la cuerda'); renderDesc(); return; }
+  if (a === 'reset') { hist(d, 'celda reabierta', { removed: { status: d.status, intentos: d.intentos } }); d.status = ''; d.definitivo = false; await saveDesc(); renderDesc(); return; }
+  if (a === 'sug') { d.apto = +t.dataset.v; await saveDesc('apartamento asociado'); renderDesc(); return; }
+  if (t.dataset.ddel != null) { if (!await ask('Quitar daño', 'El daño deja de contar, pero queda guardado en el historial. ¿Quitar?', { ok: 'Quitar', danger: true }) || !desc) return; const [x] = d.hallazgos.splice(+t.dataset.ddel, 1); hist(d, 'daño eliminado', { removed: x }); if (!d.hallazgos.length) d.status = ''; await saveDesc(); renderDesc(); return; }
+  if (t.dataset.dtip) { setTip(d.hallazgos[+t.dataset.h], t.dataset.dtip); await saveDesc(); renderDesc(); return; }
+  if (t.dataset.dpos) { const x = d.hallazgos[+t.dataset.h]; x.pos = x.pos === t.dataset.dpos ? '' : t.dataset.dpos; await saveDesc(); renderDesc(); return; }
+  if (t.dataset.drec != null) return toggleRec(+t.dataset.drec);
+}
+async function descChange(e) {
+  if (!desc) return; const t = e.target; const d = desc.draft;
+  if (readOnly() || !canEditRec(d)) return;
+  if (t.dataset.dapto != null) { d.apto = t.value ? +t.value : ''; await saveDesc('apartamento asociado'); renderDesc(); return; }
+  const key = t.dataset.dph; if (!key) return;
+  const file = (t.files || [])[0]; if (!file) return;
+  const cur = desc, it = BY_ID[cur.id]; toast('Procesando foto…');
+  try {
+    if (key === 'sin') { const ref = await storePhoto(file, `KOA · ${cur.id} · sin daño`); if (d.status !== 'sin_dano') { d.status = 'sin_dano'; d.hallazgos = []; d.fotos = []; } (d.fotos ||= []).push(ref); await saveRec(cur.id, d, 'celda sin daño'); if (desc !== cur) return; if (d.fotos.length === 1 && cur.i < LEVELS.length - 1) { toast(`${cur.id} sin daño · guardada`); cur.i++; loadDesc(); } else renderDesc(); return; }
+    const k = +key.slice(1), x = d.hallazgos[k]; if (!x) return;
+    const ref = await storePhoto(file, `KOA · ${dCode(it, x, k)}${key[0] === 'e' ? ' · detalle' : ''}`);
+    (x.fotos ||= []).push(ref); if (key[0] === 'e') x.escala = ref;
+    await saveRec(cur.id, d, 'foto agregada'); if (desc === cur) { renderDesc(); toast('Foto guardada'); }
+  } catch (err) { console.error(err); toast('No se pudo procesar la foto'); }
+}
+function descInput(e) {
+  if (!desc) return; const t = e.target, k = t.dataset.dk; if (!k) return;
+  const x = desc.draft.hallazgos[+t.dataset.h]; if (!x) return;
+  x[k] = t.value;
+  const u = x.rep === 'R99' ? x.unidad : REP_BY[x.rep]?.unit;
+  if (k === 'longitud' && u === 'ml') x.cantidad = t.value; if (k === 'area' && u === 'm²') x.cantidad = t.value;
+  clearTimeout(descT); const s = $('#saveState'); if (s) s.textContent = 'Guardando…';
+  descT = setTimeout(() => { descT = null; saveDesc(); }, 600);
+}
+async function toggleRec(k) {
+  if (recState) { try { recState.mr.stop(); } catch { } return; }
+  if (!navigator.mediaDevices?.getUserMedia || !window.MediaRecorder) { toast('Este navegador no permite grabar notas de voz'); return; }
+  let stream; try { stream = await navigator.mediaDevices.getUserMedia({ audio: true }); } catch { toast('No se pudo usar el micrófono: revise el permiso'); return; }
+  if (!desc) { stream.getTracks().forEach(t => t.stop()); return; }
+  const mime = ['audio/webm', 'audio/mp4'].find(m => MediaRecorder.isTypeSupported(m)) || '';
+  const mr = new MediaRecorder(stream, mime ? { mimeType: mime } : {}); const chunks = [];
+  const st = recState = { mr, id: desc.id, h: k, hid: desc.draft.hallazgos[k]?.id };
+  mr.ondataavailable = ev => ev.data.size && chunks.push(ev.data);
+  mr.onstop = async () => {
+    clearTimeout(st.t); stream.getTracks().forEach(t => t.stop()); recState = null;
+    const blob = new Blob(chunks, { type: (mr.mimeType || mime || 'audio/webm').split(';')[0] });
+    if (!blob.size) { if (desc) renderDesc(); return; }
+    const ref = 'm:' + uid(); await DB.put('photos', ref, blob);
+    const rec = desc && desc.id === st.id ? desc.draft : clone(recs[st.id] || {}); const x = (rec.hallazgos || []).find(z => z.id === st.hid);
+    if (!x) return; if (x.audio) hist(rec, 'nota de voz reemplazada', { removed: { audio: x.audio } }); x.audio = ref;
+    await saveRec(st.id, rec, 'nota de voz'); if (desc && desc.id === st.id) renderDesc();
+  };
+  mr.start(); st.t = setTimeout(() => { try { mr.stop(); } catch { } }, 90000); renderDesc();
 }
 let aptFilter = 'todos', aptQuery = '';
 function vAptos() {
@@ -1390,12 +1679,13 @@ function openSheet(title, sub, bodyHTML, footHTML) {
 function closeSheet(silent) {
   const b = $('.sheet-back'); if (!b) return;
   disposeScenes(s => s.sheet);
-  b.remove(); ed = null;
+  if (recState) { try { recState.mr.stop(); } catch { } }
+  b.remove(); ed = null; desc = null;
   if (!silent) render();
 }
 document.addEventListener('keydown', e => { if (e.key === 'Escape') { if ($('.lightbox')) $('.lightbox').remove(); else if ($('.dlg-back')) return; else closeSheet(); } });
 
-function hasProfile() { return !!(inspector?.nombre && inspector?.matricula); }
+function hasProfile() { return Plat.captura ? !!inspector?.nombre : !!(inspector?.nombre && inspector?.matricula); }
 // Si no hay perfil, se pide dentro de una hoja y al guardar se continúa al elemento tocado (no se cambia de vista).
 function profileGate(then) {
   if (hasProfile() || Plat.isOwner || Plat.viewer) return true;
@@ -1411,8 +1701,9 @@ function nextPending(fromId) {
   return null;
 }
 function openItem(id) {
-  const it = BY_ID[id];
+  const it = BY_ID[id]; if (!it) return;
   if (it.group === 'aptos') return openApt(it.apt, it.wall);
+  if (it.cell && Plat.captura) return openDescent(it.fach, it.baj, it.lvl);
   if (!profileGate(() => openItem(id))) return;
   openSheet(esc(it.name), `${esc(it.secName)}${it.nivel ? ' · ' + esc(it.nivel) : ''}`, `<div id="edBody"></div>`, footHTML());
   ed = { id, draft: clone(recs[id] || blankRec()) };
@@ -1452,7 +1743,8 @@ function renderEditor() {
   const it = BY_ID[ed.id], d = ed.draft;
   const st = d.status;
   const statusSeg = `<div class="status-seg">${Object.entries(STATUS).map(([k, S]) => `<button class="${st === k ? 'on' : ''}" style="--c:${S.c}" data-status="${k}"><b><span class="dot" style="background:${S.c};width:10px;height:10px"></span>${S.n}</b><small>${S.d}</small></button>`).join('')}</div>`;
-  let body = `<p class="desc"><b>${esc(it.name)}.</b> ${esc(it.desc)}</p>${statusSeg}`;
+  const hints = hintOf(it);
+  let body = `<p class="desc"><b>${esc(it.name)}.</b> ${esc(it.desc)}</p>${hints.length ? `<div class="banner info" style="font-size:12.5px"><b>Puntos a verificar</b> (informe de diagnóstico anterior FH-KOA-01): ${hints.map(esc).join('; ')}.</div>` : ''}${it.cell && !Plat.viewer ? `<button class="btn small" type="button" data-desc="${it.fach}|${it.baj}|${it.lvl}" style="margin-bottom:10px">Abrir esta celda en modo descenso</button>` : ''}${(d.perdidas || []).length && !d.perdidasOk ? `<div class="banner lock">Se perdió ${d.perdidas.length} foto(s) o nota(s) de voz antes de llegar al servidor. Vuelva a tomarlas y luego confirme. <button class="btn small" type="button" id="perdOk">Ya las repuse</button></div>` : ''}${statusSeg}`;
   if (!st) body += `<div class="blk" style="text-align:center;color:var(--muted)">Seleccione el resultado de la inspección de este elemento.</div>`;
   if (st === 'sin_dano') body += `<div class="blk"><h4>Foto de evidencia <span class="req">Obligatoria</span></h4><p class="muted" style="margin:0 0 10px;font-size:12.5px">Foto general que demuestre que el elemento fue inspeccionado y no presenta daño (1 a 2 fotos).</p>${photoBlock(d.fotos, 'gen', 2)}</div>`;
   if (st === 'no_acceso') {
@@ -1474,6 +1766,8 @@ function renderEditor() {
   }
   body += `<div id="issuesBox"></div>`;
   if (Plat.isOwner && (d.historial || []).length) body += `<details class="blk" style="font-size:12.5px"><summary style="cursor:pointer;font-weight:600">Historial del registro (${d.historial.length})</summary>${[...d.historial].reverse().map(h => `<div style="padding:6px 0;border-bottom:1px solid var(--hair)"><b>${esc(fdt(h.at))}</b> · ${esc(nameOf(h.uid))} · ${esc(h.accion)}${h.status ? ` · ${STATUS[h.status]?.n || h.status}` : ''}${h.removed ? `<div class="muted">Eliminado: ${esc(JSON.stringify(h.removed)).slice(0, 300)}</div>` : ''}</div>`).join('')}</details>`;
+  if (it.cell && (st === 'sin_dano' || st === 'con_dano')) body += `<div class="blk"><div class="f"><label>Apartamento detrás de esta celda (opcional)</label><select data-k="apto"><option value="">No sé / no aplica</option>${APTS.filter(a => aptFloor(a) === it.floor).map(a => `<option ${+d.apto === a ? 'selected' : ''}>${a}</option>`).join('')}</select></div>${d.capturado ? `<p class="muted" style="font-size:12px;margin:8px 0 0">Levantado en fachada por ${esc(nameOf(d.capturado.uid))} el ${esc(fdt(d.capturado.at))}.</p>` : ''}</div>`;
+  if (Plat.isOwner && Plat.rest && recs[ed.id]) body += `<div class="blk" id="verBox" style="font-size:12.5px"><button class="btn small" id="verSrv" type="button">Versiones guardadas en el servidor</button></div>`;
   if (Plat.isOwner && d.status) body += `<button class="btn danger small" id="reopen" type="button" style="margin-top:4px">Reabrir elemento (borra el estado, conserva el historial)</button>`;
   $('#edBody').innerHTML = body;
   applyLockUI(); renderIssues(); hydratePhotos($('#edBody'));
@@ -1484,18 +1778,22 @@ function hzHTML(h, i, it) {
   const c = SEV[h.severidad]?.c || '#c7c7cc';
   const opt = (list, v) => `<option value="">Seleccione…</option>` + list.map(x => `<option ${x === v ? 'selected' : ''}>${esc(x)}</option>`).join('');
   const src = unit === 'ml' ? 'longitud' : unit === 'm²' ? 'area' : null;
-  const suggest = src && num(h[src]) > 0 && num(h[src]) !== num(h.cantidad) ? `<button class="btn small" data-use="${src}" data-h="${i}" type="button">Usar ${src === 'area' ? 'área' : 'longitud'} medida (${fmt(num(h[src]))} ${unit})</button>` : '';
+  const suggest = (src && num(h[src]) > 0 && num(h[src]) !== num(h.cantidad) ? `<button class="btn small" data-use="${src}" data-h="${i}" type="button">Usar ${src === 'area' ? 'área' : 'longitud'} medida (${fmt(num(h[src]))} ${unit})</button>` : '') + (it?.cell && unit === 'm²' && num(h.cantidad) !== it.area ? ` <button class="btn small" data-use="celda" data-h="${i}" type="button">Usar el paño completo de la celda (${fmt(it.area)} m²)</button>` : '');
   const useEjes = it && (['s1', 's2', 'cub'].includes(it.sec) || /estructura/i.test(it.name));
   return `<div class="blk hz" style="--c:${c}">
-    <div class="hz-h"><b>Daño ${i + 1}</b>${h.severidad ? `<span class="badge" style="background:${c};color:#fff">${SEV[h.severidad].n}</span>` : ''}${h.atrib ? `<span class="badge">${ATRIB[h.atrib].s}</span>` : ''}<button class="btn small danger" data-delhz="${i}" type="button">Eliminar</button></div>
+    <div class="hz-h"><b>Daño ${i + 1}</b><span class="badge">${esc(dCode(it, h, i))}</span>${h.severidad ? `<span class="badge" style="background:${c};color:#fff">${SEV[h.severidad].n}</span>` : ''}${h.atrib ? `<span class="badge">${ATRIB[h.atrib].s}</span>` : ''}<button class="btn small danger" data-delhz="${i}" type="button">Eliminar</button></div>
     <div class="fg">
+      <div class="f c6"><label>Daño típico <span class="muted" style="font-weight:400">(llena los campos; revise y ajuste el procedimiento)</span></label><select data-h="${i}" data-k="tipico"><option value="">Seleccione o llene manualmente…</option>${TIPICOS.filter(t => it.cell || it.wall === 'fachada' ? true : !['T08'].includes(t.k)).map(t => `<option value="${t.k}" ${h.tipico === t.k ? 'selected' : ''}>${esc(t.n)}</option>`).join('')}</select></div>
+      ${h.audio ? `<div class="f c6"><label>Nota de voz del levantamiento</label><div data-audio="${h.audio}"></div></div>` : ''}
       <div class="f c3"><label>Elemento afectado <em>*</em></label><select data-h="${i}" data-k="elemento">${opt(ELEMENTOS, h.elemento)}</select></div>
       <div class="f c3"><label>Tipo de daño <em>*</em></label><select data-h="${i}" data-k="dano">${opt(DANOS, h.dano)}</select></div>
       <div class="f c6"><label>Severidad <em>*</em></label><div class="sev">${SEV_ORDER.map(k => `<button type="button" class="${h.severidad === k ? 'on' : ''}" style="--c:${SEV[k].c}" data-sev="${k}" data-h="${i}">${SEV[k].n}<small>${SEV[k].d}</small></button>`).join('')}</div></div>
       <div class="f c3"><label>Atribución del daño <em>*</em></label><select data-h="${i}" data-k="atrib"><option value="">Seleccione…</option>${Object.entries(ATRIB).map(([k, A]) => `<option value="${k}" ${h.atrib === k ? 'selected' : ''}>${A.n}</option>`).join('')}</select></div>
       <div class="f c3"><label>Justificación de la atribución ${h.atrib && h.atrib !== 'sismo' ? '<em>*</em>' : ''}</label><input data-h="${i}" data-k="atribJust" value="${esc(h.atribJust || '')}" placeholder="${h.atrib === 'sismo' ? 'Opcional (p. ej., patrón de fisuración típico de sismo)' : 'Ej.: manchas de humedad antiguas con fisura reactivada'}"></div>
       ${useEjes ? `<div class="f c2"><label>Eje / referencia estructural</label><input data-h="${i}" data-k="eje" list="ejesList" value="${esc(h.eje || '')}" placeholder="Ej.: C-5"></div>` : ''}
-      <div class="f ${useEjes ? 'c4' : 'c6'}"><label>Ubicación exacta dentro del elemento</label><input data-h="${i}" data-k="ubicacion" value="${esc(h.ubicacion)}" placeholder="Ej.: esquina superior junto al marco de la puerta, a 1,8 m del piso"></div>
+      ${it.cell ? `<div class="f c2"><label>Posición en la celda</label><select data-h="${i}" data-k="pos"><option value="">—</option>${POS9.map(p => `<option ${h.pos === p ? 'selected' : ''}>${p}</option>`).join('')}</select></div>` : ''}
+      ${/^p\d+-(pasillo|cielo)$/.test(it.id) ? `<div class="f c2"><label>Frente al apartamento</label><select data-h="${i}" data-k="frente"><option value="">—</option>${APTS.filter(a => aptFloor(a) === it.floor).map(a => `<option ${h.frente == a ? 'selected' : ''}>${a}</option>`).join('')}<option ${h.frente === 'Hall de ascensores' ? 'selected' : ''}>Hall de ascensores</option><option ${h.frente === 'Escalera' ? 'selected' : ''}>Escalera</option></select></div>` : ''}
+      <div class="f ${useEjes || it.cell || /^p\d+-(pasillo|cielo)$/.test(it.id) ? 'c4' : 'c6'}"><label>Ubicación exacta dentro del elemento</label><input data-h="${i}" data-k="ubicacion" value="${esc(h.ubicacion)}" placeholder="Ej.: esquina superior junto al marco de la puerta, a 1,8 m del piso"></div>
       <div class="f c2"><label>Ancho de fisura (mm)</label><input data-h="${i}" data-k="ancho" inputmode="decimal" value="${esc(h.ancho)}" placeholder="0,5"></div>
       <div class="f c2"><label>Longitud afectada (m)</label><input data-h="${i}" data-k="longitud" inputmode="decimal" value="${esc(h.longitud)}" placeholder="1,20"></div>
       <div class="f c2"><label>Área afectada (m²)</label><input data-h="${i}" data-k="area" inputmode="decimal" value="${esc(h.area)}" placeholder="2,40"></div>
@@ -1525,7 +1823,7 @@ function persistSoon(immediate, accion) {
 document.addEventListener('input', e => {
   if (!ed || !e.target.closest('#edBody')) return;
   const t = e.target, k = t.dataset.k; if (!k || t.tagName === 'SELECT' || t.type === 'checkbox') return;
-  if (t.dataset.h != null) ed.draft.hallazgos[+t.dataset.h][k] = t.value; else ed.draft[k] = t.value;
+  if (t.dataset.h != null) { ed.draft.hallazgos[+t.dataset.h][k] = t.value; if (k === 'espec') ed.draft.hallazgos[+t.dataset.h].especAuto = false; } else ed.draft[k] = t.value;
   persistSoon();
 });
 document.addEventListener('change', async e => {
@@ -1539,7 +1837,7 @@ document.addEventListener('change', async e => {
     toast('Procesando foto…');
     const cur = ed;
     try {
-      for (const f of files.slice(0, max - arr.length)) arr.push(await storePhoto(f, `KOA · ${it.name}${key.startsWith('h') ? ` · Daño ${+key.slice(1) + 1}` : ''}`));
+      for (const f of files.slice(0, max - arr.length)) arr.push(await storePhoto(f, key.startsWith('h') ? `KOA · ${dCode(it, ed.draft.hallazgos[+key.slice(1)], +key.slice(1))} · ${it.cell ? '' : it.name}` : `KOA · ${it.name}`));
       if (ed !== cur) { await saveRec(cur.id, cur.draft, 'foto agregada'); return; }
       await persistSoon(true, 'foto agregada'); if (ed === cur) { renderEditor(); toast('Foto guardada'); }
     } catch (err) { console.error(err); toast('No se pudo procesar la foto'); }
@@ -1547,12 +1845,14 @@ document.addEventListener('change', async e => {
   }
   if (t.type === 'checkbox' && t.dataset.k === 'definitivo') { ed.draft.definitivo = t.checked; await persistSoon(true, t.checked ? 'cerrado sin acceso definitivo' : 'reabierto'); renderEditor(); return; }
   const k = t.dataset.k; if (!k || t.tagName !== 'SELECT') return;
+  if (t.dataset.h == null) { ed.draft[k] = k === 'apto' && t.value ? +t.value : t.value; await persistSoon(true); return; }
   const h = ed.draft.hallazgos[+t.dataset.h];
-  h[k] = t.value;
+  h[k] = t.value; if (k === 'tipico') setTip(h, t.value);
   if (k === 'rep') { h.unidad = t.value === 'R99' ? '' : (REP_BY[t.value]?.unit || ''); if (h.unidad === 'ml' && num(h.longitud) > 0 && !num(h.cantidad)) h.cantidad = h.longitud; if (h.unidad === 'm²' && num(h.area) > 0 && !num(h.cantidad)) h.cantidad = h.area; }
   await persistSoon(true); renderEditor();
 });
 document.addEventListener('click', async e => {
+  const dz = e.target.closest('.sheet [data-desc]'); if (dz && ed) { await persistSoon(true); const [f, b, l] = dz.dataset.desc.split('|'); openDescent(f, +b, l); return; }
   if (!ed || !e.target.closest('.sheet')) return;
   const t = e.target.closest('button'); if (!t) return;
   if (t.id === 'nextBtn') {
@@ -1566,13 +1866,15 @@ document.addEventListener('click', async e => {
   if (t.dataset.status) {
     if (ed.draft.status && ed.draft.status !== t.dataset.status && ((ed.draft.hallazgos || []).length || (ed.draft.fotos || []).length)) { if (!await ask('Cambiar el resultado', 'Ya hay información registrada en este elemento. Se conservará en el historial, pero dejará de verse. ¿Cambiar el resultado?', { ok: 'Cambiar' })) return; hist(ed.draft, 'cambio de resultado', { removed: { status: ed.draft.status, hallazgos: ed.draft.hallazgos, fotos: ed.draft.fotos } }); }
     ed.draft.status = t.dataset.status;
-    if (t.dataset.status === 'con_dano' && !(ed.draft.hallazgos || []).length) ed.draft.hallazgos = [blankHz()];
+    if (t.dataset.status === 'con_dano' && !(ed.draft.hallazgos || []).length) ed.draft.hallazgos = [Object.assign(blankHz(), { n: nextD(ed.draft) })];
     await persistSoon(true, 'resultado: ' + STATUS[t.dataset.status].n); renderEditor(); return;
   }
-  if (t.id === 'addHz') { ed.draft.hallazgos.push(blankHz()); await persistSoon(true, 'daño agregado'); renderEditor(); setTimeout(() => { const b = $$('.hz').pop(); b?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return; }
+  if (t.id === 'addHz') { ed.draft.hallazgos.push(Object.assign(blankHz(), { n: nextD(ed.draft) })); await persistSoon(true, 'daño agregado'); renderEditor(); setTimeout(() => { const b = $$('.hz').pop(); b?.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 50); return; }
   if (t.dataset.delhz != null) { if (!await ask('Eliminar daño', 'El daño dejará de contar, pero quedará guardado en el historial del registro (el administrador puede verlo). ¿Eliminar?', { ok: 'Eliminar', danger: true })) return; const [h] = ed.draft.hallazgos.splice(+t.dataset.delhz, 1); hist(ed.draft, 'daño eliminado', { removed: h }); await persistSoon(true); renderEditor(); return; }
   if (t.dataset.sev) { ed.draft.hallazgos[+t.dataset.h].severidad = t.dataset.sev; await persistSoon(true); renderEditor(); return; }
-  if (t.dataset.use) { const h = ed.draft.hallazgos[+t.dataset.h]; h.cantidad = h[t.dataset.use]; await persistSoon(true); renderEditor(); return; }
+  if (t.id === 'perdOk') { ed.draft.perdidasOk = true; await persistSoon(true, 'fotos repuestas'); renderEditor(); return; }
+  if (t.id === 'verSrv') { t.disabled = true; try { const vs = await Rest.versiones(ed.id); $('#verBox').innerHTML = vs.length ? `<b>Versiones anteriores guardadas en el servidor (${vs.length})</b>${[...vs].reverse().map(v => `<div style="padding:6px 0;border-bottom:1px solid var(--hair)"><b>${esc(fdt(v.at))}</b> · reemplazada por ${esc(nameOf(v.by))} · ${esc(v.motivo)}<br><span class="muted">${esc(STATUS[v.rec.status]?.n || 'sin resultado')} · ${(v.rec.hallazgos || []).length} daño(s) · ${photoRefs(v.rec).length} foto(s)</span></div>`).join('')}<button class="btn small" id="verDl" type="button" style="margin-top:8px">Descargar versiones (JSON)</button>` : 'El servidor no tiene versiones anteriores de este elemento.'; $('#verDl')?.addEventListener('click', () => dl(`KOA-versiones-${ed.id}.json`, JSON.stringify(vs, null, 1))); } catch (err) { t.disabled = false; toast('No se pudieron consultar las versiones'); } return; }
+  if (t.dataset.use) { const h = ed.draft.hallazgos[+t.dataset.h]; h.cantidad = t.dataset.use === 'celda' ? fmt(BY_ID[ed.id].area) : h[t.dataset.use]; await persistSoon(true); renderEditor(); return; }
   if (t.dataset.escala) { const h = ed.draft.hallazgos[+t.dataset.escala.slice(1)]; const ref = (h.fotos || [])[+t.dataset.i]; h.escala = h.escala === ref ? '' : (ref || ''); await persistSoon(true); renderEditor(); return; }
   if (t.dataset.rmph) {
     if (!await ask('Quitar foto', 'La foto se desvincula de este registro; el archivo se conserva en el servidor y queda en el historial. ¿Quitar?', { ok: 'Quitar', danger: true })) return;
@@ -1603,6 +1905,7 @@ function profileFormHTML(i) {
 }
 function readProfileForm() {
   const d = {}; ['nombre', 'profesion', 'matricula', 'empresa', 'telefono', 'email', 'fechaInicio', 'equipos'].forEach(k => d[k] = $('#in_' + k).value.trim());
+  if (Plat.captura) { if (!d.nombre) { toast('Escriba su nombre completo'); return null; } d.profesion = d.profesion || 'Técnico de trabajo en alturas'; return d; }
   if (!d.nombre || !d.profesion || !d.matricula || !d.fechaInicio) { toast('Complete nombre, profesión, matrícula y fecha'); return null; }
   return d;
 }
@@ -1658,7 +1961,7 @@ function vAdmin() {
     <div class="rep-actions">${config.locked ? '<button class="btn" id="unlock">Reabrir inspección</button>' : '<button class="btn danger" id="lock">Cerrar inspección (solo lectura para inspectores)</button>'}</div>
     ${Plat.rest ? '' : Plat.local ? `<p class="muted" style="font-size:12.5px;margin-bottom:0"><b>Modo sin servidor:</b> la información de cada usuario queda en su propio dispositivo. El ingeniero le entrega la información con <b>Descargar respaldo</b> (Mi perfil) y usted la carga aquí con <b>Cargar respaldo</b>. El cierre de la inspección solo aplica en este equipo hasta que el portal tenga servidor.</p>` : `<p class="muted" style="font-size:12.5px;margin-bottom:0">Para dar o quitar acceso a un inspector use <b>Compartir</b> (arriba a la derecha en claude.ai): invítelo por correo como <b>Editor</b>. Al quitarlo, deja de ver y escribir de inmediato.</p>`}
   </div>
-  ${Plat.rest ? usersPanelHTML() : ''}
+  ${Plat.rest ? respaldoHTML() + usersPanelHTML() + fachPanelHTML() : ''}
   <div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Inspectores</h3>
     ${insp.length ? `<table style="width:100%;border-collapse:collapse;font-size:13px">${['Nombre', 'Profesión', 'Matrícula', 'Elementos registrados', 'Último registro'].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}${insp.map(p => `<tr><td style="padding:6px">${esc(p.nombre)}${p.uid === Plat.uid ? ' <span class="role owner">yo</span>' : ''}</td><td style="padding:6px">${esc(p.profesion)}</td><td style="padding:6px">${esc(p.matricula)}</td><td style="padding:6px">${p.n}</td><td style="padding:6px">${p.last ? fdt(p.last) : '—'}</td></tr>`).join('')}</table>` : '<p class="muted" style="font-size:13px">Ningún inspector ha registrado su perfil todavía.</p>'}
   </div>
@@ -1673,19 +1976,44 @@ function vAdmin() {
   $('#lock')?.addEventListener('click', async () => { if (!await ask('Cerrar inspección', 'Los inspectores pasarán a solo lectura. Podrá reabrirla cuando quiera.', { ok: 'Cerrar inspección', danger: true })) return; await setLock({ locked: true, lockedAt: Date.now(), lockedBy: Plat.uid }); toast('Inspección cerrada'); });
   $('#unlock')?.addEventListener('click', async () => { await setLock({ locked: false, lockedAt: null, lockedBy: Plat.uid }); toast('Inspección reabierta'); });
   $('#impJson')?.addEventListener('change', e => e.target.files[0] && importLocalBackup(e.target.files[0]));
-  if (Plat.rest) bindUsersPanel();
+  if (Plat.rest) { bindUsersPanel(); bindFachPanel(); }
   $('#expJson').onclick = () => Plat.local ? exportLocalBackup() : Plat.rest ? Rest.respaldo().then(d => dl(`KOA-respaldo-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify(d, null, 1))) : dl(`KOA-respaldo-${new Date().toISOString().slice(0, 10)}.json`, JSON.stringify({ app: 'koa-inspeccion', version: 2, exportedAt: Date.now(), config, profiles, recs }, null, 1));
   $('#csvQ2').onclick = csvQuantities; $('#csvD2').onclick = csvDetail;
 }
 
+// ---------- Respaldo y cuadrícula de fachadas ----------
+function respaldoHTML() {
+  const r = Plat.respaldo;
+  if (!r) return `<div class="banner info">Respaldo en Drive: todavía no hay un resultado registrado. Aparecerá aquí después de la próxima copia nocturna.</div>`;
+  if (!r.ok) return `<div class="banner lock">⚠️ El último respaldo en Drive <b>falló</b> el ${esc(fdt(r.at))}: ${esc(r.error || 'error')}. ${r.ultimoOk ? 'Último respaldo correcto: ' + esc(fdt(r.ultimoOk)) + '.' : 'Aún no hay ningún respaldo correcto.'}</div>`;
+  if (Date.now() - r.at > 36 * 3600e3) return `<div class="banner lock">⚠️ No hay respaldo en Drive desde el ${esc(fdt(r.at))}. Revise el servidor.</div>`;
+  return `<div class="banner info">Último respaldo en Drive: ${esc(fdt(r.at))} · correcto.</div>`;
+}
+function fachUsadas() { const u = {}; Object.keys(recs).forEach(id => { const m = id.match(/^(F\d+)-B(\d+)-/); if (m && recs[id].status) u[m[1]] = Math.max(u[m[1]] || 0, +m[2]); }); return u; }
+function fachPanelHTML() {
+  const inp = (i, k, v, w, extra = '') => `<input data-ff="${k}" data-i="${i}" value="${esc(v)}" style="width:${w}" ${extra}>`;
+  return `<div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Cuadrícula de fachadas</h3>
+    <p class="muted" style="font-size:12.5px;margin-top:-4px">Cada fachada se divide en bajadas (franjas verticales, una por descenso en cuerda), numeradas de izquierda a derecha mirando la fachada desde afuera. Los largos y el número de bajadas son <b>aproximados, tomados de los planos</b>: ajústelos con el contratista de alturas antes de empezar. En “Referencias” puede anotar qué se ve en cada bajada (separadas por punto y coma), por ejemplo: <i>balcones amarillos; franja azul; ventanas 03</i>. No reduzca las bajadas por debajo de las que ya tienen registros.</p>
+    <div style="overflow:auto"><table style="border-collapse:collapse;font-size:13px" id="fachTbl"><tr>${['Código', 'Nombre', 'Ejes', 'Largo (m)', 'Bajadas', 'Franja', 'Referencias por bajada'].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}</tr>
+    ${FACH.map((f, i) => `<tr><td style="padding:6px"><b>${esc(f.id)}</b></td><td style="padding:4px">${inp(i, 'nombre', f.nombre, '250px')}</td><td style="padding:4px">${inp(i, 'ejes', f.ejes || '', '110px')}</td><td style="padding:4px">${inp(i, 'largo', f.largo, '70px', 'inputmode="decimal"')}</td><td style="padding:4px">${inp(i, 'bajadas', f.bajadas, '60px', 'inputmode="numeric"')}</td><td style="padding:6px;white-space:nowrap">≈ ${fmt(f.largo / f.bajadas)} m</td><td style="padding:4px">${inp(i, 'notas', (f.notas || []).join('; '), '300px')}</td></tr>`).join('')}</table></div>
+    <div class="rep-actions"><button class="btn primary" id="fachSave">Guardar cuadrícula</button><span class="muted" style="font-size:12.5px">${ITEMS.filter(i => i.cell).length} celdas en total (${FACH.reduce((t, f) => t + f.bajadas, 0)} bajadas × ${LEVELS.length} niveles)</span></div></div>`;
+}
+function bindFachPanel() {
+  $('#fachSave')?.addEventListener('click', async () => {
+    const out = FACH.map(f => ({ ...f })); const usadas = fachUsadas();
+    $$('#fachTbl [data-ff]').forEach(el => { const f = out[+el.dataset.i], k = el.dataset.ff, v = el.value.trim(); if (k === 'largo') f.largo = num(v); else if (k === 'bajadas') f.bajadas = Math.round(num(v)); else if (k === 'notas') f.notas = v ? v.split(';').map(x => x.trim()) : []; else f[k] = v; });
+    for (const f of out) { if (!(f.largo > 0) || !(f.bajadas >= 1) || f.bajadas > 60 || !f.nombre) { toast(`Revise los datos de ${f.id}`); return; } if (f.bajadas < (usadas[f.id] || 0)) { toast(`${f.id} ya tiene registros hasta la bajada ${usadas[f.id]}: no puede tener menos`); return; } }
+    try { config = await Rest.putConfig({ fachadas: out }); try { localStorage.setItem('koa_fach', JSON.stringify(config.fachadas)); } catch { } buildFachadas(config.fachadas); toast('Cuadrícula guardada'); updateBadges(); vAdmin(); } catch (e) { toast(e.message || 'No se pudo guardar'); }
+  });
+}
 // ---------- Usuarios (servidor propio) ----------
 function usersPanelHTML() {
   const us = Object.values(Plat.users || {});
   return `<div class="card glass" style="margin-bottom:16px"><h3 style="margin-top:0">Usuarios y acceso</h3>
-    <p class="muted" style="font-size:12.5px;margin-top:-4px">Cree el usuario del ingeniero, cámbiele la contraseña o bloquéelo cuando termine. Un usuario bloqueado no puede entrar ni ver nada. El rol <b>Consulta</b> es para empresas cotizantes, consejo de administración o interventoría: ve todo lo registrado, el informe y las cantidades, pero no puede modificar nada ni entrar a Administración.</p>
+    <p class="muted" style="font-size:12.5px;margin-top:-4px">Cree el usuario del ingeniero, cámbiele la contraseña o bloquéelo cuando termine. Un usuario bloqueado no puede entrar ni ver nada. El rol <b>Captura de fachada</b> es para el técnico que se descuelga: solo registra celdas de fachada (fotos, tipo de daño, medidas y nota de voz) y el ingeniero las clasifica después. El rol <b>Consulta</b> es para empresas cotizantes, consejo de administración o interventoría: ve todo lo registrado, el informe y las cantidades, pero no puede modificar nada ni entrar a Administración.</p>
     <table style="width:100%;border-collapse:collapse;font-size:13px;margin-bottom:12px">${['Usuario', 'Rol', 'Estado', ''].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}
-    ${us.map(u => `<tr><td style="padding:6px"><b>${esc(u.user)}</b>${u.user === Plat.uid ? ' <span class="role owner">yo</span>' : ''}</td><td style="padding:6px">${u.role === 'admin' ? 'Administrador' : u.role === 'consulta' ? 'Consulta (solo lectura)' : 'Inspector'}</td><td style="padding:6px">${u.active ? '<span style="color:var(--green)">Activo</span>' : '<span style="color:var(--red)">Bloqueado</span>'}</td><td style="padding:6px;text-align:right;white-space:nowrap"><button class="btn small" data-upass="${esc(u.user)}">Cambiar contraseña</button> ${u.user !== Plat.uid ? `<button class="btn small ${u.active ? 'danger' : ''}" data-utoggle="${esc(u.user)}" data-active="${u.active ? 1 : 0}">${u.active ? 'Bloquear' : 'Activar'}</button>` : ''}</td></tr>`).join('')}</table>
-    <div class="fg"><div class="f c2"><label>Nuevo usuario</label><input id="nuUser" placeholder="ej. ingeniero2" autocapitalize="none"></div><div class="f c2"><label>Contraseña (mín. 8)</label><input id="nuPass" type="text" autocomplete="off" placeholder="Contraseña"></div><div class="f c1"><label>Rol</label><select id="nuRole"><option value="inspector">Inspector</option><option value="consulta">Consulta (solo lectura)</option><option value="admin">Administrador</option></select></div><div class="f c1" style="justify-content:flex-end"><button class="btn primary" id="nuAdd">Crear</button></div></div>
+    ${us.map(u => `<tr><td style="padding:6px"><b>${esc(u.user)}</b>${u.user === Plat.uid ? ' <span class="role owner">yo</span>' : ''}</td><td style="padding:6px">${u.role === 'admin' ? 'Administrador' : u.role === 'consulta' ? 'Consulta (solo lectura)' : u.role === 'captura' ? 'Captura de fachada' : 'Inspector'}</td><td style="padding:6px">${u.active ? '<span style="color:var(--green)">Activo</span>' : '<span style="color:var(--red)">Bloqueado</span>'}</td><td style="padding:6px;text-align:right;white-space:nowrap"><button class="btn small" data-upass="${esc(u.user)}">Cambiar contraseña</button> ${u.user !== Plat.uid ? `<button class="btn small ${u.active ? 'danger' : ''}" data-utoggle="${esc(u.user)}" data-active="${u.active ? 1 : 0}">${u.active ? 'Bloquear' : 'Activar'}</button>` : ''}</td></tr>`).join('')}</table>
+    <div class="fg"><div class="f c2"><label>Nuevo usuario</label><input id="nuUser" placeholder="ej. ingeniero2" autocapitalize="none"></div><div class="f c2"><label>Contraseña (mín. 8)</label><input id="nuPass" type="text" autocomplete="off" placeholder="Contraseña"></div><div class="f c1"><label>Rol</label><select id="nuRole"><option value="inspector">Inspector</option><option value="captura">Captura de fachada (técnico)</option><option value="consulta">Consulta (solo lectura)</option><option value="admin">Administrador</option></select></div><div class="f c1" style="justify-content:flex-end"><button class="btn primary" id="nuAdd">Crear</button></div></div>
   </div>`;
 }
 function bindUsersPanel() {
@@ -1696,9 +2024,9 @@ function bindUsersPanel() {
 }
 
 // ---------- Informe ----------
-function quantities() {
+function quantities(list = ITEMS) {
   const map = {};
-  ITEMS.forEach(it => {
+  list.forEach(it => {
     const r = recs[it.id]; if (r?.status !== 'con_dano') return;
     (r.hallazgos || []).forEach(h => {
       if (!h.rep) return;
@@ -1730,15 +2058,16 @@ function vInforme() {
       <div class="stat glass"><small>Actividades a cotizar</small><b>${q.length}</b></div>
     </div>
     <div class="rep-actions">
+      <select id="repScope" style="max-width:280px" title="Parte del informe">${SCOPES().map(([v, n]) => `<option value="${v}">${esc(n)}</option>`).join('')}</select>
       <button class="btn primary" id="genRep">${complete ? 'Ver informe técnico' : 'Ver borrador del informe'}</button>
       <button class="btn" id="csvQ">Cuadro de cantidades (CSV)</button>
       <button class="btn" id="csvD">Detalle de daños (CSV)</button>
     </div>
-    <p class="muted" style="font-size:12.5px;margin-bottom:0">El informe se descarga como archivo <b>.html</b> con las fotos incluidas; ábralo en el navegador y use <i>Imprimir → Guardar como PDF</i>.</p>
+    <p class="muted" style="font-size:12.5px;margin-bottom:0">Con muchas fotos conviene generar el informe <b>por partes</b> (por ejemplo, una fachada a la vez). El informe se descarga como archivo <b>.html</b> con las fotos incluidas; ábralo en el navegador y use <i>Imprimir → Guardar como PDF</i>.</p>
   </div>
   ${pend.length ? `<div class="card glass" style="margin-top:16px"><h3 style="margin-top:0">Elementos pendientes (${pend.length})</h3><div class="pend-list">${pend.slice(0, 400).map(it => `<button data-item="${it.id}"><span class="dot ${itemState(it.id) === 'incompleto' ? 'inc' : ''}" style="${itemState(it.id) === 'incompleto' ? '' : `background:${stateColor(it.id)}`}"></span>${esc(it.name)}<small>${esc(GROUPS[it.group].short)} · ${stateLabel(it.id)}</small></button>`).join('')}</div></div>` : ''}
   ${q.length ? `<div class="card glass" style="margin-top:16px"><h3 style="margin-top:0">Vista previa · cuadro de cantidades</h3><div style="overflow:auto"><table style="width:100%;border-collapse:collapse;font-size:13px">${['Código', 'Actividad', 'Unidad', 'Cantidad', 'Atrib. sismo', 'Ubicaciones'].map(h => `<th style="text-align:left;padding:6px;border-bottom:1px solid var(--hair)">${h}</th>`).join('')}${q.map(r => `<tr><td style="padding:6px">${r.code}</td><td style="padding:6px">${esc(r.name)}</td><td style="padding:6px">${esc(r.unit)}</td><td style="padding:6px;text-align:right">${fmt(r.total)}</td><td style="padding:6px;text-align:right">${fmt(r.sismo)}</td><td style="padding:6px;text-align:right">${r.n}</td></tr>`).join('')}</table></div></div>` : ''}`;
-  $('#genRep').onclick = () => buildReport(!complete);
+  $('#genRep').onclick = () => buildReport(!complete, $('#repScope').value);
   $('#csvQ').onclick = csvQuantities; $('#csvD').onclick = csvDetail;
 }
 function csv(rows) { return '﻿' + rows.map(r => r.map(c => { const s = String(c ?? ''); return /[;"\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s; }).join(';')).join('\r\n'); }
@@ -1750,26 +2079,32 @@ function csvQuantities() {
   dl('KOA-cuadro-de-cantidades.csv', csv(rows));
 }
 function csvDetail() {
-  const rows = [['Componente', 'Sección', 'Elemento inspeccionado', 'Estado', 'Atendido por', 'N.º daño', 'Elemento afectado', 'Tipo de daño', 'Severidad', 'Atribución', 'Justificación', 'Eje', 'Ubicación', 'Ancho fisura (mm)', 'Longitud (m)', 'Área (m²)', 'Código reparación', 'Reparación', 'Unidad', 'Cantidad', 'Procedimiento de reparación', 'Comentario técnico', 'Fotos', 'Fecha registro', 'Inspector']];
+  const rows = [['Componente', 'Sección', 'Elemento inspeccionado', 'Estado', 'Atendido por', 'N.º daño', 'Código del daño', 'Elemento afectado', 'Tipo de daño', 'Severidad', 'Atribución', 'Justificación', 'Eje', 'Ubicación', 'Ancho fisura (mm)', 'Longitud (m)', 'Área (m²)', 'Código reparación', 'Reparación', 'Unidad', 'Cantidad', 'Procedimiento de reparación', 'Comentario técnico', 'Fotos', 'Fecha registro', 'Inspector']];
   ITEMS.forEach(it => {
     const r = recs[it.id];
     const base = [GROUPS[it.group].n, it.secName, it.name, stateLabel(it.id), r?.atendidoPor || ''];
-    if (r?.status === 'con_dano' && r.hallazgos?.length) r.hallazgos.forEach((h, i) => rows.push([...base, i + 1, h.elemento, h.dano, SEV[h.severidad]?.n || '', ATRIB[h.atrib]?.n || '', h.atribJust || '', h.eje || '', h.ubicacion, h.ancho, h.longitud, h.area, h.rep, REP_BY[h.rep]?.name || '', h.rep === 'R99' ? h.unidad : REP_BY[h.rep]?.unit || '', h.cantidad, h.espec, h.comentario, (h.fotos || []).length, fdt(r.updatedAt), nameOf(r._uid)]));
-    else rows.push([...base, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', r?.nota || (r?.intentos || []).map(x => `${fdt(x.at)}: ${x.nota}`).join(' | '), (r?.fotos || []).length, fdt(r?.updatedAt), r ? nameOf(r._uid) : '']);
+    if (r?.status === 'con_dano' && r.hallazgos?.length) r.hallazgos.forEach((h, i) => rows.push([...base, i + 1, dCode(it, h, i), h.elemento, h.dano, SEV[h.severidad]?.n || '', ATRIB[h.atrib]?.n || '', h.atribJust || '', h.eje || '', [h.frente ? 'Frente a ' + h.frente : '', h.pos, h.ubicacion].filter(Boolean).join(' · '), h.ancho, h.longitud, h.area, h.rep, REP_BY[h.rep]?.name || '', h.rep === 'R99' ? h.unidad : REP_BY[h.rep]?.unit || '', h.cantidad, h.espec, h.comentario, (h.fotos || []).map(fotoCode).join(' '), fdt(r.updatedAt), nameOf(r._uid)]));
+    else rows.push([...base, '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', r?.nota || (r?.intentos || []).map(x => `${fdt(x.at)}: ${x.nota}`).join(' | '), (r?.fotos || []).length, fdt(r?.updatedAt), r ? nameOf(r._uid) : '']);
   });
   dl('KOA-detalle-de-danos.csv', csv(rows));
 }
 const pill = sev => sev ? `<span class="pill" style="background:${SEV[sev].c}">${SEV[sev].n}</span>` : '';
 const stPill = id => `<span class="pill" style="background:${stateColor(id)}">${stateLabel(id)}</span>`;
 // Numeración de fotos para el informe
-function photoIndex() { const idx = new Map(); let n = 0; ITEMS.forEach(it => { const r = recs[it.id]; if (!r) return; photoRefs(r).forEach(ref => { if (!idx.has(ref)) idx.set(ref, 'F-' + String(++n).padStart(4, '0')); }); }); return idx; }
+function photoIndex() { return { get: fotoCode }; }
+function planHTML(f) {
+  const cols = Array.from({ length: f.bajadas }, (_, i) => i + 1);
+  return `<table class="plan"><tr><th></th>${cols.map(b => `<th>B${pad2(b)}</th>`).join('')}</tr>${LEVELS.map(l => `<tr><th>${lvlName(l)}</th>${cols.map(b => { const id = cellId(f.id, b, l), st = itemState(id), r = recs[id]; const n = r?.status === 'con_dano' ? (r.hallazgos || []).length : 0; return `<td style="background:${st === 'pendiente' ? '#ececf0' : stateColor(id)};color:${st === 'pendiente' ? '#999' : '#fff'}">${n || (st === 'sin_dano' ? '✓' : st === 'pendiente' ? '' : '•')}</td>`; }).join('')}</tr>`).join('')}</table>
+  <p style="font-size:10.5px;color:#555">Vista desde el exterior; bajadas numeradas de izquierda a derecha${(f.notas || []).some(Boolean) ? ' (' + f.notas.map((n, i) => n ? `B${pad2(i + 1)}: ${esc(n)}` : '').filter(Boolean).join(' · ') + ')' : ''}. El número es la cantidad de daños de la celda y el color su severidad máxima (verde: sin daño; gris: pendiente). Cada daño se identifica como fachada‑bajada‑piso‑daño, por ejemplo ${f.id}-B03-P08-D1, código que también queda marcado en el muro.</p>`;
+}
+const SCOPES = () => [['todo', 'Informe completo'], ['comunes', 'Áreas comunes'], ['fachadas', 'Fachadas (todas)'], ...FACH.map(f => [f.id, `Fachada ${f.id} · ${f.nombre}`]), ['aptos', 'Apartamentos'], ['privadas', 'Locales y depósitos']];
 function hzTable(it, r, PI) {
   const ph = (refs, esc_) => `<div class="rphotos">${(refs || []).map(p => `<figure><img data-ph="${p}"><figcaption>${PI.get(p) || ''}${esc_ === p ? ' · detalle con escala' : ''}</figcaption></figure>`).join('')}</div>`;
   return (r.hallazgos || []).map((h, i) => {
     const unit = h.rep === 'R99' ? h.unidad : REP_BY[h.rep]?.unit;
-    return `<div class="item"><div class="ih"><span>${esc(it.name)} — Daño ${i + 1}</span><span>${h.atrib ? `<span class="pill" style="background:#555">${ATRIB[h.atrib].n}</span> ` : ''}${pill(h.severidad)}</span></div>
+    return `<div class="item"><div class="ih"><span>${esc(dCode(it, h, i))} · ${esc(it.cell ? it.secName + ' · ' + it.nivel + ', bajada ' + it.baj : it.name)}</span><span>${h.atrib ? `<span class="pill" style="background:#555">${ATRIB[h.atrib].n}</span> ` : ''}${pill(h.severidad)}</span></div>
     <table><tr><th style="width:24%">Elemento afectado</th><td>${esc(h.elemento)}</td><th style="width:18%">Tipo de daño</th><td>${esc(h.dano)}</td></tr>
-    <tr><th>Ubicación</th><td colspan="3">${h.eje ? `Eje ${esc(h.eje)} · ` : ''}${esc(h.ubicacion || '—')}</td></tr>
+    <tr><th>Ubicación</th><td colspan="3">${h.eje ? `Eje ${esc(h.eje)} · ` : ''}${h.frente ? `Frente a ${esc(h.frente)} · ` : ''}${h.pos ? `Posición en la celda: ${esc(h.pos)} · ` : ''}${r.apto && it.cell ? `Detrás: apto ${esc(r.apto)} · ` : ''}${esc(h.ubicacion || (h.eje || h.frente || h.pos ? '' : '—'))}</td></tr>
     <tr><th>Medidas</th><td colspan="3">Ancho de fisura: ${h.ancho ? fmt(num(h.ancho)) + ' mm' : '—'} · Longitud: ${h.longitud ? fmt(num(h.longitud)) + ' m' : '—'} · Área: ${h.area ? fmt(num(h.area)) + ' m²' : '—'}</td></tr>
     ${h.atribJust ? `<tr><th>Atribución</th><td colspan="3">${esc(ATRIB[h.atrib]?.n || '')}: ${esc(h.atribJust)}</td></tr>` : ''}
     <tr><th>Reparación recomendada</th><td colspan="3"><b>${esc(h.rep)} · ${esc(REP_BY[h.rep]?.name || '')}</b> — Cantidad: <b>${fmt(num(h.cantidad))} ${esc(unit || '')}</b></td></tr>
@@ -1778,23 +2113,26 @@ function hzTable(it, r, PI) {
     ${ph(h.fotos, h.escala)}</div>`;
   }).join('') + (r.atendidoPor ? `<p><b>Atendido por:</b> ${esc(r.atendidoPor)}</p>` : '') + (r.nota ? `<p><b>Observaciones:</b> ${esc(r.nota)}</p>` : '') + ((r.fotos || []).length ? ph(r.fotos) : '');
 }
-function reportHTML(draft) {
-  const s = stats(), q = quantities(), PI = photoIndex();
-  const dates = Object.values(recs).map(r => r.updatedAt).filter(Boolean);
+function reportHTML(draft, scope = 'todo') {
+  const inS = it => scope === 'todo' || it.group === scope || it.fach === scope; const RI = ITEMS.filter(inS); const has = g => RI.some(i => i.group === g);
+  const scopeName = SCOPES().find(x => x[0] === scope)?.[1] || '';
+  const s = stats(RI), q = quantities(RI), PI = photoIndex();
+  const dates = RI.map(it => recs[it.id]?.updatedAt).filter(Boolean);
   const dmin = dates.length ? Math.min(...dates) : null, dmax = dates.length ? Math.max(...dates) : null;
-  const insp = Object.values(profiles).map(p => ({ ...p, n: ITEMS.filter(it => recs[it.id]?._uid === p.uid && recs[it.id]?.status).length })).sort((a, b) => b.n - a.n);
+  const capt = Object.values(profiles).filter(p => !p.matricula && RI.some(it => recs[it.id]?._uid === p.uid));
+  const insp = Object.values(profiles).filter(p => p.matricula).map(p => ({ ...p, n: RI.filter(it => recs[it.id]?._uid === p.uid && recs[it.id]?.status).length })).sort((a, b) => b.n - a.n);
   const main = insp[0] || inspector || {};
   const inspLine = p => `${esc(p.nombre || '')} · ${esc(p.profesion || '')} · Matrícula ${esc(p.matricula || '')}${p.empresa ? ' · ' + esc(p.empresa) : ''}`;
-  const grpRows = Object.entries(GROUPS).map(([g, G]) => { const st = stats(ITEMS.filter(i => i.group === g)); return `<tr><td>${G.n}</td><td class="num">${st.total}</td><td class="num">${st.sin}</td><td class="num">${st.con}</td><td class="num">${st.noapl}</td><td class="num">${st.noaccdef}</td><td class="num">${st.noacc + st.inc + st.pend}</td><td class="num">${st.sev.leve}</td><td class="num">${st.sev.moderado}</td><td class="num">${st.sev.severo}</td><td class="num">${st.sev.critico}</td></tr>`; }).join('');
+  const grpRows = Object.entries(GROUPS).filter(([g]) => has(g)).map(([g, G]) => { const st = stats(RI.filter(i => i.group === g)); return `<tr><td>${G.n}</td><td class="num">${st.total}</td><td class="num">${st.sin}</td><td class="num">${st.con}</td><td class="num">${st.noapl}</td><td class="num">${st.noaccdef}</td><td class="num">${st.noacc + st.inc + st.pend}</td><td class="num">${st.sev.leve}</td><td class="num">${st.sev.moderado}</td><td class="num">${st.sev.severo}</td><td class="num">${st.sev.critico}</td></tr>`; }).join('');
   const detailFor = group => SECTIONS.filter(x => x.group === group).map(sec => {
-    const dam = sec.items.filter(it => recs[it.id]?.status === 'con_dano');
+    const dam = sec.items.filter(it => inS(it) && recs[it.id]?.status === 'con_dano');
     if (!dam.length) return '';
     return `<h3>${esc(sec.name)}${sec.nivel ? ` <span style="font-weight:400;color:#666">· ${esc(sec.nivel)}</span>` : ''}</h3>` + dam.map(it => hzTable(it, recs[it.id], PI)).join('');
   }).join('') || '<p>No se registraron daños en este componente.</p>';
-  const statusTable = group => `<table><tr><th>Elemento</th><th>Sección</th><th>Estado</th><th class="num">Daños</th></tr>${ITEMS.filter(i => i.group === group).map(it => `<tr><td>${esc(it.name)}</td><td>${esc(it.secName)}</td><td>${stPill(it.id)}</td><td class="num">${(recs[it.id]?.status === 'con_dano' ? recs[it.id].hallazgos.length : 0) || ''}</td></tr>`).join('')}</table>`;
+  const statusTable = group => `<table><tr><th>Elemento</th><th>Sección</th><th>Estado</th><th class="num">Daños</th></tr>${RI.filter(i => i.group === group).map(it => `<tr><td>${esc(it.name)}</td><td>${esc(it.secName)}</td><td>${stPill(it.id)}</td><td class="num">${(recs[it.id]?.status === 'con_dano' ? recs[it.id].hallazgos.length : 0) || ''}</td></tr>`).join('')}</table>`;
   const aptTable = `<table><tr><th>Apto</th><th>Piso</th><th>Muro hacia pasillo</th><th>Muro de fachada</th><th class="num">Daños</th><th>Atendido por</th></tr>${APTS.map(a => { const p = `a${a}-pasillo`, f = `a${a}-fachada`; const n = [p, f].reduce((t, id) => t + (recs[id]?.status === 'con_dano' ? recs[id].hallazgos.length : 0), 0); return `<tr><td><b>${a}</b></td><td>${aptFloor(a)}</td><td>${stPill(p)}</td><td>${stPill(f)}</td><td class="num">${n || ''}</td><td>${esc(recs[p]?.atendidoPor || recs[f]?.atendidoPor || '')}</td></tr>`; }).join('')}</table>`;
-  const pend = ITEMS.filter(it => !isDone(it.id));
-  const sinDano = ITEMS.filter(it => recs[it.id]?.status === 'sin_dano' && (recs[it.id].fotos || []).length);
+  const pend = RI.filter(it => !isDone(it.id));
+  const sinDano = RI.filter(it => recs[it.id]?.status === 'sin_dano' && (recs[it.id].fotos || []).length);
   const equipos = [...new Set(insp.map(p => p.equipos).filter(Boolean))].join('; ');
   return `
   ${draft ? '<div class="watermark">BORRADOR · INSPECCIÓN INCOMPLETA</div>' : ''}
@@ -1807,6 +2145,7 @@ function reportHTML(draft) {
     <table style="font-size:12.5px">
       <tr><th style="width:32%">Objeto</th><td>Identificación, cuantificación y recomendaciones de reparación de los daños en áreas comunes, fachadas y muros de unidades privadas que lindan con áreas comunes, como base para el cálculo de la indemnización y la cotización de las reparaciones.</td></tr>
       <tr><th>Evento</th><td>${PROJECT.evento}</td></tr>
+      ${scope !== 'todo' ? `<tr><th>Parte del informe</th><td><b>${esc(scopeName)}</b>. Este documento contiene solo esta parte; las cantidades corresponden únicamente a ella.</td></tr>` : ''}
       <tr><th>Profesional responsable</th><td>${inspLine(main)}${insp.length > 1 ? `<br><span style="color:#555">Con la participación de: ${insp.slice(1).map(inspLine).join('; ')}</span>` : ''}</td></tr>
       <tr><th>Período de inspección</th><td>${main.fechaInicio ? fdate(main.fechaInicio + 'T12:00') : fdate(dmin)} — ${fdate(dmax)}</td></tr>
       <tr><th>Fecha del informe</th><td>${fdate(Date.now())}</td></tr>
@@ -1823,10 +2162,10 @@ function reportHTML(draft) {
     ${equipos ? `<tr><th>Equipos utilizados</th><td>${esc(equipos)}</td></tr>` : ''}
   </table>
   <h2>2. Alcance</h2>
-  <p>La inspección cubre: (a) las <b>áreas comunes</b> del edificio: sótanos −1 y −2 (parqueaderos de forma global, rampas, muros de contención, cuartos técnicos y circulaciones), piso 1 (acceso, lobby, zona común y piscina), puntos fijos y pasillos de los pisos 2 a 11, cubierta e instalaciones comunes; (b) las <b>fachadas exteriores</b>, inspeccionadas desde el exterior y divididas en paños por piso; (c) en cada uno de los <b>130 apartamentos</b>, los dos muros que lindan con áreas comunes: el <b>muro hacia el pasillo</b> y el <b>muro de fachada</b> (cara interior); y (d) los muros de los <b>2 locales comerciales</b> y los <b>9 depósitos</b> que lindan con áreas comunes. En total se definieron <b>${ITEMS.length}</b> elementos de inspección.</p>
+  <p>La inspección cubre: (a) las <b>áreas comunes</b> del edificio: sótanos −1 y −2 (parqueaderos de forma global, rampas, muros de contención, cuartos técnicos y circulaciones), piso 1 (acceso, lobby, zona común y piscina), puntos fijos y pasillos de los pisos 2 a 11, cubierta e instalaciones comunes; (b) las <b>fachadas exteriores</b>, inspeccionadas desde el exterior mediante descensos en cuerda y divididas en celdas por bajada y piso, cada una con un código único; (c) en cada uno de los <b>130 apartamentos</b>, los dos muros que lindan con áreas comunes: el <b>muro hacia el pasillo</b> y el <b>muro de fachada</b> (cara interior); y (d) los muros de los <b>2 locales comerciales</b> y los <b>9 depósitos</b> que lindan con áreas comunes. En total se definieron <b>${RI.length}</b> elementos de inspección.</p>
   <p>El alcance se limita a la identificación, medición y recomendación de reparación de los daños observados.</p>
   <h2>3. Metodología</h2>
-  <p>Inspección visual elemento por elemento${equipos ? `, con apoyo de ${esc(equipos)}` : ''}. Cada elemento se clasifica como <i>sin daño</i> (con foto de evidencia), <i>con daño</i>, <i>sin acceso</i> (con registro de intentos) o <i>no aplica</i>. Para cada daño se registra el elemento afectado, el tipo de daño, la severidad, la atribución al sismo, la ubicación, las medidas (ancho de fisura, longitud y área), la reparación recomendada con su cantidad de obra, el procedimiento específico de reparación, un comentario técnico y de 1 a 4 fotografías numeradas con sello de fecha, ubicación e inspector; en fisuras y grietas, una de ellas es de detalle con escala.</p>
+  <p>Inspección visual elemento por elemento${equipos ? `, con apoyo de ${esc(equipos)}` : ''}. Cada elemento se clasifica como <i>sin daño</i> (con foto de evidencia), <i>con daño</i>, <i>sin acceso</i> (con registro de intentos) o <i>no aplica</i>. Para cada daño se registra el elemento afectado, el tipo de daño, la severidad, la atribución al sismo, la ubicación, las medidas (ancho de fisura, longitud y área), la reparación recomendada con su cantidad de obra, el procedimiento específico de reparación, un comentario técnico y de 1 a 4 fotografías numeradas con sello de fecha, ubicación e inspector; en fisuras y grietas, una de ellas es de detalle con escala. El número de cada fotografía (F‑0001…) lo asigna el servidor al recibirla y no cambia. Cada daño tiene un código propio (elemento‑D1, D2…). En fachada, el levantamiento se hace por bajadas: en cada celda (fachada‑bajada‑piso) el personal de alturas registra fotografías, tipo de daño, posición, medidas y nota de voz, y marca el código del daño en el muro; el profesional responsable clasifica y cuantifica cada daño a partir de ese levantamiento.${capt.length ? ' Personal de captura en fachada: ' + capt.map(p => esc(p.nombre)).join(', ') + '.' : ''}</p>
   <table><tr><th>Severidad</th><th>Criterio</th></tr>
     <tr><td>${pill('leve')}</td><td>Daño superficial o estético (p. ej., fisuras capilares en revoque o pintura) que no compromete el funcionamiento del elemento.</td></tr>
     <tr><td>${pill('moderado')}</td><td>Daño que requiere reparación localizada del elemento (p. ej., fisuras de 1 a 3 mm, desprendimientos parciales, desajuste de carpinterías).</td></tr>
@@ -1844,14 +2183,14 @@ function reportHTML(draft) {
   <tr><th colspan="10" style="text-align:right">Total costo directo</th><td colspan="2"></td></tr></table>
   <h3>5.1 Cantidades por nivel</h3>
   <table><tr><th>Código</th><th>Unidad</th>${[-2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(f => `<th class="num">${f === 12 ? 'Cub.' : f < 0 ? 'S' + f : 'P' + f}</th>`).join('')}<th class="num">Gral.</th></tr>${q.map(r => `<tr><td>${r.code}</td><td>${esc(r.unit)}</td>${[-2, -1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(f => `<td class="num">${r.pisos[f] ? fmt(r.pisos[f]) : ''}</td>`).join('')}<td class="num">${r.pisos.Gral ? fmt(r.pisos.Gral) : ''}</td></tr>`).join('')}</table>
-  <h2 class="pb">6. Detalle de daños — áreas comunes</h2>${detailFor('comunes')}
-  <h2 class="pb">7. Detalle de daños — fachadas exteriores</h2>${detailFor('fachadas')}
-  <h2 class="pb">8. Apartamentos</h2>
+  ${has('comunes') ? `<h2 class="pb">6. Detalle de daños — áreas comunes</h2>${detailFor('comunes')}` : ''}
+  ${has('fachadas') ? `<h2 class="pb">7. Fachadas exteriores</h2><h3>7.1 Planos de daños por fachada</h3>${FACH.filter(f => RI.some(it => it.fach === f.id)).map(f => `<h3 style="margin-top:14px">${esc(f.id)} · ${esc(f.nombre)} <span style="font-weight:400;color:#666">· ${esc(f.ejes || '')} · ≈ ${fmt(f.largo)} m</span></h3>${planHTML(f)}`).join('')}<h3>7.2 Detalle de daños por celda</h3>${detailFor('fachadas')}` : ''}
+  ${has('aptos') ? `<h2 class="pb">8. Apartamentos</h2>
   <h3>8.1 Estado de los muros por apartamento</h3>${aptTable}
-  <h3>8.2 Detalle de daños por apartamento</h3>${detailFor('aptos')}
-  <h2 class="pb">9. Locales comerciales y depósitos</h2>${statusTable('privadas')}${detailFor('privadas')}
+  <h3>8.2 Detalle de daños por apartamento</h3>${detailFor('aptos')}` : ''}
+  ${has('privadas') ? `<h2 class="pb">9. Locales comerciales y depósitos</h2>${statusTable('privadas')}${detailFor('privadas')}` : ''}
   <h2 class="pb">10. Elementos sin acceso, no aplicables o pendientes</h2>
-  ${(() => { const rows = ITEMS.filter(it => ['no_acceso', 'no_acceso_def', 'no_aplica', 'pendiente', 'incompleto'].includes(itemState(it.id))); return rows.length ? `<table><tr><th>Elemento</th><th>Componente</th><th>Estado</th><th>Intentos / observación</th></tr>${rows.map(it => { const r = recs[it.id]; return `<tr><td>${esc(it.name)}</td><td>${GROUPS[it.group].n}</td><td>${stPill(it.id)}</td><td>${(r?.intentos || []).map(x => `${esc(fdt(x.at))}: ${esc(x.nota)}`).join('<br>')}${r?.nota ? (r.intentos?.length ? '<br>' : '') + esc(r.nota) : ''}</td></tr>`; }).join('')}</table>` : '<p>Ninguno. Todos los elementos fueron inspeccionados.</p>'; })()}
+  ${(() => { const rows = RI.filter(it => ['no_acceso', 'no_acceso_def', 'no_aplica', 'pendiente', 'incompleto', 'por_clasificar'].includes(itemState(it.id))); return rows.length ? `<table><tr><th>Elemento</th><th>Componente</th><th>Estado</th><th>Intentos / observación</th></tr>${rows.map(it => { const r = recs[it.id]; return `<tr><td>${esc(it.name)}</td><td>${GROUPS[it.group].n}</td><td>${stPill(it.id)}</td><td>${(r?.intentos || []).map(x => `${esc(fdt(x.at))}: ${esc(x.nota)}`).join('<br>')}${r?.nota ? (r.intentos?.length ? '<br>' : '') + esc(r.nota) : ''}</td></tr>`; }).join('')}</table>` : '<p>Ninguno. Todos los elementos fueron inspeccionados.</p>'; })()}
   <h2 class="pb">11. Anexo fotográfico — elementos sin daño</h2>
   ${sinDano.length ? `<div class="thumbs">${sinDano.map(it => `<figure><img data-ph="${recs[it.id].fotos[0]}"><figcaption>${PI.get(recs[it.id].fotos[0]) || ''} · ${esc(it.name)}</figcaption></figure>`).join('')}</div>` : '<p>Sin registros.</p>'}
   <h2 class="pb">12. Firma del profesional responsable</h2>
@@ -1859,44 +2198,40 @@ function reportHTML(draft) {
   <div class="sign">${insp.length ? insp.map(p => `<div>${esc(p.nombre)}<br>${esc(p.profesion)} · Matrícula profesional ${esc(p.matricula)}${p.empresa ? '<br>' + esc(p.empresa) : ''}</div>`).join('') : `<div>${esc(main.nombre || '')}</div>`}<div>Fecha: ${fdate(Date.now())}</div></div>
   <div class="foot">Generado con el Portal de Inspección KOA · ${new Date().toLocaleString('es-CO')}</div>`;
 }
-const REPORT_CSS = `body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;margin:0;background:#fff;color:#111}.paper{max-width:900px;margin:0 auto;padding:40px 48px;font-size:12.5px;line-height:1.5;position:relative}.paper h1{font-size:24px;margin:0 0 6px}.paper h2{font-size:16px;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #0a84ff}.paper h3{font-size:13.5px;margin:18px 0 8px}.paper table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:11.5px}.paper th,.paper td{border:1px solid #d6d6db;padding:5px 7px;text-align:left;vertical-align:top}.paper th{background:#f2f4f8;font-weight:700}.paper td.num,.paper th.num{text-align:right}.paper .cover{min-height:820px;display:flex;flex-direction:column;justify-content:space-between}.paper .cover .top{border-left:6px solid #0a84ff;padding-left:18px}.paper .cover .kicker{font-size:12px;color:#c2410c;font-weight:700;letter-spacing:.5px;text-transform:uppercase}.paper .cover h1{font-size:30px;line-height:1.15;margin:10px 0}.paper .watermark{position:absolute;top:220px;left:0;right:0;text-align:center;font-size:54px;font-weight:800;color:rgba(255,59,48,.12);transform:rotate(-18deg);pointer-events:none}.paper .item{border:1px solid #e1e1e6;border-radius:8px;padding:10px 12px;margin:10px 0;break-inside:avoid}.paper .item .ih{display:flex;justify-content:space-between;gap:10px;font-weight:700;margin-bottom:6px}.paper .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10.5px;font-weight:700;color:#fff}.paper .rphotos{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.paper .rphotos figure{margin:0}.paper .rphotos img{width:240px;height:180px;object-fit:cover;border-radius:4px;border:1px solid #ddd}.paper .rphotos figcaption,.paper .thumbs figcaption{font-size:9.5px;color:#555;margin-top:2px}.paper .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.paper .thumbs figure{margin:0;break-inside:avoid}.paper .thumbs img{width:100%;height:110px;object-fit:cover;border-radius:4px;border:1px solid #ddd}.paper .sign{margin-top:60px;display:grid;grid-template-columns:1fr 1fr;gap:40px}.paper .sign div{border-top:1px solid #333;padding-top:6px;font-size:11.5px}.paper .pb{break-before:page}.paper .foot{margin-top:30px;color:#888;font-size:10px;text-align:center}.fallback{width:240px;height:180px;display:grid;place-items:center;background:#eee;color:#888;font-size:11px;border-radius:4px}@media print{@page{size:letter;margin:14mm}.paper{padding:0;max-width:none}.paper tr,.paper .keep{break-inside:avoid}.paper .cover{min-height:auto;gap:60px}}`;
-async function buildReport(draft) {
-  const html = reportHTML(draft);
+const REPORT_CSS = `.plan{width:auto!important}.plan td{width:26px;height:20px;text-align:center;font-weight:700;font-size:10.5px;padding:2px!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}.plan th{font-size:10px;padding:2px 5px!important;white-space:nowrap}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;margin:0;background:#fff;color:#111}.paper{max-width:900px;margin:0 auto;padding:40px 48px;font-size:12.5px;line-height:1.5;position:relative}.paper h1{font-size:24px;margin:0 0 6px}.paper h2{font-size:16px;margin:26px 0 10px;padding-bottom:6px;border-bottom:2px solid #0a84ff}.paper h3{font-size:13.5px;margin:18px 0 8px}.paper table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:11.5px}.paper th,.paper td{border:1px solid #d6d6db;padding:5px 7px;text-align:left;vertical-align:top}.paper th{background:#f2f4f8;font-weight:700}.paper td.num,.paper th.num{text-align:right}.paper .cover{min-height:820px;display:flex;flex-direction:column;justify-content:space-between}.paper .cover .top{border-left:6px solid #0a84ff;padding-left:18px}.paper .cover .kicker{font-size:12px;color:#c2410c;font-weight:700;letter-spacing:.5px;text-transform:uppercase}.paper .cover h1{font-size:30px;line-height:1.15;margin:10px 0}.paper .watermark{position:absolute;top:220px;left:0;right:0;text-align:center;font-size:54px;font-weight:800;color:rgba(255,59,48,.12);transform:rotate(-18deg);pointer-events:none}.paper .item{border:1px solid #e1e1e6;border-radius:8px;padding:10px 12px;margin:10px 0;break-inside:avoid}.paper .item .ih{display:flex;justify-content:space-between;gap:10px;font-weight:700;margin-bottom:6px}.paper .pill{display:inline-block;padding:1px 8px;border-radius:999px;font-size:10.5px;font-weight:700;color:#fff}.paper .rphotos{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}.paper .rphotos figure{margin:0}.paper .rphotos img{width:240px;height:180px;object-fit:cover;border-radius:4px;border:1px solid #ddd}.paper .rphotos figcaption,.paper .thumbs figcaption{font-size:9.5px;color:#555;margin-top:2px}.paper .thumbs{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}.paper .thumbs figure{margin:0;break-inside:avoid}.paper .thumbs img{width:100%;height:110px;object-fit:cover;border-radius:4px;border:1px solid #ddd}.paper .sign{margin-top:60px;display:grid;grid-template-columns:1fr 1fr;gap:40px}.paper .sign div{border-top:1px solid #333;padding-top:6px;font-size:11.5px}.paper .pb{break-before:page}.paper .foot{margin-top:30px;color:#888;font-size:10px;text-align:center}.fallback{width:240px;height:180px;display:grid;place-items:center;background:#eee;color:#888;font-size:11px;border-radius:4px}@media print{@page{size:letter;margin:14mm}.paper{padding:0;max-width:none}.paper tr,.paper .keep{break-inside:avoid}.paper .cover{min-height:auto;gap:60px}}`;
+async function buildReport(draft, scope = 'todo') {
+  draft = ITEMS.some(it => (scope === 'todo' || it.group === scope || it.fach === scope) && !isDone(it.id));
+  const html = reportHTML(draft, scope);
   $('#paper').innerHTML = html;
   $('#report').style.display = 'block'; $('#report').scrollTop = 0;
-  $('#repDl').onclick = () => downloadReport(draft);
+  $('#repDl').onclick = () => downloadReport(draft, scope);
   await hydratePhotos($('#paper'));
 }
 async function blobToDataURL(b) { return new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); }); }
-async function downloadReport(draft) {
+async function downloadReport(draft, scope = 'todo') {
   const btn = $('#repDl'); btn.disabled = true; btn.textContent = 'Preparando archivo…';
   try {
-    const tmp = document.createElement('div'); tmp.innerHTML = reportHTML(draft);
+    const tmp = document.createElement('div'); tmp.innerHTML = reportHTML(draft, scope);
     const imgs = $$('img[data-ph]', tmp); let k = 0;
     for (const img of imgs) {
       k++; if (k % 10 === 0) btn.textContent = `Incluyendo fotos ${k}/${imgs.length}…`;
       try {
-        const ref = img.dataset.ph; let blob;
-        if (ref.startsWith('a:') || ref.startsWith('p:')) { const r = await fetch(assetURL(ref)); if (!r.ok) throw 0; blob = await r.blob(); }
-        else blob = await DB.get('photos', ref);
+        const blob = await photoBlob(img.dataset.ph);
         if (!blob) throw 0;
-        const small = await compressPhoto(blob, null, 900, .62);
+        const small = await compressPhoto(blob, null, 850, .6);
         img.src = await blobToDataURL(small);
       } catch { img.replaceWith(Object.assign(document.createElement('div'), { className: 'fallback', textContent: 'Foto no disponible' })); }
       img.removeAttribute('data-ph');
     }
     const doc = `<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><title>Informe de inspección · KOA</title><style>${REPORT_CSS}</style></head><body><div class="paper">${tmp.innerHTML}</div></body></html>`;
-    await dl(`KOA-informe-inspeccion-${draft ? 'BORRADOR-' : ''}${new Date().toISOString().slice(0, 10)}.html`, new Blob([doc], { type: 'text/html' }));
+    await dl(`KOA-informe-${scope === 'todo' ? 'inspeccion' : scope}-${draft ? 'BORRADOR-' : ''}${new Date().toISOString().slice(0, 10)}.html`, new Blob([doc], { type: 'text/html' }));
   } finally { btn.disabled = false; btn.textContent = 'Descargar informe (.html)'; }
 }
 $('#repClose').onclick = () => { $('#report').style.display = 'none'; };
 
 // ---------- Acceso con usuario y contraseña (GitHub Pages, sin servidor) ----------
 // Solo se guardan huellas PBKDF2 de las contraseñas, nunca las contraseñas.
-const LOCAL_USERS = {
-  fabig76: { s: '4353144834120d06e8f309a6a4f99484', h: '9792a8bd64fbdfc8ebb8852205762710df6c3ba2fed1d5a3878259b9104c7a6e', admin: true },
-  ingeniero: { s: '3d9061334ba810936140452b2170d0cc', h: 'ec6902dfba322ffe0dff27fc8258cf5d813f689776094ae2b045ebe81a3588e9', admin: false }
-};
+const LOCAL_USERS = {}; // El acceso es únicamente contra el servidor; aquí no se guarda ninguna huella de contraseña
 const hex2b = h => new Uint8Array(h.match(/../g).map(x => parseInt(x, 16)));
 const b2hex = b => [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join('');
 async function pbkdf2(pass, saltHex) {
@@ -1936,7 +2271,7 @@ function localGate() {
 }
 async function localLogout() {
   if (Plat.rest) { if (Object.keys(outbox).length) { await Sync.flush(); if (Object.keys(outbox).length && !await ask('Cambios sin enviar', 'Hay cambios que aún no llegan al servidor; se conservan en este equipo y se enviarán al volver a entrar. ¿Cerrar sesión de todos modos?', { ok: 'Cerrar sesión' })) return; } await Rest.logout(); }
-  try { localStorage.removeItem('koa_sesion'); } catch { } location.reload();
+  try { localStorage.removeItem('koa_sesion'); localStorage.removeItem('koa_me'); } catch { } location.reload();
 }
 // Primer arranque del servidor: el dueño crea su cuenta de administrador
 function setupGate() {
@@ -2009,20 +2344,26 @@ function gateScreen(title, msg) {
   const g = $('#gate'); g.hidden = false;
   g.innerHTML = `<div class="lcard"><div class="logo">K</div><h1>${esc(title)}</h1><p>${msg}</p><div class="foot">Edificio KOA Apartamentos · Sismo del 10 de agosto de 2026 · Armenia, Quindío</div></div>`;
 }
+if ('serviceWorker' in navigator && !window.claude?.use) navigator.serviceWorker.register('sw.js').catch(() => { });
 (async function init() {
   try { await DB.open(); } catch { }
   try { navigator.storage?.persist?.(); } catch { }
   if (!window.claude?.use) {
     gateScreen('Conectando…', 'Buscando el servidor del portal.');
     const health = await Rest.health();
-    if (health) {
+    let meCache = null; try { meCache = JSON.parse(localStorage.getItem('koa_me') || 'null'); } catch { }
+    if (health || (Rest.token && meCache)) {
       // Servidor propio (VPS): usuario y contraseña verificados en el servidor; datos y fotos en el servidor
       Plat.rest = Rest;
       let me = null;
-      if (Rest.token) { try { me = await Rest.me(); } catch { Rest.token = ''; } }
-      if (!me && health.users === false) await setupGate();
+      // Sin señal pero con sesión guardada: el portal abre con lo que hay en el dispositivo y envía al recuperar la conexión
+      if (!health) { me = meCache; Plat.online = false; }
+      else if (Rest.token) { try { me = await Rest.me(); } catch (e) { if (e.code === 'login') Rest.token = ''; else me = meCache; } }
+      if (!me && health && health.users === false) await setupGate();
       if (!me) { const j = await serverGate(health); me = { user: j.user, role: j.role, name: j.user }; }
-      Plat.uid = me.user; Plat.viewer = me.role === 'consulta'; Plat.me = { id: me.user, name: me.user, isOwner: me.role === 'admin', canEdit: !Plat.viewer }; Plat.isOwner = me.role === 'admin'; Plat.canEdit = !Plat.viewer;
+      try { localStorage.setItem('koa_me', JSON.stringify({ user: me.user, role: me.role, name: me.user })); } catch { }
+      Plat.uid = me.user; Plat.viewer = me.role === 'consulta'; Plat.captura = me.role === 'captura'; if (Plat.captura) current = 'fachadas';
+      try { Plat.roles = JSON.parse(localStorage.getItem('koa_roles') || '{}'); Plat.fotoN = JSON.parse(localStorage.getItem('koa_fotoN') || '{}'); } catch { } Plat.me = { id: me.user, name: me.user, isOwner: me.role === 'admin', canEdit: !Plat.viewer }; Plat.isOwner = me.role === 'admin'; Plat.canEdit = !Plat.viewer;
       (await DB.entries('cache')).forEach(([k, v]) => { if (!remote[v._uid]) remote[v._uid] = {}; remote[v._uid][k] = v; });
       (await DB.entries('outbox')).forEach(([k, v]) => { outbox[k] = v; });
       inspector = (await DB.get('meta', 'perfil')) || null; if (inspector && inspector.uid !== Plat.uid) inspector = null;
@@ -2038,7 +2379,7 @@ function gateScreen(title, msg) {
       gateScreen('Servidor no disponible', `No fue posible conectar con el servidor del portal. Verifique su conexión a internet e intente de nuevo.<br><br><button class="btn primary" onclick="location.reload()">Reintentar</button><br><br><span style="font-size:12px">Si el problema continúa, avise a la administración.</span>`);
       return;
     }
-    // Sin servidor (GitHub Pages sin configurar): acceso con usuario y contraseña; los datos se guardan en este dispositivo
+    gateScreen('Portal no disponible', 'Este portal funciona únicamente conectado a su servidor. Ábralo desde la dirección que le entregó la administración.'); return;
     const u = await localGate();
     Plat.local = true; Plat.uid = u; Plat.me = { id: u, name: u, isOwner: !!LOCAL_USERS[u].admin, canEdit: true };
     Plat.isOwner = !!LOCAL_USERS[u].admin; Plat.canEdit = true;
@@ -2068,7 +2409,7 @@ function gateScreen(title, msg) {
   Sync.start(); Sync.pill();
   render();
 })();
-window.__koa = { ITEMS, SECTIONS, recs: () => recs, stats, Plat, outbox: () => outbox, ed: () => ed };
+window.__koa = { ITEMS, SECTIONS, recs: () => recs, stats, Plat, outbox: () => outbox, ed: () => ed, desc: () => desc, itemState, FACH: () => FACH, Sync };
 
 </script>
 </body>

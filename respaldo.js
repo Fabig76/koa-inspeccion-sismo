@@ -67,7 +67,7 @@ async function viaWebhook() {
   if (process.argv.includes('--prueba')) { const r = await fetch(DRIVE_WEBHOOK, { redirect: 'follow' }); const j = await r.json(); log(`Receptor de Drive responde: carpeta "${j.carpeta}"`); return; }
   const users = readJSON(path.join(DATA, 'users.json'), {});
   let auditoria = ''; try { auditoria = fs.readFileSync(path.join(DATA, 'auditoria.ndjson'), 'utf8'); } catch { }
-  const copia = { app: 'koa-inspeccion', respaldo: new Date().toISOString(), state: readJSON(path.join(DATA, 'state.json'), {}), usuarios: Object.fromEntries(Object.entries(users).map(([n, u]) => [n, { role: u.role, active: u.active }])), auditoria };
+  const copia = { app: 'koa-inspeccion', respaldo: new Date().toISOString(), state: readJSON(path.join(DATA, 'state.json'), {}), fotos: readJSON(path.join(DATA, 'fotos.json'), {}), versiones: (() => { try { return fs.readFileSync(path.join(DATA, 'versiones.ndjson'), 'utf8'); } catch { return ''; } })(), usuarios: Object.fromEntries(Object.entries(users).map(([n, u]) => [n, { role: u.role, active: u.active }])), auditoria };
   const dia = new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Bogota' });
   const r = await hook({ accion: 'subir', carpeta: 'datos', nombre: `koa-${dia}.json`, mime: 'application/json', b64: Buffer.from(JSON.stringify(copia)).toString('base64') });
   log(`Datos subidos: koa-${dia}.json (${r.size} bytes)`);
@@ -78,6 +78,10 @@ async function viaWebhook() {
     await hook({ accion: 'subir', carpeta: 'fotos', unico: true, nombre: f, mime: 'image/jpeg', b64: fs.readFileSync(path.join(dir, f)).toString('base64') }); nuevas++;
   }
   log(`Fotos nuevas subidas: ${nuevas} · ya estaban en Drive: ${enDrive.size}`);
+  // audios (notas de voz) nuevos
+  const adir = path.join(DATA, 'audios'); let na = 0;
+  if (fs.existsSync(adir)) { const ya = new Set((await hook({ accion: 'listar', carpeta: 'datos' })).archivos); for (const f of fs.readdirSync(adir)) { if (f.endsWith('.tipo') || ya.has('audio-' + f)) continue; await hook({ accion: 'subir', carpeta: 'datos', unico: true, nombre: 'audio-' + f, mime: 'application/octet-stream', b64: fs.readFileSync(path.join(adir, f)).toString('base64') }); na++; } }
+  log(`Notas de voz nuevas subidas: ${na}`);
 }
 
 (async () => {
@@ -91,7 +95,7 @@ async function viaWebhook() {
   // 1) datos del día
   const users = readJSON(path.join(DATA, 'users.json'), {});
   let auditoria = ''; try { auditoria = fs.readFileSync(path.join(DATA, 'auditoria.ndjson'), 'utf8'); } catch { }
-  const copia = { app: 'koa-inspeccion', respaldo: new Date().toISOString(), state: readJSON(path.join(DATA, 'state.json'), {}), usuarios: Object.fromEntries(Object.entries(users).map(([n, u]) => [n, { role: u.role, active: u.active }])), auditoria };
+  const copia = { app: 'koa-inspeccion', respaldo: new Date().toISOString(), state: readJSON(path.join(DATA, 'state.json'), {}), fotos: readJSON(path.join(DATA, 'fotos.json'), {}), versiones: (() => { try { return fs.readFileSync(path.join(DATA, 'versiones.ndjson'), 'utf8'); } catch { return ''; } })(), usuarios: Object.fromEntries(Object.entries(users).map(([n, u]) => [n, { role: u.role, active: u.active }])), auditoria };
   const dia = new Date().toLocaleDateString('sv-SE', { timeZone: 'America/Bogota' });
   const r = await upload(tok, base, `koa-${dia}.json`, Buffer.from(JSON.stringify(copia)), 'application/json');
   log(`Datos subidos: koa-${dia}.json (${r.size} bytes)`);
@@ -103,4 +107,5 @@ async function viaWebhook() {
     await upload(tok, fotosId, f, fs.readFileSync(path.join(dir, f)), 'image/jpeg'); nuevas++;
   }
   log(`Fotos nuevas subidas: ${nuevas} · ya estaban en Drive: ${enDrive.size}`);
-})().catch(e => { console.error(new Date().toISOString(), 'ERROR respaldo:', e.message); process.exit(1); });
+})().then(() => { if (!process.argv.includes('--prueba')) estado({ ok: true }); }).catch(e => { console.error(new Date().toISOString(), 'ERROR respaldo:', e.message); estado({ ok: false, error: String(e.message).slice(0, 300) }); process.exit(1); });
+function estado(o) { try { const f = path.join(DATA, 'respaldo-estado.json'); let prev = {}; try { prev = JSON.parse(fs.readFileSync(f, 'utf8')); } catch { } fs.writeFileSync(f, JSON.stringify({ ...o, at: Date.now(), ultimoOk: o.ok ? Date.now() : prev.ultimoOk || null })); } catch { } }

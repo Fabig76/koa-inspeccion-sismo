@@ -182,7 +182,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted
     <div class="grid g4 reveal" style="margin-top:22px">
       <div class="card"><div class="num" data-count="11">0</div><p>pisos de vivienda y 2 sótanos de parqueaderos</p></div>
       <div class="card"><div class="num" data-count="130">0</div><p>apartamentos, más 2 locales y 9 depósitos</p></div>
-      <div class="card"><div class="num" data-count="385">0</div><p>elementos de inspección definidos a partir de los planos</p></div>
+      <div class="card"><div class="num" data-count="1088">0</div><p>elementos de inspección definidos a partir de los planos</p></div>
       <div class="card"><div class="num">100<span style="font-size:.5em">%</span></div><p>de los elementos documentados antes de emitir el informe final</p></div>
     </div>
   </div>
@@ -218,10 +218,10 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted
   <div class="wrap grid g2" style="align-items:center">
     <div>
       <span class="kicker reveal">04 · Alcance</span>
-      <h2 class="reveal">385 elementos, <span class="grad">ninguno por fuera</span></h2>
+      <h2 class="reveal">1.088 elementos, <span class="grad">ninguno por fuera</span></h2>
       <p class="lead reveal">El inventario se construyó desde los planos arquitectónicos y estructurales aprobados. Cada elemento tiene un estado, y el informe final no se emite hasta que todos estén completos.</p>
       <div class="bars reveal" id="bars"></div>
-      <p class="note reveal">En cada apartamento se inspeccionan los dos muros que lindan con áreas comunes: el del pasillo y el de fachada (cara interior). La cara exterior de la fachada se inspecciona por fuera, paño por paño.</p>
+      <p class="note reveal">En cada apartamento se inspeccionan los dos muros que lindan con áreas comunes: el del pasillo y el de fachada (cara interior). La cara exterior de la fachada, la zona más afectada, se inspecciona por fuera con descensos en cuerda: cada fachada se divide en bajadas y pisos, y cada celda tiene un código único (por ejemplo F1-B05-P08).</p>
     </div>
     <div class="stage glass reveal" id="st-apt">
       <div class="tag">Los 2 muros de cada apartamento</div>
@@ -276,7 +276,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted
       </div>
     </div>
     <div class="grid g4 reveal" style="margin-top:16px">
-      <div class="card"><div class="num">18</div><p>actividades de reparación codificadas (R01 a R18), cada una con su unidad</p></div>
+      <div class="card"><div class="num">23</div><p>actividades de reparación codificadas (R01 a R23), cada una con su unidad</p></div>
       <div class="card"><div class="num">1–4</div><p>fotos por daño, con sello de fecha, ubicación e inspector</p></div>
       <div class="card"><div class="num">F-0001</div><p>numeración única de cada foto para citarla en el informe</p></div>
       <div class="card"><div class="num">Escala</div><p>en fisuras, foto de detalle con regla o fisurómetro</p></div>
@@ -292,7 +292,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted
     <p class="lead reveal">La información queda en un servidor propio del edificio y en el Google Drive de la administración. Nadie puede borrar registros, y cada cambio deja huella.</p>
     <div class="grid g3 reveal" style="margin-top:18px">
       <div class="card"><div class="ico" style="background:#0a84ff">☁︎</div><h3>En tiempo real</h3><p>Cada registro y foto llega al servidor en el momento; si no hay señal en los sótanos, se envía al recuperarla.</p></div>
-      <div class="card"><div class="ico" style="background:#30d158">🔒</div><h3>Nada se borra</h3><p>Quitar una foto o un daño deja el contenido en el historial del registro.</p></div>
+      <div class="card"><div class="ico" style="background:#30d158">🔒</div><h3>Nada se borra</h3><p>Si se quita una foto o un daño, el servidor conserva la versión anterior completa.</p></div>
       <div class="card"><div class="ico" style="background:#bf5af2">🧾</div><h3>Auditoría</h3><p>Ingresos, registros, fotos y cambios de usuarios quedan anotados con fecha y responsable.</p></div>
       <div class="card"><div class="ico" style="background:#ff9f0a">✔︎</div><h3>Completitud obligatoria</h3><p>El informe final solo se emite con el 100 % de los elementos documentados.</p></div>
       <div class="card"><div class="ico" style="background:#40c8e0">🗂</div><h3>Respaldo diario</h3><p>Cada noche se copia la información y las fotos nuevas al Drive de la administración.</p></div>
@@ -308,12 +308,12 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted
     <h2 class="reveal">Acceso controlado por <span class="grad">roles</span></h2>
     <div class="glass reveal" style="padding:6px 6px;margin-top:16px;overflow:auto">
       <table>
-        <tr><th></th><th>Administración</th><th>Ingeniero inspector</th><th>Consulta</th></tr>
-        <tr><td>Ver secciones, daños y fotos</td><td>✅</td><td>✅</td><td>✅</td></tr>
-        <tr><td>Registrar y corregir daños</td><td>✅</td><td>✅ solo los suyos</td><td>—</td></tr>
-        <tr><td>Informe y cuadro de cantidades</td><td>✅</td><td>✅</td><td>✅</td></tr>
-        <tr><td>Crear, bloquear usuarios y cerrar la inspección</td><td>✅</td><td>—</td><td>—</td></tr>
-        <tr><td>Borrar información del servidor</td><td>nadie</td><td>nadie</td><td>nadie</td></tr>
+        <tr><th></th><th>Administración</th><th>Ingeniero inspector</th><th>Captura de fachada</th><th>Consulta</th></tr>
+        <tr><td>Ver secciones, daños y fotos</td><td>✅</td><td>✅</td><td>solo fachadas</td><td>✅</td></tr>
+        <tr><td>Registrar y corregir daños</td><td>✅</td><td>✅ los suyos y los de captura</td><td>✅ solo celdas de fachada</td><td>—</td></tr>
+        <tr><td>Informe y cuadro de cantidades</td><td>✅</td><td>✅</td><td>—</td><td>✅</td></tr>
+        <tr><td>Crear, bloquear usuarios y cerrar la inspección</td><td>✅</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Borrar información del servidor</td><td>nadie</td><td>nadie</td><td>nadie</td><td>nadie</td></tr>
       </table>
     </div>
     <p class="lead reveal" style="margin-top:16px">El rol <b>Consulta</b> está pensado para los miembros del Consejo, las empresas que van a cotizar y la interventoría: ven todo lo que se debe reparar, pero no pueden modificar nada.</p>
@@ -327,7 +327,7 @@ th{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted
     <h2 class="reveal">De la inspección a la <span class="grad">obra</span></h2>
     <div class="tl reveal" style="margin-top:18px">
       <div class="it"><span class="n">PASO 1</span><b>Puesta en marcha</b>Ingeniero inspector ya designado; se crea su acceso al portal.</div>
-      <div class="it"><span class="n">PASO 2</span><b>Inspección</b>Recorrido completo de los 385 elementos, con registro en sitio.</div>
+      <div class="it"><span class="n">PASO 2</span><b>Inspección</b>Recorrido completo de los 1.088 elementos; la fachada, por descensos en cuerda.</div>
       <div class="it"><span class="n">PASO 3</span><b>Informe técnico</b>Firmado por el ingeniero, con cuadro de cantidades y anexo fotográfico.</div>
       <div class="it"><span class="n">PASO 4</span><b>Cotizaciones</b>Las empresas cotizan con acceso de consulta y el mismo cuadro.</div>
       <div class="it"><span class="n">PASO 5</span><b>Aseguradora</b>Presentación del informe y del presupuesto para la indemnización.</div>
@@ -391,7 +391,7 @@ $('#mode').onclick=()=>setMode(!isDark()); setMode(isDark());
 /* ---------- Audiencias ---------- */
 const AUD=[
  {t:'Intervención técnica',d:'El contratista recibe, por cada daño, el elemento afectado, su ubicación exacta (sección, piso, eje), las medidas, la severidad y el procedimiento específico de reparación definido por el ingeniero. La interventoría verifica la obra contra ese mismo registro y sus fotos.',l:['Procedimiento de reparación escrito por el ingeniero','Ubicación precisa y fotos numeradas','Severidad para priorizar (lo crítico primero)']},
- {t:'Cotización comercial',d:'Todas las empresas cotizan sobre el mismo cuadro de cantidades, agrupado por actividad codificada y por nivel. Así las ofertas son comparables entre sí y se evita que cada contratista mida por su cuenta.',l:['18 actividades codificadas con su unidad','Cantidades por actividad, por componente y por piso','Acceso de consulta para revisar cada daño con sus fotos']},
+ {t:'Cotización comercial',d:'Todas las empresas cotizan sobre el mismo cuadro de cantidades, agrupado por actividad codificada y por nivel. Así las ofertas son comparables entre sí y se evita que cada contratista mida por su cuenta.',l:['23 actividades codificadas con su unidad','Cantidades por actividad, por componente y por piso','Acceso de consulta para revisar cada daño con sus fotos']},
  {t:'Aseguradora',d:'La reclamación se apoya en evidencia ordenada: cada daño con fotografías selladas, medidas, criterio de severidad y atribución al sismo justificada, y un presupuesto que se reconstruye partida por partida desde los registros.',l:['Atribución explícita y justificada de cada daño','Fotos con fecha, ubicación e inspector, y foto de escala en fisuras','Trazabilidad completa: historial y auditoría']}
 ];
 function aud(i){$$('.aud').forEach((c,k)=>c.classList.toggle('on',k===i));const a=AUD[i];$('#audDetail').innerHTML=`<h3>${a.t}</h3><p style="color:var(--muted);margin:6px 0 10px">${a.d}</p><div style="display:flex;gap:8px;flex-wrap:wrap">${a.l.map(x=>`<span class="card" style="padding:8px 12px;font-size:13px">✓ ${x}</span>`).join('')}</div>`;}
@@ -399,10 +399,10 @@ $$('.aud').forEach(c=>c.onclick=()=>aud(+c.dataset.a)); aud(0);
 
 /* ---------- Metodología ---------- */
 const STEPS=[
- {t:'Inventario desde planos',i:'📐',d:'Con los planos arquitectónicos y estructurales aprobados se definieron todos los elementos a inspeccionar, organizados por sección y nivel.',l:['Áreas comunes: sótanos, piso 1, puntos fijos de cada piso, cubierta e instalaciones (51)','Fachadas exteriores divididas en paños por piso (61)','130 apartamentos × 2 muros que lindan con áreas comunes (260)','Locales comerciales y depósitos (13)']},
- {t:'Inspección en sitio',i:'🔎',d:'El ingeniero recorre cada elemento y lo clasifica. No hay elementos “sin respuesta”: cada uno queda como sin daño, con daño, sin acceso o no aplica.',l:['“Sin daño” también exige foto de evidencia','“Sin acceso” exige registrar intentos; con dos documentados se cierra formalmente','Fachadas inspeccionadas desde el exterior, paño por paño']},
+ {t:'Inventario desde planos',i:'📐',d:'Con los planos arquitectónicos y estructurales aprobados se definieron todos los elementos a inspeccionar, organizados por sección y nivel.',l:['Áreas comunes: sótanos, piso 1, puntos fijos de cada piso, cubierta e instalaciones (71)','Fachadas exteriores divididas en celdas por bajada y piso (744, ajustables en sitio)','130 apartamentos × 2 muros que lindan con áreas comunes (260)','Locales comerciales y depósitos (13)']},
+ {t:'Inspección en sitio',i:'🔎',d:'El ingeniero recorre cada elemento y lo clasifica. No hay elementos “sin respuesta”: cada uno queda como sin daño, con daño, sin acceso o no aplica.',l:['“Sin daño” también exige foto de evidencia','“Sin acceso” exige registrar intentos; con dos documentados se cierra formalmente','Fachada por descensos en cuerda: el técnico registra cada celda con fotos, tipo de daño, medidas y nota de voz, y marca el código del daño en el muro','El ingeniero clasifica después cada daño levantado en fachada']},
  {t:'Registro estandarizado',i:'🧩',d:'Cada daño se registra con los mismos campos y listas de valores, lo que hace la información comparable y sumable.',l:['Elemento afectado y tipo de daño (listas cerradas)','Severidad y atribución al sismo con justificación','Medidas: ancho de fisura, longitud y área','Actividad de reparación codificada, cantidad y procedimiento']},
- {t:'Evidencia fotográfica',i:'📷',d:'Las fotos se sellan automáticamente y se numeran para poder citarlas en el informe y en la reclamación.',l:['1 a 4 fotos por daño, sello con fecha, ubicación e inspector','Foto de detalle con escala obligatoria en fisuras y grietas','Numeración única F-0001, F-0002…']},
+ {t:'Evidencia fotográfica',i:'📷',d:'Las fotos se sellan automáticamente y se numeran para poder citarlas en el informe y en la reclamación.',l:['1 a 4 fotos por daño, sello con fecha, ubicación e inspector','Foto de detalle con escala obligatoria en fisuras y grietas','Numeración única F-0001, F-0002…, asignada por el servidor y que no cambia']},
  {t:'Validación de completitud',i:'✅',d:'El sistema verifica cada registro y muestra exactamente qué falta. Un elemento incompleto no cuenta como inspeccionado.',l:['Avance por componente, por nivel y en el modelo 3D','Avisos de coherencia (por ejemplo, fisura ancha marcada como leve)','Informe final bloqueado hasta llegar al 100 %']},
  {t:'Consolidación',i:'📊',d:'Los registros se convierten automáticamente en el informe técnico y en el cuadro de cantidades para cotizar.',l:['Informe con metodología, resumen, detalle por sección y anexo fotográfico','Cuadro de cantidades por actividad, componente y nivel','Separación de cantidades atribuibles al sismo','Exportable a Excel']}
 ];
@@ -413,13 +413,13 @@ let auto=0; setInterval(()=>{const r=$('#s-metodo').getBoundingClientRect();if(r
 $('#steps').addEventListener('pointerdown',()=>step.hold=1);
 
 /* ---------- Alcance ---------- */
-const BARS=[['Apartamentos (2 muros c/u)',260,'#0a84ff'],['Fachadas exteriores',61,'#ff9f0a'],['Áreas comunes',51,'#30d158'],['Locales y depósitos',13,'#bf5af2']];
-$('#bars').innerHTML=BARS.map(b=>`<div class="b"><span>${b[0]}</span><span class="t"><i style="background:${b[2]}" data-w="${b[1]/260*100}"></i></span><span class="v">${b[1]}</span></div>`).join('');
+const BARS=[['Fachadas (celdas)',744,'#ff9f0a'],['Apartamentos (2 muros c/u)',260,'#0a84ff'],['Áreas comunes',71,'#30d158'],['Locales y depósitos',13,'#bf5af2']];
+$('#bars').innerHTML=BARS.map(b=>`<div class="b"><span>${b[0]}</span><span class="t"><i style="background:${b[2]}" data-w="${b[1]/744*100}"></i></span><span class="v">${b[1]}</span></div>`).join('');
 new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)$$('#bars i').forEach(i=>i.style.width=i.dataset.w+'%');}),{root:deck,threshold:.3}).observe($('#bars'));
 
 /* ---------- Registro ---------- */
 const REC=[
- ['Elemento','Apto 503 · muro de fachada','Ubica el daño sin ambigüedad: sección, piso y elemento. El contratista sabe a dónde ir y la interventoría qué verificar.'],
+ ['Elemento','Fachada F1 · bajada 5 · piso 8 (celda F1-B05-P08)','Ubica el daño sin ambigüedad: sección, piso y elemento. El contratista sabe a dónde ir y la interventoría qué verificar.'],
  ['Tipo de daño','Fisura diagonal','Lista cerrada de tipos de daño: dos inspectores describen lo mismo con las mismas palabras.'],
  ['Severidad','Moderado','Prioriza la intervención y orienta el tipo de reparación. Lo crítico se atiende primero.'],
  ['Atribución','Atribuible al sismo','Es el dato que la aseguradora evalúa. Si no es atribuible, se justifica por escrito; así el presupuesto separa lo que corresponde a la póliza.'],
@@ -427,7 +427,7 @@ const REC=[
  ['Reparación','R03 · Apertura en V, malla y resane','Actividad codificada con unidad fija: todas las cotizaciones hablan del mismo ítem.'],
  ['Cantidad','2,4 ml','Se suma automáticamente en el cuadro de cantidades por actividad, componente y nivel.'],
  ['Procedimiento','Abrir en V, puente de adherencia, malla y mortero; estuco y pintura','Define el alcance real del trabajo. Evita cotizaciones con alcances distintos.'],
- ['Evidencia','F-0127, F-0128 (escala)','Fotos selladas y numeradas, con detalle a escala. Soporte ante la aseguradora y punto de comparación al recibir la obra.']
+ ['Evidencia','F-0127, F-0128 (escala) · daño F1-B05-P08-D1','Fotos selladas y numeradas, con detalle a escala. Soporte ante la aseguradora y punto de comparación al recibir la obra.']
 ];
 $('#rec').innerHTML=`<div style="padding:8px 12px 10px;font-weight:700">Registro de daño · ejemplo ilustrativo</div>`+REC.map((r,i)=>`<div class="row" data-r="${i}"><span>${r[0]}</span><span>${r[1]}</span></div>`).join('');
 function rec(i){$$('#rec .row').forEach((r,k)=>r.classList.toggle('on',k===i));$('#why').innerHTML=`<span class="kicker">Por qué importa</span><h3 style="font-size:22px;margin-top:6px">${REC[i][0]}</h3><p style="color:var(--muted)">${REC[i][2]}</p>`;}
